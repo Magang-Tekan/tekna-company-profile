@@ -26,13 +26,13 @@
     --ring: 76.00 66.34% 59.01%;
     
     /* Sidebar variables */
-    --sidebar: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
+    --sidebar: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
@@ -74,5 +74,53 @@
   
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Custom layout styles for sidebar */
+@layer components {
+  .sidebar-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+  }
+  
+  .sidebar-main {
+    flex: 1;
+    margin-left: 0;
+    padding: 1rem;
+    background: hsl(var(--background));
+  }
+  
+  .sidebar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 16rem;
+    background: hsl(var(--sidebar));
+    border-right: 1px solid hsl(var(--sidebar-border));
+    z-index: 40;
+  }
+  
+  .sidebar-content {
+    padding: 1rem;
+    height: 100%;
+    overflow-y: auto;
+  }
+  
+  /* Dashboard content centering */
+  .dashboard-content {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+  
+  /* Responsive layout */
+  @media (max-width: 1024px) {
+    .dashboard-content {
+      max-width: 100%;
+      padding: 1rem;
+    }
   }
 }
