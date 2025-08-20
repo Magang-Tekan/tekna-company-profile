@@ -34,5 +34,37 @@ export class PublicService {
     }
   }
 
-  
+  /**
+   * Get featured testimonials.
+   */
+  static async getFeaturedTestimonials() {
+    const supabase = await createClient();
+    try {
+      const { data, error } = await supabase
+        .from('testimonials')
+        .select(`
+          id,
+          client_name,
+          client_position,
+          client_avatar_url,
+          testimonial_translations (
+            content
+          )
+        `)
+        .eq('is_featured', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data.map((testimonial) => ({
+        id: testimonial.id,
+        name: testimonial.client_name,
+        title: testimonial.client_position,
+        quote: testimonial.testimonial_translations[0]?.content || '',
+        avatar_url: testimonial.client_avatar_url,
+      })) || [];
+    } catch (error) {
+      console.error('Error fetching featured testimonials:', error);
+      throw new Error('Failed to retrieve featured testimonials.');
+    }
+  }
 }
