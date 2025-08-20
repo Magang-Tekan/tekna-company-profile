@@ -31,7 +31,7 @@ export async function TestimonialsSection() {
           {testimonials.map((testimonial) => (
             <Card key={testimonial.id}>
               <CardContent className="p-6">
-                <p className="mb-6 text-muted-foreground">&ldquo;{testimonial.testimonial_translations?.[0]?.content || 'No testimonial available'}&rdquo;</p>
+                <p className="mb-6 text-muted-foreground">"{testimonial.testimonial_text}"</p>
                 <div className="flex items-center gap-4">
                   <Avatar>
                     <AvatarImage src={testimonial.client_avatar_url || undefined} />

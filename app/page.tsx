@@ -1,18 +1,14 @@
-import { RocketHeroSection } from "@/components/landing/rocket-hero-section";
-import { EnhancedFeaturesSection } from "@/components/landing/enhanced-features-section";
-import { EnhancedTestimonialsSection } from "@/components/landing/enhanced-testimonials-section";
-import { PricingSection } from "@/components/landing/pricing-section";
-import { CTASection } from "@/components/landing/cta-section";
+import { HeroSection } from "@/components/landing/hero-section";
+import { FeaturesSection } from "@/components/landing/features-section";
+import { TestimonialsSection } from "@/components/landing/testimonials-section";
 import { PublicLayout } from "@/components/layout/public-layout";
 
 export default function LandingPage() {
   return (
     <PublicLayout>
-      <RocketHeroSection />
-      <EnhancedFeaturesSection />
-      <PricingSection />
-      <EnhancedTestimonialsSection />
-      <CTASection />
+      <HeroSection />
+      <FeaturesSection />
+      <TestimonialsSection />
     </PublicLayout>
   );
 }
