@@ -130,10 +130,7 @@ export class DashboardService {
         recentProjects: recentProjects.map(project => ({
           id: project.id,
           name: project.name,
-          client: project.client_name || 'N/A',
           status: project.status as ProjectStatus,
-          startDate: project.start_date,
-          endDate: project.end_date,
           description: project.project_translations?.[0]?.short_description || ''
         })),
         recentPosts: recentPosts.map(post => ({
@@ -196,10 +193,7 @@ export class DashboardService {
         .select(`
           id,
           name,
-          client_name,
           status,
-          start_date,
-          end_date,
           is_featured,
           is_active
         `)
@@ -227,11 +221,7 @@ export class DashboardService {
           id,
           name,
           slug,
-          client_name,
           project_url,
-          github_url,
-          start_date,
-          end_date,
           status,
           featured_image_url,
           is_featured,
@@ -255,11 +245,7 @@ export class DashboardService {
   static async createProject(projectData: {
     name: string;
     slug: string;
-    client_name?: string;
     project_url?: string;
-    github_url?: string;
-    start_date?: string;
-    end_date?: string;
     status: ProjectStatus;
     featured_image_url?: string;
     is_featured?: boolean;
@@ -292,11 +278,7 @@ export class DashboardService {
     projectData: {
       name?: string;
       slug?: string;
-      client_name?: string;
       project_url?: string;
-      github_url?: string;
-      start_date?: string;
-      end_date?: string;
       status?: ProjectStatus;
       featured_image_url?: string;
       is_featured?: boolean;
@@ -350,7 +332,8 @@ export class DashboardService {
     const supabase = await createClient();
     
     try {
-      const { data, error } = await supabase
+      // Get main posts data
+      const { data: posts, error: postsError } = await supabase
         .from('posts')
         .select(`
           id,
@@ -371,8 +354,54 @@ export class DashboardService {
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data || [];
+      if (postsError) throw postsError;
+
+      // Get content for each post from translations
+      if (posts && posts.length > 0) {
+        const postsWithContent = await Promise.all(
+          posts.map(async (post) => {
+            try {
+              const { data: translation } = await supabase
+                .from('post_translations')
+                .select(`
+                  content,
+                  meta_title,
+                  meta_description,
+                  meta_keywords
+                `)
+                .eq('post_id', post.id)
+                .eq('language_id', (await supabase
+                  .from('languages')
+                  .select('id')
+                  .eq('is_default', true)
+                  .eq('is_active', true)
+                  .single()).data?.id || 'en')
+                .single();
+
+              return {
+                ...post,
+                content: translation?.content || '',
+                meta_title: translation?.meta_title || post.title,
+                meta_description: translation?.meta_description || post.excerpt,
+                meta_keywords: translation?.meta_keywords || ''
+              };
+            } catch {
+              // If translation not found, return post without content
+              return {
+                ...post,
+                content: '',
+                meta_title: post.title,
+                meta_description: post.excerpt,
+                meta_keywords: ''
+              };
+            }
+          })
+        );
+
+        return postsWithContent;
+      }
+
+      return posts || [];
     } catch (error) {
       console.error('Error fetching blog posts:', error);
       return [];

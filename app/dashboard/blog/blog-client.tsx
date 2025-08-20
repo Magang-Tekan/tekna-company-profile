@@ -5,14 +5,16 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
-import { IconPlus, IconEdit, IconTrash, IconEye } from '@tabler/icons-react';
+import { IconPlus, IconEdit, IconTrash, IconEye, IconEyeOff } from '@tabler/icons-react';
 
 interface BlogPost {
   id: string;
   title: string;
   slug: string;
   excerpt: string | null;
+  content: string;
   featured_image_url: string | null;
   author_id: string | null;
   category_id: string | null;
@@ -23,6 +25,9 @@ interface BlogPost {
   view_count: number;
   created_at: string;
   updated_at: string;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
 }
 
 interface BlogPageClientProps {
@@ -33,6 +38,7 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
   const router = useRouter();
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
   const [isLoading, setIsLoading] = useState(false);
+  const [expandedPost, setExpandedPost] = useState<string | null>(null);
 
   const handleDelete = async (postId: string, title: string) => {
     if (!confirm(`Apakah Anda yakin ingin menghapus artikel "${title}"?`)) {
@@ -59,6 +65,10 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
     router.push('/dashboard/blog/new');
   };
 
+  const toggleExpanded = (postId: string) => {
+    setExpandedPost(expandedPost === postId ? null : postId);
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig = {
       draft: { label: 'Draft', variant: 'secondary' as const },
@@ -77,6 +87,11 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
       month: 'short',
       day: 'numeric',
     });
+  };
+
+  const truncateContent = (content: string, maxLength: number = 200) => {
+    if (content.length <= maxLength) return content;
+    return content.substring(0, maxLength) + '...';
   };
 
   return (
@@ -141,12 +156,69 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
                     <span>{formatDate(post.published_at || post.created_at)}</span>
                   </div>
                   
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-4">
                     {getStatusBadge(post.status)}
                     <p className="text-xs text-muted-foreground">
                       /{post.slug}
                     </p>
                   </div>
+
+                  {/* Content Preview */}
+                  {post.content && (
+                    <div className="mb-4">
+                      <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => toggleExpanded(post.id)}
+                    className="p-0 h-auto text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    {expandedPost === post.id ? (
+                      <>
+                        <IconEyeOff className="h-3 w-3 mr-1" />
+                        Sembunyikan Konten
+                      </>
+                    ) : (
+                      <>
+                        <IconEye className="h-3 w-3 mr-1" />
+                        Lihat Konten
+                      </>
+                    )}
+                  </Button>
+                  
+                  {expandedPost === post.id && (
+                    <div className="mt-2 p-3 bg-muted rounded-md text-xs">
+                      <div 
+                        className="prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ 
+                          __html: truncateContent(post.content, 300) 
+                        }}
+                      />
+                    </div>
+                  )}
+                    </div>
+                  )}
+
+                  {/* SEO Info */}
+                  {(post.meta_title || post.meta_description || post.meta_keywords) && (
+                    <div className="mb-4 p-3 bg-blue-50 rounded-md text-xs">
+                      <h4 className="font-semibold text-blue-800 mb-2">SEO Info:</h4>
+                      {post.meta_title && (
+                        <div className="mb-1">
+                          <span className="font-medium text-blue-700">Title:</span> {post.meta_title}
+                        </div>
+                      )}
+                      {post.meta_description && (
+                        <div className="mb-1">
+                          <span className="font-medium text-blue-700">Description:</span> {post.meta_description}
+                        </div>
+                      )}
+                      {post.meta_keywords && (
+                        <div>
+                          <span className="font-medium text-blue-700">Keywords:</span> {post.meta_keywords}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex gap-2 mt-4 pt-4 border-t">

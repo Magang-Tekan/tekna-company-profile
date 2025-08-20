@@ -13,12 +13,16 @@ export default function EditPostPage() {
     title: string;
     slug: string;
     excerpt: string;
+    content: string;
     featured_image_url: string;
     author_id: string;
     category_id: string;
     status: PostStatus;
     published_at: string;
     is_featured: boolean;
+    meta_title: string;
+    meta_description: string;
+    meta_keywords: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,12 +35,16 @@ export default function EditPostPage() {
           title: post.title || '',
           slug: post.slug || '',
           excerpt: post.excerpt || '',
+          content: post.content || '',
           featured_image_url: post.featured_image_url || '',
           author_id: post.author_id || '',
           category_id: post.category_id || '',
           status: post.status,
           published_at: post.published_at || '',
           is_featured: post.is_featured || false,
+          meta_title: post.meta_title || post.title || '',
+          meta_description: post.meta_description || post.excerpt || '',
+          meta_keywords: post.meta_keywords || '',
         });
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Gagal memuat data artikel');
