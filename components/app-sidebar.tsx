@@ -4,26 +4,15 @@ import * as React from "react"
 import {
   IconChartBar,
   IconDashboard,
-  IconDatabase,
   IconFileDescription,
-  IconFileWord,
   IconFolder,
   IconHelp,
   IconInnerShadowTop,
-  IconReport,
   IconSearch,
   IconSettings,
-  IconUsers,
   IconArticle,
-  IconBriefcase,
-  IconBuilding,
-  IconMessageCircle,
-  IconAward,
-  IconPhoto,
-  IconWorld,
 } from "@tabler/icons-react"
 
-import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
@@ -50,21 +39,6 @@ const data = {
       icon: IconDashboard,
     },
     {
-      title: "Perusahaan",
-      url: "/protected/company",
-      icon: IconBuilding,
-    },
-    {
-      title: "Tim",
-      url: "/protected/team",
-      icon: IconUsers,
-    },
-    {
-      title: "Layanan",
-      url: "/protected/services",
-      icon: IconBriefcase,
-    },
-    {
       title: "Proyek",
       url: "/protected/projects",
       icon: IconFolder,
@@ -73,31 +47,6 @@ const data = {
       title: "Blog",
       url: "/protected/blog",
       icon: IconArticle,
-    },
-    {
-      title: "Testimonial",
-      url: "/protected/testimonials",
-      icon: IconMessageCircle,
-    },
-    {
-      title: "Pencapaian",
-      url: "/protected/achievements",
-      icon: IconAward,
-    },
-    {
-      title: "Halaman",
-      url: "/protected/pages",
-      icon: IconFileDescription,
-    },
-    {
-      title: "Media",
-      url: "/protected/media",
-      icon: IconPhoto,
-    },
-    {
-      title: "Kontak",
-      url: "/protected/contacts",
-      icon: IconWorld,
     },
   ],
   navClouds: [
@@ -177,23 +126,6 @@ const data = {
       icon: IconSearch,
     },
   ],
-  documents: [
-    {
-      name: "Database",
-      url: "/protected/database",
-      icon: IconDatabase,
-    },
-    {
-      name: "Laporan",
-      url: "/protected/reports",
-      icon: IconReport,
-    },
-    {
-      name: "Backup",
-      url: "/protected/backup",
-      icon: IconFileWord,
-    },
-  ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -216,7 +148,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
