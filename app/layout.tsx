@@ -9,8 +9,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Tekna",
-  description: "Tekna Software Development",
+  title: "Tekna - Inovasi Digital & Desain",
+  description: "Agensi digital yang bersemangat dalam menciptakan solusi inovatif dan pengalaman pengguna yang luar biasa.",
 };
 
 const geistSans = Geist({
@@ -25,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased`}>
+    <html lang="id" suppressHydrationWarning>
+      <body className={`${geistSans.className} antialiased bg-background text-foreground`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
