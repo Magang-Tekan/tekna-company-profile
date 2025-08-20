@@ -31,16 +31,20 @@ export async function TestimonialsSection() {
           {testimonials.map((testimonial) => (
             <Card key={testimonial.id}>
               <CardContent className="p-6">
-                <p className="mb-6 text-muted-foreground">"{testimonial.testimonial_text}"</p>
+                <p className="mb-6 text-muted-foreground">&ldquo;{testimonial.testimonial_text || ''}&rdquo;</p>
                 <div className="flex items-center gap-4">
                   <Avatar>
                     <AvatarImage src={testimonial.client_avatar_url || undefined} />
-                    <AvatarFallback>{testimonial.client_name.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>
+                      {testimonial.client_name && testimonial.client_name.length > 0 
+                        ? testimonial.client_name.charAt(0).toUpperCase() 
+                        : 'U'}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-semibold">{testimonial.client_name}</p>
+                    <p className="font-semibold">{testimonial.client_name || 'Unknown'}</p>
                     <p className="text-sm text-muted-foreground">
-                      {testimonial.client_position}, {testimonial.client_company}
+                      {testimonial.client_position || 'Position'}, {testimonial.client_company || 'Company'}
                     </p>
                   </div>
                 </div>

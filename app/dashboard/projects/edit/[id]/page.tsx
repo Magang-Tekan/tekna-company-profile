@@ -7,9 +7,9 @@ import { ClientDashboardService } from "@/lib/services/client-dashboard.service"
 import type { ProjectStatus } from "@/lib/types/dashboard";
 
 interface EditProjectPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function EditProjectPage({ params }: EditProjectPageProps) {
@@ -32,7 +32,8 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
   useEffect(() => {
     async function getProject() {
       try {
-        const projectData = await ClientDashboardService.getProjectById(params.id);
+        const resolvedParams = await params;
+        const projectData = await ClientDashboardService.getProjectById(resolvedParams.id);
         setProject(projectData);
       } catch (error) {
         console.error('Error fetching project:', error);
@@ -43,7 +44,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
     }
 
     getProject();
-  }, [params.id]);
+  }, [params]);
 
   if (loading) {
     return (

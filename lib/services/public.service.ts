@@ -46,21 +46,25 @@ export class PublicService {
           id,
           client_name,
           client_position,
+          client_company,
           client_avatar_url,
           testimonial_translations (
             content
           )
         `)
         .eq('is_featured', true)
+        .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data.map((testimonial) => ({
+      
+      return data?.map((testimonial) => ({
         id: testimonial.id,
-        name: testimonial.client_name,
-        title: testimonial.client_position,
-        quote: testimonial.testimonial_translations[0]?.content || '',
-        avatar_url: testimonial.client_avatar_url,
+        client_name: testimonial.client_name,
+        client_position: testimonial.client_position,
+        client_company: testimonial.client_company,
+        client_avatar_url: testimonial.client_avatar_url,
+        testimonial_text: testimonial.testimonial_translations?.[0]?.content || '',
       })) || [];
     } catch (error) {
       console.error('Error fetching featured testimonials:', error);

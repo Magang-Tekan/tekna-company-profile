@@ -88,6 +88,9 @@ export interface SupabaseTestimonial {
   client_name: string;
   client_position: string | null;
   client_company: string | null;
+  client_avatar_url: string | null;
+  testimonial_text: string;
   rating: number | null;
   is_active: boolean;
+  is_featured: boolean;
 }
