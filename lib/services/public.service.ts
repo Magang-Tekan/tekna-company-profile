@@ -47,8 +47,8 @@ export class PublicService {
           client_name,
           client_position,
           client_company,
-          testimonial_text,
-          client_avatar_url
+          client_avatar_url,
+          testimonial_translations(content)
         `)
         .eq('is_featured', true)
         .eq('is_active', true)
@@ -57,7 +57,7 @@ export class PublicService {
       if (error) throw error;
       return data || [];
     } catch (error) {
-      console.error('Error fetching featured testimonials:', error);
+      console.error('Error fetching featured testimonials:', error.message, error.stack);
       throw new Error('Gagal mengambil data testimonial.');
     }
   }
