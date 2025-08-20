@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -13,10 +13,19 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+interface ParticleStyle {
+  left: string;
+  top: string;
+  animationDelay: string;
+  animationDuration: string;
+}
+
 export function RocketHeroSection() {
   const heroRef = useRef<HTMLElement>(null);
+  const [particleStyles, setParticleStyles] = useState<ParticleStyle[]>([]);
 
   useEffect(() => {
+    // GSAP ScrollTrigger setup
     if (typeof window !== 'undefined' && heroRef.current) {
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -33,6 +42,15 @@ export function RocketHeroSection() {
         ease: "none"
       });
     }
+
+    // Generate particle styles on client-side only
+    const generatedStyles: ParticleStyle[] = Array.from({ length: 20 }).map(() => ({
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      animationDelay: `${Math.random() * 3}s`,
+      animationDuration: `${2 + Math.random() * 2}s`
+    }));
+    setParticleStyles(generatedStyles);
   }, []);
 
   return (
@@ -52,16 +70,11 @@ export function RocketHeroSection() {
       
       {/* Animated particles */}
       <div className="absolute inset-0 overflow-hidden">
-        {Array.from({ length: 20 }).map((_, i) => (
+        {particleStyles.map((style, i) => (
           <div
             key={`particle-${i}`}
             className="absolute w-1 h-1 bg-primary/20 rounded-full animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 2}s`
-            }}
+            style={style}
           />
         ))}
       </div>

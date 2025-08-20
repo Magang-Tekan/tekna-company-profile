@@ -1,6 +1,6 @@
 'use client';
 
-import { PublicService } from "@/lib/services/public.service";
+import { getFeaturedTestimonialsAction } from "@/app/actions/public";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +32,7 @@ export function EnhancedTestimonialsSection() {
   useEffect(() => {
     async function fetchTestimonials() {
       try {
-        const data = await PublicService.getFeaturedTestimonials();
+        const data = await getFeaturedTestimonialsAction();
         
         // Add mock ratings and enhance data for better presentation
         const enhancedData = data.map(testimonial => ({
