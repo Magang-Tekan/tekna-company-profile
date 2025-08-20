@@ -67,6 +67,9 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      fontFamily: {
+        sans: ["var(--font-plus-jakarta-sans)"],
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

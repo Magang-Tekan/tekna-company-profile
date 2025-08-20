@@ -52,9 +52,11 @@ const Model: React.FC<ModelProps> = memo(
         // Progressive forward movement throughout scroll
         modelRef.current.position.z = animationProgress * 0.5;
         
-        // Gradual scale change throughout scroll
-        const scale = 1.8 + (animationProgress * 0.2);
-        modelRef.current.scale.set(scale, scale, scale);
+        // FIXED scale - no zoom-dependent scaling to maintain consistent size
+        const baseScale = 1.8; // Fixed base scale
+        const scrollScale = animationProgress * 0.2; // Minimal scroll-based scaling
+        const finalScale = baseScale + scrollScale;
+        modelRef.current.scale.set(finalScale, finalScale, finalScale);
       }
     });
 
@@ -140,19 +142,21 @@ const RocketViewer: React.FC<Readonly<RocketViewerProps>> = memo(
         shadows={false}
         camera={{
           position: [0, 0, 4],
-          fov: 60, // Increased FOV to show more of the model
+          fov: 45, // Fixed FOV for consistent perspective
           near: 0.1,
           far: 1000,
+          zoom: 1, // Fixed zoom level
         }}
         gl={{
-          antialias: false,
+          antialias: true,
           alpha: true,
           powerPreference: "high-performance",
           stencil: false,
           depth: true,
         }}
-        dpr={[1, 1.5]}
+        dpr={1} // Fixed device pixel ratio to prevent scaling issues
         performance={{ min: 0.5 }}
+        resize={{ scroll: false, debounce: { scroll: 0, resize: 0 } }} // Disable auto-resize
       >
         {/* Ambient light - cahaya dasar yang sangat terang */}
         <ambientLight intensity={lightIntensity.ambient} />
@@ -313,7 +317,18 @@ export function Rocket3D() {
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full h-[300px] md:h-[400px] lg:h-[500px] overflow-visible">
+    <div 
+      ref={containerRef} 
+      className="overflow-visible"
+      style={{
+        width: '50vmin', // Fixed size based on viewport minimum dimension
+        height: '50vmin', // Square aspect ratio, scales with viewport but consistent
+        minWidth: '300px', // Minimum size to prevent too small on mobile
+        minHeight: '300px',
+        maxWidth: '500px', // Maximum size to prevent too large on desktop
+        maxHeight: '500px',
+      }}
+    >
       <Suspense fallback={<LoadingSpinner />}>
         <RocketViewer
           src="/rocket.glb"
