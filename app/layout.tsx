@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   description: "Agensi digital yang bersemangat dalam menciptakan solusi inovatif dan pengalaman pengguna yang luar biasa.",
 };
 
-const geistSans = Geist({
+const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-geist-sans",
   display: "swap",
   subsets: ["latin"],
@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" suppressHydrationWarning>
-      <body className={`${geistSans.className} antialiased bg-background text-foreground`}>
+      <body className={`${plusJakartaSans.className} antialiased bg-background text-foreground`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
