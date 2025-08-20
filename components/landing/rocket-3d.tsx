@@ -1,5 +1,4 @@
 'use client';
-
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Preload } from "@react-three/drei";
 import { Suspense, useEffect, useState, memo } from "react";
@@ -15,7 +14,7 @@ interface RocketViewerProps {
 const Model: React.FC<{ src: string; onLoad?: () => void }> = memo(
   ({ src, onLoad }) => {
     const { scene } = useGLTF(src);
-
+    
     useEffect(() => {
       if (onLoad) onLoad();
     }, [scene, onLoad]);
@@ -29,7 +28,6 @@ const Model: React.FC<{ src: string; onLoad?: () => void }> = memo(
     );
   },
 );
-
 Model.displayName = "Model";
 
 // Preload rocket model
@@ -48,11 +46,29 @@ const RocketViewer: React.FC<Readonly<RocketViewerProps>> = memo(
     const getLightIntensity = () => {
       switch (theme) {
         case "light":
-          return { ambient: 1.5, directional: 0.8 };
+          return { 
+            ambient: 5.0,      // Sangat terang
+            directional: 2.5,  // Cahaya utama sangat kuat
+            fill: 2.0,         // Fill light kuat
+            rim: 1.5,          // Rim light kuat
+            side: 1.8          // Cahaya samping kuat
+          };
         case "dark":
-          return { ambient: 0.4, directional: 0.6 };
+          return { 
+            ambient: 2.0,      // Lebih terang dari sebelumnya
+            directional: 2.0,  
+            fill: 1.5,         
+            rim: 1.2,          
+            side: 1.4          
+          };
         default:
-          return { ambient: 0.8, directional: 0.7 };
+          return { 
+            ambient: 3.5,      // Default sangat terang
+            directional: 2.2,  
+            fill: 1.8,         
+            rim: 1.3,          
+            side: 1.6          
+          };
       }
     };
 
@@ -93,10 +109,105 @@ const RocketViewer: React.FC<Readonly<RocketViewerProps>> = memo(
         dpr={[1, 1.5]}
         performance={{ min: 0.5 }}
       >
+        {/* Ambient light - cahaya dasar yang sangat terang */}
         <ambientLight intensity={lightIntensity.ambient} />
+        
+        {/* Directional light utama - sangat kuat */}
         <directionalLight
           position={[3, 4, 3]}
           intensity={lightIntensity.directional}
+          castShadow={false}
+        />
+        
+        {/* Fill light kiri - mengisi bayangan */}
+        <directionalLight
+          position={[-4, 3, 2]}
+          intensity={lightIntensity.fill}
+          color="#ffffff"
+          castShadow={false}
+        />
+        
+        {/* Fill light kanan */}
+        <directionalLight
+          position={[4, 3, 2]}
+          intensity={lightIntensity.fill}
+          color="#ffffff"
+          castShadow={false}
+        />
+        
+        {/* Back light - menerangi dari belakang */}
+        <directionalLight
+          position={[0, 3, -4]}
+          intensity={lightIntensity.fill}
+          color="#ffffff"
+          castShadow={false}
+        />
+        
+        {/* Front light - tambahan dari depan */}
+        <directionalLight
+          position={[0, 2, 4]}
+          intensity={lightIntensity.fill}
+          color="#ffffff"
+          castShadow={false}
+        />
+        
+        {/* Side lights - kiri dan kanan */}
+        <directionalLight
+          position={[-4, 0, 0]}
+          intensity={lightIntensity.side}
+          color="#ffffff"
+          castShadow={false}
+        />
+        
+        <directionalLight
+          position={[4, 0, 0]}
+          intensity={lightIntensity.side}
+          color="#ffffff"
+          castShadow={false}
+        />
+        
+        {/* Top light - dari atas */}
+        <directionalLight
+          position={[0, 6, 0]}
+          intensity={lightIntensity.fill}
+          color="#ffffff"
+          castShadow={false}
+        />
+        
+        {/* Bottom light - dari bawah */}
+        <directionalLight
+          position={[0, -4, 0]}
+          intensity={lightIntensity.fill}
+          color="#ffffff"
+          castShadow={false}
+        />
+        
+        {/* Corner lights - sudut-sudut */}
+        <directionalLight
+          position={[3, 3, -3]}
+          intensity={lightIntensity.rim}
+          color="#ffffff"
+          castShadow={false}
+        />
+        
+        <directionalLight
+          position={[-3, 3, -3]}
+          intensity={lightIntensity.rim}
+          color="#ffffff"
+          castShadow={false}
+        />
+        
+        <directionalLight
+          position={[3, -3, 3]}
+          intensity={lightIntensity.rim}
+          color="#ffffff"
+          castShadow={false}
+        />
+        
+        <directionalLight
+          position={[-3, -3, 3]}
+          intensity={lightIntensity.rim}
+          color="#ffffff"
           castShadow={false}
         />
 
@@ -122,7 +233,6 @@ const RocketViewer: React.FC<Readonly<RocketViewerProps>> = memo(
     );
   },
 );
-
 RocketViewer.displayName = "RocketViewer";
 
 function LoadingSpinner() {
@@ -137,7 +247,7 @@ export function Rocket3D() {
   return (
     <div className="w-full h-[400px] md:h-[500px] lg:h-[600px]">
       <Suspense fallback={<LoadingSpinner />}>
-        <RocketViewer 
+        <RocketViewer
           src="/rocket.glb"
           enableRotation={true}
           enableInteraction={false}
