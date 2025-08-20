@@ -2,25 +2,17 @@ import Image from 'next/image';
 import { PublicService } from '@/lib/services/public.service';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Calendar } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 
 interface ProjectData {
   id: string;
   name: string;
   slug: string;
-  client_name: string;
   project_url?: string;
-  github_url?: string;
-  start_date: string;
-  end_date?: string;
   status: string;
   featured_image_url?: string;
   description: string;
   short_description: string;
-  challenges: string;
-  solutions: string;
-  technologies: string;
-  results: string;
   images: {
     image_url: string;
     alt_text?: string;
@@ -55,21 +47,6 @@ export async function ProjectsSection() {
 }
 
 function ProjectRow({ project, isReversed }: { readonly project: ProjectData; readonly isReversed: boolean }) {
-  const parseArrayField = (field: string): string[] => {
-    try {
-      if (Array.isArray(field)) return field;
-      return JSON.parse(field || '[]');
-    } catch {
-      // If parsing fails, assume it's a comma-separated string
-      if (typeof field === 'string') {
-        return field.split(',').map(item => item.trim());
-      }
-      return [];
-    }
-  };
-
-  const technologies = parseArrayField(project.technologies);
-  
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto w-full">
@@ -111,21 +88,6 @@ function ProjectRow({ project, isReversed }: { readonly project: ProjectData; re
               <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                 {project.name}
               </h3>
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <div className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  {new Date(project.start_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long' })}
-                  {project.end_date && ` - ${new Date(project.end_date).toLocaleDateString('id-ID', { year: 'numeric', month: 'long' })}`}
-                </div>
-                {project.client_name && (
-                  <>
-                    <span className="hidden sm:block">•</span>
-                    <span className="font-medium text-blue-600 dark:text-blue-400">
-                      Klien: {project.client_name}
-                    </span>
-                  </>
-                )}
-              </div>
             </div>
 
             {/* Description */}
@@ -135,26 +97,7 @@ function ProjectRow({ project, isReversed }: { readonly project: ProjectData; re
               </p>
             </div>
 
-            {/* Technologies */}
-            {technologies.length > 0 && (
-              <div>
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-                  Teknologi yang Digunakan:
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {technologies.slice(0, 6).map((tech: string) => (
-                    <Badge key={tech} variant="outline" className="text-sm py-1 px-3">
-                      {tech}
-                    </Badge>
-                  ))}
-                  {technologies.length > 6 && (
-                    <Badge variant="outline" className="text-sm py-1 px-3">
-                      +{technologies.length - 6} lainnya
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            )}
+
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
@@ -163,14 +106,6 @@ function ProjectRow({ project, isReversed }: { readonly project: ProjectData; re
                   <a href={project.project_url} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="w-4 h-4" />
                     Lihat Proyek
-                  </a>
-                </Button>
-              )}
-              {project.github_url && (
-                <Button size="lg" variant="outline" className="flex items-center gap-2" asChild>
-                  <a href={project.github_url} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="w-4 h-4" />
-                    Source Code
                   </a>
                 </Button>
               )}

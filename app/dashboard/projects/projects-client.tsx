@@ -12,10 +12,7 @@ import { ClientDashboardService } from "@/lib/services/client-dashboard.service"
 interface Project {
   id: string;
   name: string;
-  client_name: string | null;
   status: string;
-  start_date: string | null;
-  end_date: string | null;
   is_featured: boolean;
   is_active: boolean;
 }
@@ -119,31 +116,10 @@ export default function ProjectsPageClient({ initialProjects }: Readonly<Project
                         </div>
                         {getStatusBadge(project.status)}
                       </div>
-                      {project.client_name && (
-                        <CardDescription>
-                          Klien: {project.client_name}
-                        </CardDescription>
-                      )}
+
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
-                        {project.start_date && (
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Mulai:</span>
-                            <span className="font-medium">
-                              {new Date(project.start_date).toLocaleDateString('id-ID')}
-                            </span>
-                          </div>
-                        )}
-                        {project.end_date && (
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Selesai:</span>
-                            <span className="font-medium">
-                              {new Date(project.end_date).toLocaleDateString('id-ID')}
-                            </span>
-                          </div>
-                        )}
-                        
                         <div className="flex gap-2 pt-2">
                           <Button 
                             variant="outline" 

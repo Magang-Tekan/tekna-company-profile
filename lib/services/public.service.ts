@@ -84,20 +84,12 @@ export class PublicService {
           id,
           name,
           slug,
-          client_name,
           project_url,
-          github_url,
-          start_date,
-          end_date,
           status,
           featured_image_url,
           project_translations!inner (
             description,
             short_description,
-            challenges,
-            solutions,
-            technologies,
-            results,
             languages!inner (
               code
             )
@@ -120,19 +112,11 @@ export class PublicService {
         id: project.id,
         name: project.name,
         slug: project.slug,
-        client_name: project.client_name,
         project_url: project.project_url,
-        github_url: project.github_url,
-        start_date: project.start_date,
-        end_date: project.end_date,
         status: project.status,
         featured_image_url: project.featured_image_url,
         description: project.project_translations?.[0]?.description || '',
         short_description: project.project_translations?.[0]?.short_description || '',
-        challenges: project.project_translations?.[0]?.challenges || '',
-        solutions: project.project_translations?.[0]?.solutions || '',
-        technologies: project.project_translations?.[0]?.technologies || '',
-        results: project.project_translations?.[0]?.results || '',
         images: project.project_images?.sort((a, b) => a.sort_order - b.sort_order) || [],
       })) || [];
     } catch (error) {

@@ -148,7 +148,6 @@ export default async function DashboardPage() {
                   <div key={project.id} className="flex items-center space-x-4">
                     <div className="flex-1 space-y-1">
                       <p className="text-sm font-medium leading-none">{project.name}</p>
-                      <p className="text-sm text-muted-foreground">{project.client}</p>
                       {project.description && (
                         <p className="text-xs text-muted-foreground line-clamp-2">
                           {project.description}

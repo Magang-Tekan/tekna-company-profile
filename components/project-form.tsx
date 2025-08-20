@@ -15,11 +15,7 @@ import type { ProjectStatus } from "@/lib/types/dashboard";
 interface ProjectFormData {
   name: string;
   slug: string;
-  client_name: string;
   project_url: string;
-  github_url: string;
-  start_date: string;
-  end_date: string;
   status: ProjectStatus;
   featured_image_url: string;
   is_featured: boolean;
@@ -37,11 +33,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
   const [formData, setFormData] = useState<ProjectFormData>({
     name: initialData?.name || '',
     slug: initialData?.slug || '',
-    client_name: initialData?.client_name || '',
     project_url: initialData?.project_url || '',
-    github_url: initialData?.github_url || '',
-    start_date: initialData?.start_date || '',
-    end_date: initialData?.end_date || '',
     status: initialData?.status || 'planning',
     featured_image_url: initialData?.featured_image_url || '',
     is_featured: initialData?.is_featured || false,
@@ -74,11 +66,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
         await ClientDashboardService.createProject({
           name: formData.name,
           slug: formData.slug,
-          client_name: formData.client_name || undefined,
           project_url: formData.project_url || undefined,
-          github_url: formData.github_url || undefined,
-          start_date: formData.start_date || undefined,
-          end_date: formData.end_date || undefined,
           status: formData.status,
           featured_image_url: formData.featured_image_url || undefined,
           is_featured: formData.is_featured,
@@ -87,11 +75,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
         await ClientDashboardService.updateProject(projectId, {
           name: formData.name,
           slug: formData.slug,
-          client_name: formData.client_name || undefined,
           project_url: formData.project_url || undefined,
-          github_url: formData.github_url || undefined,
-          start_date: formData.start_date || undefined,
-          end_date: formData.end_date || undefined,
           status: formData.status,
           featured_image_url: formData.featured_image_url || undefined,
           is_featured: formData.is_featured,
@@ -171,16 +155,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
                       </p>
                     </div>
 
-                    {/* Nama Klien */}
-                    <div className="space-y-2">
-                      <Label htmlFor="client_name">Nama Klien</Label>
-                      <Input
-                        id="client_name"
-                        value={formData.client_name}
-                        onChange={(e) => setFormData(prev => ({ ...prev, client_name: e.target.value }))}
-                        placeholder="Contoh: PT Teknologi Maju"
-                      />
-                    </div>
+
 
                     {/* Status */}
                     <div className="space-y-2">
@@ -201,27 +176,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
                       </Select>
                     </div>
 
-                    {/* Tanggal Mulai */}
-                    <div className="space-y-2">
-                      <Label htmlFor="start_date">Tanggal Mulai</Label>
-                      <Input
-                        id="start_date"
-                        type="date"
-                        value={formData.start_date}
-                        onChange={(e) => setFormData(prev => ({ ...prev, start_date: e.target.value }))}
-                      />
-                    </div>
 
-                    {/* Tanggal Selesai */}
-                    <div className="space-y-2">
-                      <Label htmlFor="end_date">Tanggal Selesai</Label>
-                      <Input
-                        id="end_date"
-                        type="date"
-                        value={formData.end_date}
-                        onChange={(e) => setFormData(prev => ({ ...prev, end_date: e.target.value }))}
-                      />
-                    </div>
 
                     {/* URL Proyek */}
                     <div className="space-y-2">
@@ -235,17 +190,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
                       />
                     </div>
 
-                    {/* GitHub URL */}
-                    <div className="space-y-2">
-                      <Label htmlFor="github_url">GitHub URL</Label>
-                      <Input
-                        id="github_url"
-                        type="url"
-                        value={formData.github_url}
-                        onChange={(e) => setFormData(prev => ({ ...prev, github_url: e.target.value }))}
-                        placeholder="https://github.com/username/repo"
-                      />
-                    </div>
+
                   </div>
 
                   {/* Featured Image URL */}

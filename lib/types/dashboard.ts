@@ -16,10 +16,7 @@ export interface DashboardStats {
 export interface Project {
   id: string;
   name: string;
-  client: string;
   status: ProjectStatus;
-  startDate: string | null;
-  endDate: string | null;
   description?: string;
 }
 
@@ -42,10 +39,7 @@ export interface DashboardData {
 export interface SupabaseProject {
   id: string;
   name: string;
-  client_name: string | null;
   status: string;
-  start_date: string | null;
-  end_date: string | null;
   project_translations: Array<{
     short_description: string | null;
   }>;
