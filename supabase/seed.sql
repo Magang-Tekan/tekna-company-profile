@@ -234,82 +234,239 @@ INSERT INTO post_tags (post_id, tag_id) VALUES
 );
 
 -- =====================================================
--- PROJECTS
+-- PROJECTS (Updated with Tekna specific projects)
 -- =====================================================
 
 INSERT INTO projects (name, slug, client_name, project_url, github_url, start_date, end_date, status, featured_image_url, is_featured, is_active, sort_order) VALUES
 (
-    'E-Commerce Platform',
-    'ecommerce-platform',
-    'RetailCorp',
-    'https://retailcorp-ecommerce.com',
-    'https://github.com/teknasolutions/ecommerce-platform',
+    'Tekna Web Platform',
+    'tekna-web-platform',
+    'Tekna Digital',
+    'https://web.tekna.digital',
+    'https://github.com/tekna/web-platform',
     '2024-01-01',
-    '2024-06-01',
+    '2024-06-30',
     'completed',
-    '/images/projects/ecommerce-platform.jpg',
+    '/images/projects/tekna-web.jpg',
     TRUE,
     TRUE,
     1
 ),
 (
-    'Mobile Banking App',
-    'mobile-banking-app',
-    'BankDigital',
-    'https://bankdigital.com/app',
-    'https://github.com/teknasolutions/mobile-banking',
-    '2024-03-01',
-    '2024-08-01',
+    'Tekna Mobile App',
+    'tekna-mobile-app',
+    'Tekna Digital',
+    'https://mobile.tekna.digital',
+    'https://github.com/tekna/mobile-app',
+    '2024-02-01',
+    '2024-08-31',
     'completed',
-    '/images/projects/mobile-banking.jpg',
+    '/images/projects/tekna-mobile.jpg',
     TRUE,
     TRUE,
     2
 ),
 (
-    'Corporate Website Redesign',
-    'corporate-website-redesign',
-    'TechStartup Inc',
-    'https://techstartup.com',
-    NULL,
-    '2024-05-01',
-    '2024-07-01',
-    'completed',
-    '/images/projects/corporate-website.jpg',
-    FALSE,
+    'ERP Tekna',
+    'erp-tekna',
+    'Tekna Digital',
+    'https://erp.tekna.digital',
+    'https://github.com/tekna/erp-system',
+    '2024-03-01',
+    '2024-12-31',
+    'in-progress',
+    '/images/projects/erp-tekna.jpg',
+    TRUE,
     TRUE,
     3
+),
+(
+    'Midea E-Warranty Mobile',
+    'midea-e-warranty-mobile',
+    'PT Midea Indonesia',
+    'https://warranty.midea.id',
+    NULL,
+    '2023-09-01',
+    '2024-02-28',
+    'completed',
+    '/images/projects/midea-warranty.jpg',
+    TRUE,
+    TRUE,
+    4
 );
 
 -- Project translations
 INSERT INTO project_translations (project_id, language_id, description, short_description, challenges, solutions, technologies, results, meta_title, meta_description, meta_keywords) VALUES
--- E-Commerce Platform - English
+-- Tekna Web Platform - English
 (
-    (SELECT id FROM projects WHERE slug = 'ecommerce-platform'),
+    (SELECT id FROM projects WHERE slug = 'tekna-web-platform'),
     (SELECT id FROM languages WHERE code = 'en'),
-    'A comprehensive e-commerce platform built with modern technologies to provide seamless online shopping experience.',
-    'Modern e-commerce platform with advanced features and excellent user experience.',
-    'Complex inventory management, High traffic handling, Secure payment processing, Mobile responsiveness',
-    'Microservices architecture, Redis caching, CDN integration, Progressive Web App features, Advanced security measures',
-    'React.js, Node.js, PostgreSQL, Redis, AWS, Stripe API',
-    '50% increase in conversion rate, 40% improvement in page load speed, 99.9% uptime, 30% increase in mobile sales',
-    'E-Commerce Platform Development - Tekna Solutions',
-    'Professional e-commerce platform development with modern technologies and excellent performance.',
-    'e-commerce platform, online shopping, web development, React.js, Node.js'
+    'A comprehensive IoT monitoring platform designed to provide real-time insights and control over industrial equipment and environmental conditions. The platform features advanced dashboard capabilities, real-time data visualization, and intelligent alerting systems.',
+    'IoT monitoring platform with real-time dashboards and intelligent alerting',
+    'Building a scalable system capable of handling thousands of IoT devices with minimal latency, ensuring data accuracy, and providing intuitive user interfaces for complex industrial data.',
+    'Implemented microservices architecture with real-time data processing pipelines, advanced caching strategies, and responsive web design optimized for industrial environments.',
+    'React.js, Node.js, PostgreSQL, Redis, WebSocket, Docker, AWS IoT Core, Grafana, TypeScript',
+    'Successfully deployed across 15+ industrial facilities, monitoring 500+ IoT devices with 99.9% uptime and sub-second response times.',
+    'Tekna Web Platform - IoT Monitoring Solution',
+    'IoT monitoring platform with real-time dashboards and intelligent alerting systems for industrial environments.',
+    'IoT monitoring, real-time dashboard, industrial IoT, React.js, Node.js'
 ),
--- E-Commerce Platform - Indonesian
+-- Tekna Web Platform - Indonesian
 (
-    (SELECT id FROM projects WHERE slug = 'ecommerce-platform'),
+    (SELECT id FROM projects WHERE slug = 'tekna-web-platform'),
     (SELECT id FROM languages WHERE code = 'id'),
-    'Platform e-commerce komprehensif yang dibangun dengan teknologi modern untuk memberikan pengalaman berbelanja online yang mulus.',
-    'Platform e-commerce modern dengan fitur canggih dan pengalaman pengguna yang luar biasa.',
-    'Manajemen inventaris yang kompleks, Penanganan lalu lintas tinggi, Pemrosesan pembayaran yang aman, Responsivitas mobile',
-    'Arsitektur microservices, Redis caching, Integrasi CDN, Fitur Progressive Web App, Langkah-langkah keamanan canggih',
-    'React.js, Node.js, PostgreSQL, Redis, AWS, Stripe API',
-    'Peningkatan 50% dalam tingkat konversi, Peningkatan 40% dalam kecepatan pemuatan halaman, 99.9% uptime, Peningkatan 30% dalam penjualan mobile',
-    'Pengembangan Platform E-Commerce - Tekna Solutions',
-    'Pengembangan platform e-commerce profesional dengan teknologi modern dan kinerja yang luar biasa.',
-    'platform e-commerce, belanja online, pengembangan web, React.js, Node.js'
+    'Platform monitoring IoT yang komprehensif dirancang untuk memberikan wawasan real-time dan kontrol atas peralatan industri dan kondisi lingkungan. Platform ini memiliki kemampuan dashboard canggih, visualisasi data real-time, dan sistem peringatan yang cerdas.',
+    'Platform monitoring IoT dengan dashboard real-time dan sistem peringatan cerdas',
+    'Membangun sistem yang scalable mampu menangani ribuan perangkat IoT dengan latensi minimal, memastikan akurasi data, dan menyediakan antarmuka pengguna yang intuitif untuk data industri yang kompleks.',
+    'Mengimplementasikan arsitektur microservices dengan pipeline pemrosesan data real-time, strategi caching canggih, dan desain web responsif yang dioptimalkan untuk lingkungan industri.',
+    'React.js, Node.js, PostgreSQL, Redis, WebSocket, Docker, AWS IoT Core, Grafana, TypeScript',
+    'Berhasil dideploy di 15+ fasilitas industri, memonitor 500+ perangkat IoT dengan uptime 99.9% dan response time sub-detik.',
+    'Tekna Web Platform - Solusi Monitoring IoT',
+    'Platform monitoring IoT dengan dashboard real-time dan sistem peringatan cerdas untuk lingkungan industri.',
+    'monitoring IoT, dashboard real-time, IoT industri, React.js, Node.js'
+),
+-- Tekna Mobile App - English
+(
+    (SELECT id FROM projects WHERE slug = 'tekna-mobile-app'),
+    (SELECT id FROM languages WHERE code = 'en'),
+    'Native mobile application for IoT monitoring that provides field engineers and managers with on-the-go access to critical system data. Features offline capabilities, push notifications, and augmented reality for equipment identification.',
+    'Native mobile app for IoT monitoring with offline capabilities and AR features',
+    'Developing a mobile solution that works reliably in industrial environments with poor connectivity, while maintaining synchronization with the central platform.',
+    'Built with React Native for cross-platform compatibility, implemented offline-first architecture with intelligent sync mechanisms, and integrated AR capabilities for enhanced user experience.',
+    'React Native, Expo, SQLite, Redux Toolkit, WebRTC, ARCore/ARKit, Firebase, TypeScript',
+    'Deployed to 200+ field engineers across multiple sites, reducing response time to critical alerts by 60% and improving maintenance efficiency by 40%.',
+    'Tekna Mobile App - IoT Monitoring Mobile Solution',
+    'Native mobile app for IoT monitoring with offline capabilities and augmented reality features.',
+    'mobile IoT monitoring, React Native, offline app, augmented reality, field engineering'
+),
+-- Tekna Mobile App - Indonesian
+(
+    (SELECT id FROM projects WHERE slug = 'tekna-mobile-app'),
+    (SELECT id FROM languages WHERE code = 'id'),
+    'Aplikasi mobile native untuk monitoring IoT yang memberikan akses on-the-go kepada teknisi lapangan dan manajer terhadap data sistem kritis. Memiliki kemampuan offline, push notification, dan augmented reality untuk identifikasi peralatan.',
+    'Aplikasi mobile native untuk monitoring IoT dengan kemampuan offline dan fitur AR',
+    'Mengembangkan solusi mobile yang bekerja reliabel di lingkungan industri dengan konektivitas buruk, sambil mempertahankan sinkronisasi dengan platform pusat.',
+    'Dibangun dengan React Native untuk kompatibilitas cross-platform, mengimplementasikan arsitektur offline-first dengan mekanisme sync cerdas, dan mengintegrasikan kemampuan AR untuk pengalaman pengguna yang lebih baik.',
+    'React Native, Expo, SQLite, Redux Toolkit, WebRTC, ARCore/ARKit, Firebase, TypeScript',
+    'Dideploy ke 200+ teknisi lapangan di berbagai lokasi, mengurangi waktu respons terhadap alert kritis sebesar 60% dan meningkatkan efisiensi maintenance sebesar 40%.',
+    'Tekna Mobile App - Solusi Mobile Monitoring IoT',
+    'Aplikasi mobile native untuk monitoring IoT dengan kemampuan offline dan fitur augmented reality.',
+    'monitoring IoT mobile, React Native, aplikasi offline, augmented reality, teknik lapangan'
+),
+-- ERP Tekna - English
+(
+    (SELECT id FROM projects WHERE slug = 'erp-tekna'),
+    (SELECT id FROM languages WHERE code = 'en'),
+    'Enterprise Resource Planning system tailored for modern businesses, featuring integrated modules for inventory management, financial tracking, human resources, and project management. Built with scalability and customization in mind.',
+    'Modern ERP system with integrated modules for complete business management',
+    'Creating a flexible ERP system that can adapt to various business processes while maintaining performance and user-friendliness across different departments.',
+    'Developed modular architecture with customizable workflows, implemented role-based access control, and created intuitive dashboards for different user types.',
+    'Next.js, Supabase, PostgreSQL, Prisma, Tailwind CSS, Framer Motion, TypeScript, Docker',
+    'Currently being implemented across 10+ departments, streamlining business processes and reducing manual work by 70%.',
+    'ERP Tekna - Modern Enterprise Resource Planning',
+    'Modern ERP system with integrated modules for inventory, finance, HR, and project management.',
+    'ERP system, enterprise resource planning, business management, Next.js, Supabase'
+),
+-- ERP Tekna - Indonesian
+(
+    (SELECT id FROM projects WHERE slug = 'erp-tekna'),
+    (SELECT id FROM languages WHERE code = 'id'),
+    'Sistem Enterprise Resource Planning yang disesuaikan untuk bisnis modern, menampilkan modul terintegrasi untuk manajemen inventori, pelacakan keuangan, sumber daya manusia, dan manajemen proyek. Dibangun dengan skalabilitas dan kustomisasi dalam pikiran.',
+    'Sistem ERP modern dengan modul terintegrasi untuk manajemen bisnis lengkap',
+    'Menciptakan sistem ERP yang fleksibel yang dapat beradaptasi dengan berbagai proses bisnis sambil mempertahankan performa dan user-friendliness di berbagai departemen.',
+    'Mengembangkan arsitektur modular dengan workflow yang dapat dikustomisasi, mengimplementasikan kontrol akses berbasis peran, dan menciptakan dashboard intuitif untuk berbagai tipe pengguna.',
+    'Next.js, Supabase, PostgreSQL, Prisma, Tailwind CSS, Framer Motion, TypeScript, Docker',
+    'Saat ini sedang diimplementasikan di 10+ departemen, menyederhanakan proses bisnis dan mengurangi pekerjaan manual sebesar 70%.',
+    'ERP Tekna - Sistem Perencanaan Sumber Daya Perusahaan Modern',
+    'Sistem ERP modern dengan modul terintegrasi untuk inventori, keuangan, SDM, dan manajemen proyek.',
+    'sistem ERP, perencanaan sumber daya perusahaan, manajemen bisnis, Next.js, Supabase'
+),
+-- Midea E-Warranty - English
+(
+    (SELECT id FROM projects WHERE slug = 'midea-e-warranty-mobile'),
+    (SELECT id FROM languages WHERE code = 'en'),
+    'Digital warranty management application for Midea home appliances, enabling customers to register products, claim warranties, and track service requests. Features QR code scanning, multilingual support, and integration with service centers.',
+    'Digital warranty management app for Midea home appliances',
+    'Integrating with existing legacy systems while providing a modern user experience, supporting multiple languages, and ensuring data security for customer information.',
+    'Built hybrid mobile application with offline capabilities, implemented secure API integration with legacy systems, and created multilingual interface with seamless user experience.',
+    'Ionic, Angular, Capacitor, SQLite, REST APIs, QR Scanner, Push Notifications, TypeScript',
+    'Successfully launched with 50,000+ registered users, reducing warranty claim processing time by 80% and improving customer satisfaction scores by 45%.',
+    'Midea E-Warranty - Digital Warranty Management',
+    'Digital warranty management application for Midea home appliances with QR scanning and multilingual support.',
+    'warranty management, mobile app, QR scanner, Midea, home appliances'
+),
+-- Midea E-Warranty - Indonesian
+(
+    (SELECT id FROM projects WHERE slug = 'midea-e-warranty-mobile'),
+    (SELECT id FROM languages WHERE code = 'id'),
+    'Aplikasi manajemen garansi digital untuk peralatan rumah tangga Midea, memungkinkan pelanggan untuk mendaftarkan produk, mengklaim garansi, dan melacak permintaan layanan. Memiliki fitur QR code scanning, dukungan multibahasa, dan integrasi dengan pusat layanan.',
+    'Aplikasi manajemen garansi digital untuk peralatan rumah tangga Midea',
+    'Mengintegrasikan dengan sistem legacy yang ada sambil menyediakan pengalaman pengguna modern, mendukung multiple bahasa, dan memastikan keamanan data untuk informasi pelanggan.',
+    'Membangun aplikasi mobile hybrid dengan kemampuan offline, mengimplementasikan integrasi API aman dengan sistem legacy, dan menciptakan antarmuka multibahasa dengan pengalaman pengguna yang seamless.',
+    'Ionic, Angular, Capacitor, SQLite, REST APIs, QR Scanner, Push Notifications, TypeScript',
+    'Berhasil diluncurkan dengan 50,000+ pengguna terdaftar, mengurangi waktu pemrosesan klaim garansi sebesar 80% dan meningkatkan skor kepuasan pelanggan sebesar 45%.',
+    'Midea E-Warranty - Manajemen Garansi Digital',
+    'Aplikasi manajemen garansi digital untuk peralatan rumah tangga Midea dengan QR scanning dan dukungan multibahasa.',
+    'manajemen garansi, aplikasi mobile, QR scanner, Midea, peralatan rumah tangga'
+);
+
+-- Project images for the new projects
+INSERT INTO project_images (project_id, image_url, alt_text, caption, sort_order) VALUES
+(
+    (SELECT id FROM projects WHERE slug = 'tekna-web-platform'),
+    '/images/projects/tekna-web-dashboard.jpg',
+    'Tekna Web Platform Dashboard',
+    'Main dashboard showing real-time IoT data visualization',
+    1
+),
+(
+    (SELECT id FROM projects WHERE slug = 'tekna-web-platform'),
+    '/images/projects/tekna-web-analytics.jpg',
+    'Tekna Web Platform Analytics',
+    'Advanced analytics and reporting interface',
+    2
+),
+(
+    (SELECT id FROM projects WHERE slug = 'tekna-mobile-app'),
+    '/images/projects/tekna-mobile-home.jpg',
+    'Tekna Mobile App Home',
+    'Mobile app home screen with quick access to monitoring tools',
+    1
+),
+(
+    (SELECT id FROM projects WHERE slug = 'tekna-mobile-app'),
+    '/images/projects/tekna-mobile-ar.jpg',
+    'Tekna Mobile App AR Feature',
+    'Augmented reality feature for equipment identification',
+    2
+),
+(
+    (SELECT id FROM projects WHERE slug = 'erp-tekna'),
+    '/images/projects/erp-dashboard.jpg',
+    'ERP Tekna Dashboard',
+    'Main ERP dashboard with business intelligence widgets',
+    1
+),
+(
+    (SELECT id FROM projects WHERE slug = 'erp-tekna'),
+    '/images/projects/erp-modules.jpg',
+    'ERP Tekna Modules',
+    'Overview of integrated ERP modules and workflows',
+    2
+),
+(
+    (SELECT id FROM projects WHERE slug = 'midea-e-warranty-mobile'),
+    '/images/projects/midea-warranty-home.jpg',
+    'Midea E-Warranty Home',
+    'Warranty app home screen with product registration',
+    1
+),
+(
+    (SELECT id FROM projects WHERE slug = 'midea-e-warranty-mobile'),
+    '/images/projects/midea-warranty-qr.jpg',
+    'Midea E-Warranty QR Scanner',
+    'QR code scanning feature for product registration',
+    2
 );
 
 -- =====================================================
