@@ -340,6 +340,138 @@ INSERT INTO project_images (project_id, image_url, alt_text, caption, sort_order
     2
 );
 
+-- =====================================================
+-- ADMIN USERS SEED (INTEGRATED WITH SUPABASE AUTH)
+-- =====================================================
+
+-- Aktifkan ekstensi yang diperlukan
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- Insert admin users directly into Supabase Auth
+DO $$
+DECLARE
+  admin_id UUID;
+  editor_id UUID;
+  admin_email TEXT := 'admin@admin.com';
+  editor_email TEXT := 'editor@editor.com';
+  admin_password TEXT := 'admin123';
+  editor_password TEXT := 'editor123';
+BEGIN
+  -- Check if admin user already exists
+  IF NOT EXISTS (SELECT 1 FROM auth.users WHERE email = admin_email) THEN
+    -- Create super admin user in Supabase Auth
+    INSERT INTO auth.users (
+      instance_id,
+      id,
+      aud,
+      role,
+      email,
+      encrypted_password,
+      email_confirmed_at,
+      recovery_sent_at,
+      last_sign_in_at,
+      raw_app_meta_data,
+      raw_user_meta_data,
+      created_at,
+      updated_at,
+      confirmation_token,
+      email_change,
+      email_change_token_new,
+      recovery_token
+    ) VALUES (
+      '00000000-0000-0000-0000-000000000000',
+      uuid_generate_v4(),
+      'authenticated',
+      'authenticated',
+      admin_email,
+      crypt(admin_password, gen_salt('bf')),
+      now(),
+      now(),
+      now(),
+      '{"provider":"email","providers":["email"]}',
+      '{}',
+      now(),
+      now(),
+      '',
+      '',
+      '',
+      ''
+    ) RETURNING id INTO admin_id;
+    
+    -- Assign super admin role
+    INSERT INTO user_roles (user_id, role, is_active) VALUES 
+      (admin_id, 'super_admin', true);
+    
+    -- Create admin profile
+    INSERT INTO user_profiles (user_id, first_name, last_name) VALUES 
+      (admin_id, 'Super', 'Admin');
+  END IF;
+  
+  -- Check if editor user already exists
+  IF NOT EXISTS (SELECT 1 FROM auth.users WHERE email = editor_email) THEN
+    -- Create editor user in Supabase Auth
+    INSERT INTO auth.users (
+      instance_id,
+      id,
+      aud,
+      role,
+      email,
+      encrypted_password,
+      email_confirmed_at,
+      recovery_sent_at,
+      last_sign_in_at,
+      raw_app_meta_data,
+      raw_user_meta_data,
+      created_at,
+      updated_at,
+      confirmation_token,
+      email_change,
+      email_change_token_new,
+      recovery_token
+    ) VALUES (
+      '00000000-0000-0000-0000-000000000000',
+      uuid_generate_v4(),
+      'authenticated',
+      'authenticated',
+      editor_email,
+      crypt(editor_password, gen_salt('bf')),
+      now(),
+      now(),
+      now(),
+      '{"provider":"email","providers":["email"]}',
+      '{}',
+      now(),
+      now(),
+      '',
+      '',
+      '',
+      ''
+    ) RETURNING id INTO editor_id;
+    
+    -- Assign editor role
+    INSERT INTO user_roles (user_id, role, is_active) VALUES 
+      (editor_id, 'editor', true);
+    
+    -- Create editor profile
+    INSERT INTO user_profiles (user_id, first_name, last_name) VALUES 
+      (editor_id, 'Content', 'Editor');
+  END IF;
+END $$;
+
+-- Verify admin users setup
+SELECT 
+    u.email,
+    ur.role,
+    ur.is_active,
+    up.first_name,
+    up.last_name
+FROM auth.users u
+JOIN user_roles ur ON u.id = ur.user_id
+LEFT JOIN user_profiles up ON u.id = up.user_id
+WHERE u.email IN ('admin@admin.com', 'editor@editor.com')
+ORDER BY u.email;
+
 
 
 

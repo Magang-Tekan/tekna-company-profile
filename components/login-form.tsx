@@ -33,14 +33,20 @@ export function LoginForm({
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
       if (error) throw error;
-      // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push("/dashboard");
+      
+      if (data.user) {
+        router.push('/dashboard');
+      } else {
+        throw new Error('No user data returned');
+      }
     } catch (error: unknown) {
+      console.error('Login error:', error);
       setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
       setIsLoading(false);
@@ -93,14 +99,8 @@ export function LoginForm({
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
             </div>
-            <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Link
-                href="/auth/sign-up"
-                className="underline underline-offset-4"
-              >
-                Sign up
-              </Link>
+            <div className="mt-4 text-center text-sm text-muted-foreground">
+              Internal company access only
             </div>
           </form>
         </CardContent>
