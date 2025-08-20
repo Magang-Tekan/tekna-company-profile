@@ -4,10 +4,7 @@ import {
   IconUsers, 
   IconFolder, 
   IconArticle, 
-  IconMessageCircle,
-  IconBriefcase,
-  IconPhoto,
-  IconWorld
+  IconMessageCircle
 } from "@tabler/icons-react";
 import { DashboardService } from "@/lib/services/dashboard.service";
 import type { DashboardData } from "@/lib/types/dashboard";
@@ -221,30 +218,14 @@ export default async function DashboardPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-            <a href="/dashboard/projects/new" className="flex flex-col items-center space-y-2 p-4 rounded-lg border hover:bg-accent transition-colors">
+          <div className="grid gap-4 md:grid-cols-2">
+            <a href="/dashboard/projects" className="flex flex-col items-center space-y-2 p-4 rounded-lg border hover:bg-accent transition-colors">
               <IconFolder className="h-6 w-6" />
-              <span className="text-sm font-medium">Tambah Proyek</span>
+              <span className="text-sm font-medium">Kelola Proyek</span>
             </a>
-            <a href="/dashboard/blog/new" className="flex flex-col items-center space-y-2 p-4 rounded-lg border hover:bg-accent transition-colors">
+            <a href="/dashboard/blog" className="flex flex-col items-center space-y-2 p-4 rounded-lg border hover:bg-accent transition-colors">
               <IconArticle className="h-6 w-6" />
-              <span className="text-sm font-medium">Tulis Artikel</span>
-            </a>
-            <a href="/dashboard/team/new" className="flex flex-col items-center space-y-2 p-4 rounded-lg border hover:bg-accent transition-colors">
-              <IconUsers className="h-6 w-6" />
-              <span className="text-sm font-medium">Tambah Tim</span>
-            </a>
-            <a href="/dashboard/services/new" className="flex flex-col items-center space-y-2 p-4 rounded-lg border hover:bg-accent transition-colors">
-              <IconBriefcase className="h-6 w-6" />
-              <span className="text-sm font-medium">Tambah Layanan</span>
-            </a>
-            <a href="/dashboard/media/upload" className="flex flex-col items-center space-y-2 p-4 rounded-lg border hover:bg-accent transition-colors">
-              <IconPhoto className="h-6 w-6" />
-              <span className="text-sm font-medium">Upload Media</span>
-            </a>
-            <a href="/dashboard/contacts" className="flex flex-col items-center space-y-2 p-4 rounded-lg border hover:bg-accent transition-colors">
-              <IconWorld className="h-6 w-6" />
-              <span className="text-sm font-medium">Lihat Kontak</span>
+              <span className="text-sm font-medium">Kelola Blog</span>
             </a>
           </div>
         </CardContent>

@@ -3,66 +3,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { IconArticle, IconPlus, IconSearch, IconFilter, IconEye, IconEdit, IconTrash } from "@tabler/icons-react";
+import { DashboardService } from "@/lib/services/dashboard.service";
 
-export default function BlogPage() {
-  // Mock data untuk blog posts
-  const blogPosts = [
-    {
-      id: "1",
-      title: "Tips Membuat Website yang Responsif",
-      excerpt: "Panduan lengkap untuk membuat website yang responsif dan user-friendly di berbagai perangkat...",
-      author: "Admin",
-      status: "published",
-      views: 1250,
-      publishedAt: "2024-03-15",
-      category: "Web Development",
-      tags: ["Responsive", "CSS", "UX"]
-    },
-    {
-      id: "2",
-      title: "Teknologi Terbaru di 2024",
-      excerpt: "Eksplorasi teknologi-teknologi terbaru yang akan mendominasi industri IT di tahun 2024...",
-      author: "Admin",
-      status: "published",
-      views: 890,
-      publishedAt: "2024-03-10",
-      category: "Technology",
-      tags: ["AI", "Machine Learning", "2024"]
-    },
-    {
-      id: "3",
-      title: "Cara Optimasi SEO Website",
-      excerpt: "Strategi dan teknik untuk mengoptimalkan SEO website agar mendapatkan ranking tinggi di Google...",
-      author: "Admin",
-      status: "draft",
-      views: 0,
-      publishedAt: null,
-      category: "SEO",
-      tags: ["SEO", "Google", "Optimization"]
-    },
-    {
-      id: "4",
-      title: "Peran AI dalam Pengembangan Software",
-      excerpt: "Bagaimana Artificial Intelligence mengubah cara kita mengembangkan software dan aplikasi...",
-      author: "Admin",
-      status: "published",
-      views: 1560,
-      publishedAt: "2024-03-05",
-      category: "AI",
-      tags: ["AI", "Software", "Development"]
-    },
-    {
-      id: "5",
-      title: "Best Practices untuk Mobile App",
-      excerpt: "Praktik terbaik dalam pengembangan aplikasi mobile yang user-friendly dan performant...",
-      author: "Admin",
-      status: "published",
-      views: 720,
-      publishedAt: "2024-02-28",
-      category: "Mobile",
-      tags: ["Mobile", "App", "Best Practices"]
-    }
-  ];
+async function getBlogPosts() {
+  try {
+    return await DashboardService.getBlogPosts();
+  } catch (error) {
+    console.error('Error fetching blog posts:', error);
+    return [];
+  }
+}
+
+export default async function BlogPage() {
+  const blogPosts = await getBlogPosts();
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -77,9 +30,9 @@ export default function BlogPage() {
     }
   };
 
-  const getCategoryBadge = (category: string) => {
-    return <Badge variant="outline" className="text-xs">{category}</Badge>;
-  };
+  const publishedCount = blogPosts.filter(post => post.status === 'published').length;
+  const draftCount = blogPosts.filter(post => post.status === 'draft').length;
+  const totalViews = blogPosts.reduce((total, post) => total + (post.view_count || 0), 0);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -128,52 +81,46 @@ export default function BlogPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {blogPosts.map((post) => (
-                    <div key={post.id} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-accent/50 transition-colors">
-                      <div className="flex-1 space-y-1">
+                  {blogPosts.length > 0 ? (
+                    blogPosts.map((post) => (
+                      <div key={post.id} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-accent/50 transition-colors">
+                        <div className="flex-1 space-y-1">
+                          <div className="flex items-center space-x-2">
+                            <IconArticle className="h-4 w-4 text-muted-foreground" />
+                            <h3 className="font-medium">{post.title}</h3>
+                          </div>
+                          <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                            <span>{post.view_count || 0} views</span>
+                            {post.published_at && (
+                              <>
+                                <span>•</span>
+                                <span>{new Date(post.published_at).toLocaleDateString('id-ID')}</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
                         <div className="flex items-center space-x-2">
-                          <IconArticle className="h-4 w-4 text-muted-foreground" />
-                          <h3 className="font-medium">{post.title}</h3>
-                        </div>
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {post.excerpt}
-                        </p>
-                        <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                          <span>Oleh {post.author}</span>
-                          <span>•</span>
-                          <span>{post.views} views</span>
-                          {post.publishedAt && (
-                            <>
-                              <span>•</span>
-                              <span>{post.publishedAt}</span>
-                            </>
-                          )}
-                        </div>
-                        <div className="flex items-center space-x-2 pt-1">
-                          {getCategoryBadge(post.category)}
-                          {post.tags.map((tag, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
-                              {tag}
-                            </Badge>
-                          ))}
+                          {getStatusBadge(post.status)}
+                          <div className="flex gap-1">
+                            <Button variant="outline" size="sm">
+                              <IconEye className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <IconEdit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline" size="sm">
+                              <IconTrash className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        {getStatusBadge(post.status)}
-                        <div className="flex gap-1">
-                          <Button variant="outline" size="sm">
-                            <IconEye className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <IconEdit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="outline" size="sm">
-                            <IconTrash className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <IconArticle className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                      <p>Belum ada artikel blog</p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -197,10 +144,10 @@ export default function BlogPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Diterbitkan</CardTitle>
-                  <Badge variant="default">4</Badge>
+                  <Badge variant="default">{publishedCount}</Badge>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">4</div>
+                  <div className="text-2xl font-bold">{publishedCount}</div>
                   <p className="text-xs text-muted-foreground">
                     Artikel aktif
                   </p>
@@ -209,10 +156,10 @@ export default function BlogPage() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Draft</CardTitle>
-                  <Badge variant="outline">1</Badge>
+                  <Badge variant="outline">{draftCount}</Badge>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">1</div>
+                  <div className="text-2xl font-bold">{draftCount}</div>
                   <p className="text-xs text-muted-foreground">
                     Artikel dalam draft
                   </p>
@@ -224,7 +171,7 @@ export default function BlogPage() {
                   <IconEye className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">4,420</div>
+                  <div className="text-2xl font-bold">{totalViews.toLocaleString('id-ID')}</div>
                   <p className="text-xs text-muted-foreground">
                     Total kunjungan artikel
                   </p>
