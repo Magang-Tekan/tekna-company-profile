@@ -111,7 +111,7 @@ export default async function DashboardPage() {
               <CardTitle className="text-sm font-medium">
                 {stat.title}
               </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
+              {stat.icon && <stat.icon className="h-4 w-4 text-muted-foreground" />}
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stat.value}</div>
