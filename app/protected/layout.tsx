@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AppLayout } from "@/components/layout/app-layout";
-import { AppSidebarNew } from "@/components/layout/app-sidebar-new";
+import { AppSidebarNew } from "@/components/layout/app-sidebar";
 import { AppHeader } from "@/components/layout/app-header";
 
 export default async function ProtectedLayout({
