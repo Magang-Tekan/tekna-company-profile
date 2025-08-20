@@ -21,7 +21,7 @@ interface PostFormProps {
     excerpt: string;
     content: string;
     featured_image_url: string;
-    author_id: string;
+    author_name: string;
     category_id: string;
     status: PostStatus;
     published_at: string;
@@ -56,7 +56,7 @@ export function PostForm({ postId, initialData }: PostFormProps) {
     excerpt: initialData?.excerpt || '',
     content: initialData?.content || '',
     featured_image_url: initialData?.featured_image_url || '',
-    author_id: initialData?.author_id || '',
+    author_name: initialData?.author_name || '',
     category_id: initialData?.category_id || '',
     status: initialData?.status || 'draft' as PostStatus,
     published_at: initialData?.published_at || undefined,
@@ -235,11 +235,11 @@ export function PostForm({ postId, initialData }: PostFormProps) {
 
               {/* Author Selection */}
               <div className="space-y-2">
-                <Label htmlFor="author_id">Penulis</Label>
+                <Label htmlFor="author_name">Penulis</Label>
                 {authors.length > 0 ? (
                   <Select
-                    value={formData.author_id}
-                    onValueChange={(value) => handleInputChange('author_id', value)}
+                    value={formData.author_name}
+                    onValueChange={(value) => handleInputChange('author_name', value)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih penulis" />
@@ -255,11 +255,11 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                   </Select>
                 ) : (
                   <Input
-                    id="author_id"
+                    id="author_name"
                     type="text"
-                    value={formData.author_id}
-                    onChange={(e) => handleInputChange('author_id', e.target.value)}
-                    placeholder="UUID penulis (opsional)"
+                    value={formData.author_name}
+                    onChange={(e) => handleInputChange('author_name', e.target.value)}
+                    placeholder="Nama penulis"
                   />
                 )}
                 <p className="text-sm text-muted-foreground">

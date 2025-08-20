@@ -332,6 +332,8 @@ export class DashboardService {
     const supabase = await createClient();
     
     try {
+      console.log('Fetching blog posts...');
+      
       // Get main posts data
       const { data: posts, error: postsError } = await supabase
         .from('posts')
@@ -341,7 +343,7 @@ export class DashboardService {
           slug,
           excerpt,
           featured_image_url,
-          author_id,
+          author_name,
           category_id,
           status,
           published_at,
@@ -354,14 +356,42 @@ export class DashboardService {
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
-      if (postsError) throw postsError;
+      if (postsError) {
+        console.error('Posts query error:', postsError);
+        throw postsError;
+      }
+
+      console.log(`Found ${posts?.length || 0} posts`);
 
       // Get content for each post from translations
       if (posts && posts.length > 0) {
+        // Get default language ID first
+        const { data: defaultLanguage, error: langError } = await supabase
+          .from('languages')
+          .select('id')
+          .eq('is_default', true)
+          .eq('is_active', true)
+          .single();
+
+        if (langError) {
+          console.error('Language query error:', langError);
+          // Continue without translations
+          return posts.map(post => ({
+            ...post,
+            content: '',
+            meta_title: post.title,
+            meta_description: post.excerpt,
+            meta_keywords: ''
+          }));
+        }
+
+        const defaultLangId = defaultLanguage?.id || 'en';
+        console.log('Default language ID:', defaultLangId);
+
         const postsWithContent = await Promise.all(
           posts.map(async (post) => {
             try {
-              const { data: translation } = await supabase
+              const { data: translation, error: transError } = await supabase
                 .from('post_translations')
                 .select(`
                   content,
@@ -370,13 +400,12 @@ export class DashboardService {
                   meta_keywords
                 `)
                 .eq('post_id', post.id)
-                .eq('language_id', (await supabase
-                  .from('languages')
-                  .select('id')
-                  .eq('is_default', true)
-                  .eq('is_active', true)
-                  .single()).data?.id || 'en')
+                .eq('language_id', defaultLangId)
                 .single();
+
+              if (transError) {
+                console.log(`No translation found for post ${post.id}:`, transError.message);
+              }
 
               return {
                 ...post,
@@ -385,7 +414,8 @@ export class DashboardService {
                 meta_description: translation?.meta_description || post.excerpt,
                 meta_keywords: translation?.meta_keywords || ''
               };
-            } catch {
+            } catch (error) {
+              console.log(`Error fetching translation for post ${post.id}:`, error);
               // If translation not found, return post without content
               return {
                 ...post,
@@ -398,12 +428,14 @@ export class DashboardService {
           })
         );
 
+        console.log('Posts with content processed successfully');
         return postsWithContent;
       }
 
       return posts || [];
     } catch (error) {
       console.error('Error fetching blog posts:', error);
+      // Return empty array instead of throwing to prevent page crash
       return [];
     }
   }

@@ -2,61 +2,58 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { PostForm } from '@/components/post-form';
+import { AuthorForm } from '@/components/author-form';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
-import { PostStatus } from '@/lib/types/dashboard';
 
-export default function EditPostPage() {
+export default function EditAuthorPage() {
   const params = useParams();
-  const postId = params.id as string;
+  const authorId = params.id as string;
   const [initialData, setInitialData] = useState<{
-    title: string;
-    slug: string;
-    excerpt: string;
-    content: string;
-    featured_image_url: string;
-    author_name: string;
-    category_id: string;
-    status: PostStatus;
-    published_at: string;
-    is_featured: boolean;
-    meta_title: string;
-    meta_description: string;
-    meta_keywords: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone: string;
+    position: string;
+    department: string;
+    avatar_url: string;
+    linkedin_url: string;
+    twitter_url: string;
+    github_url: string;
+    is_active: boolean;
+    sort_order: number;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchPost() {
+    async function fetchAuthor() {
       try {
-        const post = await ClientDashboardService.getPostById(postId);
+        const author = await ClientDashboardService.getAuthorById(authorId);
         setInitialData({
-          title: post.title || '',
-          slug: post.slug || '',
-          excerpt: post.excerpt || '',
-          content: post.content || '',
-          featured_image_url: post.featured_image_url || '',
-          author_name: post.author_name || '',
-          category_id: post.category_id || '',
-          status: post.status,
-          published_at: post.published_at || '',
-          is_featured: post.is_featured || false,
-          meta_title: post.meta_title || post.title || '',
-          meta_description: post.meta_description || post.excerpt || '',
-          meta_keywords: post.meta_keywords || '',
+          first_name: author.first_name || '',
+          last_name: author.last_name || '',
+          email: author.email || '',
+          phone: author.phone || '',
+          position: author.position || '',
+          department: author.department || '',
+          avatar_url: author.avatar_url || '',
+          linkedin_url: author.linkedin_url || '',
+          twitter_url: author.twitter_url || '',
+          github_url: author.github_url || '',
+          is_active: author.is_active ?? true,
+          sort_order: author.sort_order || 0,
         });
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Gagal memuat data artikel');
+        setError(err instanceof Error ? err.message : 'Gagal memuat data author');
       } finally {
         setIsLoading(false);
       }
     }
 
-    if (postId) {
-      fetchPost();
+    if (authorId) {
+      fetchAuthor();
     }
-  }, [postId]);
+  }, [authorId]);
 
   if (isLoading) {
     return (
@@ -64,7 +61,7 @@ export default function EditPostPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-            <p>Memuat data artikel...</p>
+            <p>Memuat data author...</p>
           </div>
         </div>
       </div>
@@ -92,8 +89,8 @@ export default function EditPostPage() {
   return (
     <div className="container mx-auto p-6">
       {initialData && (
-        <PostForm 
-          postId={postId}
+        <AuthorForm 
+          authorId={authorId}
           initialData={initialData}
         />
       )}

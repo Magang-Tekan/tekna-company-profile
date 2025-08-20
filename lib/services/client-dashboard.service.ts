@@ -166,7 +166,7 @@ export class ClientDashboardService {
     excerpt?: string;
     content: string;
     featured_image_url?: string;
-    author_id?: string;
+    author_name?: string;
     category_id?: string;
     status: PostStatus;
     published_at?: string;
@@ -182,20 +182,20 @@ export class ClientDashboardService {
       const defaultLanguageId = await this.getDefaultLanguageId();
 
       // First, create the main post
-      const { data: post, error: postError } = await supabase
-        .from('posts')
-        .insert({
-          title: postData.title,
-          slug: postData.slug,
-          excerpt: postData.excerpt,
-          featured_image_url: postData.featured_image_url,
-          author_id: postData.author_id || null,
-          category_id: postData.category_id || null,
-          status: postData.status,
-          published_at: postData.published_at,
-          is_featured: postData.is_featured || false,
-          is_active: true
-        })
+              const { data: post, error: postError } = await supabase
+          .from('posts')
+          .insert({
+            title: postData.title,
+            slug: postData.slug,
+            excerpt: postData.excerpt,
+            featured_image_url: postData.featured_image_url,
+            author_name: postData.author_name || null,
+            category_id: postData.category_id || null,
+            status: postData.status,
+            published_at: postData.published_at,
+            is_featured: postData.is_featured || false,
+            is_active: true
+          })
         .select()
         .single();
 
@@ -240,7 +240,7 @@ export class ClientDashboardService {
       excerpt?: string;
       content?: string;
       featured_image_url?: string;
-      author_id?: string;
+      author_name?: string;
       category_id?: string;
       status?: PostStatus;
       published_at?: string;
@@ -264,7 +264,7 @@ export class ClientDashboardService {
           slug: postData.slug,
           excerpt: postData.excerpt,
           featured_image_url: postData.featured_image_url,
-          author_id: postData.author_id || null,
+          author_name: postData.author_name || null,
           category_id: postData.category_id || null,
           status: postData.status,
           published_at: postData.published_at,
@@ -337,24 +337,24 @@ export class ClientDashboardService {
     
     try {
       // Get main post data
-      const { data: post, error: postError } = await supabase
-        .from('posts')
-        .select(`
-          id,
-          title,
-          slug,
-          excerpt,
-          featured_image_url,
-          author_id,
-          category_id,
-          status,
-          published_at,
-          is_featured,
-          is_active,
-          view_count,
-          created_at,
-          updated_at
-        `)
+              const { data: post, error: postError } = await supabase
+          .from('posts')
+          .select(`
+            id,
+            title,
+            slug,
+            excerpt,
+            featured_image_url,
+            author_name,
+            category_id,
+            status,
+            published_at,
+            is_featured,
+            is_active,
+            view_count,
+            created_at,
+            updated_at
+          `)
         .eq('id', postId)
         .eq('is_active', true)
         .single();
@@ -448,6 +448,262 @@ export class ClientDashboardService {
     } catch (error) {
       console.error('Error fetching authors:', error);
       return [];
+    }
+  }
+
+  /**
+   * Get single author by ID - Client side
+   */
+  static async getAuthorById(authorId: string) {
+    const supabase = createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('team_members')
+        .select(`
+          id,
+          first_name,
+          last_name,
+          email,
+          phone,
+          position,
+          department,
+          avatar_url,
+          linkedin_url,
+          twitter_url,
+          github_url,
+          is_active,
+          sort_order,
+          created_at,
+          updated_at
+        `)
+        .eq('id', authorId)
+        .eq('is_active', true)
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching author:', error);
+      throw new Error('Gagal mengambil data author');
+    }
+  }
+
+  /**
+   * Create new author - Client side
+   */
+  static async createAuthor(authorData: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    phone?: string;
+    position: string;
+    department: string;
+    avatar_url?: string;
+    linkedin_url?: string;
+    twitter_url?: string;
+    github_url?: string;
+    is_active?: boolean;
+    sort_order?: number;
+  }) {
+    const supabase = createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('team_members')
+        .insert({
+          ...authorData,
+          is_active: authorData.is_active ?? true,
+          sort_order: authorData.sort_order || 0
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error creating author:', error);
+      throw new Error('Gagal membuat author baru');
+    }
+  }
+
+  /**
+   * Update existing author - Client side
+   */
+  static async updateAuthor(
+    authorId: string, 
+    authorData: {
+      first_name?: string;
+      last_name?: string;
+      email?: string;
+      phone?: string;
+      position?: string;
+      department?: string;
+      avatar_url?: string;
+      linkedin_url?: string;
+      twitter_url?: string;
+      github_url?: string;
+      is_active?: boolean;
+      sort_order?: number;
+    }
+  ) {
+    const supabase = createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('team_members')
+        .update(authorData)
+        .eq('id', authorId)
+        .eq('is_active', true)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error updating author:', error);
+      throw new Error('Gagal mengupdate author');
+    }
+  }
+
+  /**
+   * Delete author (soft delete) - Client side
+   */
+  static async deleteAuthor(authorId: string) {
+    const supabase = createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('team_members')
+        .update({ is_active: false })
+        .eq('id', authorId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error deleting author:', error);
+      throw new Error('Gagal menghapus author');
+    }
+  }
+
+  /**
+   * Get single category by ID - Client side
+   */
+  static async getCategoryById(categoryId: string) {
+    const supabase = createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          color,
+          is_active,
+          sort_order,
+          created_at,
+          updated_at
+        `)
+        .eq('id', categoryId)
+        .eq('is_active', true)
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching category:', error);
+      throw new Error('Gagal mengambil data kategori');
+    }
+  }
+
+  /**
+   * Create new category - Client side
+   */
+  static async createCategory(categoryData: {
+    name: string;
+    slug: string;
+    description?: string;
+    color: string;
+    is_active?: boolean;
+    sort_order?: number;
+  }) {
+    const supabase = createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .insert({
+          ...categoryData,
+          is_active: categoryData.is_active ?? true,
+          sort_order: categoryData.sort_order || 0
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error creating category:', error);
+      throw new Error('Gagal membuat kategori baru');
+    }
+  }
+
+  /**
+   * Update existing category - Client side
+   */
+  static async updateCategory(
+    categoryId: string, 
+    categoryData: {
+      name?: string;
+      slug?: string;
+      description?: string;
+      color?: string;
+      is_active?: boolean;
+      sort_order?: number;
+    }
+  ) {
+    const supabase = createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .update(categoryData)
+        .eq('id', categoryId)
+        .eq('is_active', true)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error updating category:', error);
+      throw new Error('Gagal mengupdate kategori');
+    }
+  }
+
+  /**
+   * Delete category (soft delete) - Client side
+   */
+  static async deleteCategory(categoryId: string) {
+    const supabase = createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .update({ is_active: false })
+        .eq('id', categoryId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      throw new Error('Gagal menghapus kategori');
     }
   }
 }

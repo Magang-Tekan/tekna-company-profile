@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
+import { useRealtimeBlogPosts } from '@/lib/hooks/use-realtime-simple';
+import { RealtimeStatus } from '@/components/realtime-status';
 import { IconPlus, IconEdit, IconTrash, IconEye, IconEyeOff } from '@tabler/icons-react';
 
 interface BlogPost {
@@ -16,7 +18,7 @@ interface BlogPost {
   excerpt: string | null;
   content: string;
   featured_image_url: string | null;
-  author_id: string | null;
+  author_name: string | null;
   category_id: string | null;
   status: 'draft' | 'published' | 'archived';
   published_at: string | null;
@@ -39,6 +41,20 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
   const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
   const [isLoading, setIsLoading] = useState(false);
   const [expandedPost, setExpandedPost] = useState<string | null>(null);
+
+  // Real-time sync for blog posts
+  const { isConnected } = useRealtimeBlogPosts(() => {
+    // Refresh posts when real-time changes are detected
+    const refreshPosts = async () => {
+      try {
+        const updatedPosts = await ClientDashboardService.getBlogPosts();
+        setPosts(updatedPosts);
+      } catch (error) {
+        console.error('Error refreshing posts:', error);
+      }
+    };
+    refreshPosts();
+  });
 
   const handleDelete = async (postId: string, title: string) => {
     if (!confirm(`Apakah Anda yakin ingin menghapus artikel "${title}"?`)) {
@@ -100,8 +116,9 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Blog</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground flex items-center gap-2">
             Kelola artikel dan konten blog Anda
+            <RealtimeStatus isConnected={isConnected} showLabel />
           </p>
         </div>
         <Button onClick={handleAddNew}>

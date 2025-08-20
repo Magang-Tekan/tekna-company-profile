@@ -1,11 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { IconPlus, IconEdit, IconTrash, IconMail, IconPhone, IconLinkedin, IconTwitter, IconGithub } from '@tabler/icons-react';
+import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
+import { useRealtimeAuthors } from '@/lib/hooks/use-realtime-simple';
+import { RealtimeStatus } from '@/components/realtime-status';
+import { IconPlus, IconEdit, IconTrash, IconMail } from '@tabler/icons-react';
 
 interface Author {
   id: string;
@@ -24,8 +28,23 @@ interface AuthorsPageClientProps {
 }
 
 export function AuthorsPageClient({ initialAuthors }: AuthorsPageClientProps) {
+  const router = useRouter();
   const [authors, setAuthors] = useState<Author[]>(initialAuthors);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Real-time sync for authors
+  const { isConnected } = useRealtimeAuthors(() => {
+    // Refresh authors when real-time changes are detected
+    const refreshAuthors = async () => {
+      try {
+        const updatedAuthors = await ClientDashboardService.getAuthors();
+        setAuthors(updatedAuthors);
+      } catch (error) {
+        console.error('Error refreshing authors:', error);
+      }
+    };
+    refreshAuthors();
+  });
 
   const handleDelete = async (authorId: string, name: string) => {
     if (!confirm(`Apakah Anda yakin ingin menghapus author "${name}"?`)) {
@@ -34,8 +53,7 @@ export function AuthorsPageClient({ initialAuthors }: AuthorsPageClientProps) {
 
     setIsLoading(true);
     try {
-      // TODO: Implement delete author service
-      // await ClientDashboardService.deleteAuthor(authorId);
+      await ClientDashboardService.deleteAuthor(authorId);
       setAuthors(prev => prev.filter(author => author.id !== authorId));
     } catch (error) {
       console.error('Error deleting author:', error);
@@ -46,13 +64,11 @@ export function AuthorsPageClient({ initialAuthors }: AuthorsPageClientProps) {
   };
 
   const handleEdit = (authorId: string) => {
-    // TODO: Navigate to edit author page
-    console.log('Edit author:', authorId);
+    router.push(`/dashboard/authors/edit/${authorId}`);
   };
 
   const handleAddNew = () => {
-    // TODO: Navigate to add author page
-    console.log('Add new author');
+    router.push('/dashboard/authors/new');
   };
 
   const getInitials = (firstName: string, lastName: string) => {
@@ -65,8 +81,9 @@ export function AuthorsPageClient({ initialAuthors }: AuthorsPageClientProps) {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Author</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground flex items-center gap-2">
             Kelola author/team members untuk artikel blog
+            <RealtimeStatus isConnected={isConnected} showLabel />
           </p>
         </div>
         <Button onClick={handleAddNew}>

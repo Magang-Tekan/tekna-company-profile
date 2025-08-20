@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
+import { useRealtimeCategories } from '@/lib/hooks/use-realtime-simple';
+import { RealtimeStatus } from '@/components/realtime-status';
 import { IconPlus, IconEdit, IconTrash } from '@tabler/icons-react';
 
 interface Category {
@@ -26,6 +29,20 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Real-time sync for categories
+  const { isConnected } = useRealtimeCategories(() => {
+    // Refresh categories when real-time changes are detected
+    const refreshCategories = async () => {
+      try {
+        const updatedCategories = await ClientDashboardService.getCategories();
+        setCategories(updatedCategories);
+      } catch (error) {
+        console.error('Error refreshing categories:', error);
+      }
+    };
+    refreshCategories();
+  });
+
   const handleDelete = async (categoryId: string, name: string) => {
     if (!confirm(`Apakah Anda yakin ingin menghapus kategori "${name}"?`)) {
       return;
@@ -33,8 +50,7 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
 
     setIsLoading(true);
     try {
-      // TODO: Implement delete category service
-      // await ClientDashboardService.deleteCategory(categoryId);
+      await ClientDashboardService.deleteCategory(categoryId);
       setCategories(prev => prev.filter(category => category.id !== categoryId));
     } catch (error) {
       console.error('Error deleting category:', error);
@@ -45,13 +61,11 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
   };
 
   const handleEdit = (categoryId: string) => {
-    // TODO: Navigate to edit category page
-    console.log('Edit category:', categoryId);
+    router.push(`/dashboard/categories/edit/${categoryId}`);
   };
 
   const handleAddNew = () => {
-    // TODO: Navigate to add category page
-    console.log('Add new category');
+    router.push('/dashboard/categories/new');
   };
 
   const formatDate = (dateString: string) => {
@@ -68,8 +82,9 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Kategori</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground flex items-center gap-2">
             Kelola kategori untuk artikel blog
+            <RealtimeStatus isConnected={isConnected} showLabel />
           </p>
         </div>
         <Button onClick={handleAddNew}>
