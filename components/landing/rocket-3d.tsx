@@ -1,5 +1,5 @@
 'use client';
-import { Canvas, useFrame, extend } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Preload } from "@react-three/drei";
 import { Suspense, useEffect, useState, memo, useRef } from "react";
 import { gsap } from "gsap";
@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import * as THREE from "three";
 
 // Extend Three.js objects for React Three Fiber
-extend(THREE);
+
 
 // Register ScrollTrigger plugin
 if (typeof window !== "undefined") {
@@ -46,15 +46,15 @@ const Model: React.FC<ModelProps> = memo(
         modelRef.current.rotation.y = Math.PI / 4 + (animationProgress * Math.PI * 8); // 4 full rotations
         
         // CONTINUOUS floating effect - multiple wave cycles throughout scroll
-        const scrollFloat = Math.sin(animationProgress * Math.PI * 6) * 0.3; // 3 float cycles
+        const scrollFloat = Math.sin(animationProgress * Math.PI * 6) * 0.1;
         modelRef.current.position.y = scrollFloat;
         
         // Progressive forward movement throughout scroll
-        modelRef.current.position.z = animationProgress * 0.5;
+        modelRef.current.position.z = animationProgress * 0.1;
         
         // FIXED scale - no zoom-dependent scaling to maintain consistent size
-        const baseScale = 1.8; // Fixed base scale
-        const scrollScale = animationProgress * 0.2; // Minimal scroll-based scaling
+        const baseScale = 1.5; 
+        const scrollScale = animationProgress * 0.05; 
         const finalScale = baseScale + scrollScale;
         modelRef.current.scale.set(finalScale, finalScale, finalScale);
       }
@@ -63,11 +63,8 @@ const Model: React.FC<ModelProps> = memo(
     return (
       <group ref={modelRef}>
         <primitive
-          // @ts-expect-error Three.js primitive props
           object={scene}
-          // @ts-expect-error Three.js primitive props
           rotation={[0, 0, 0]}
-          // @ts-expect-error Three.js primitive props
           scale={[1.8, 1.8, 1.8]}
         />
       </group>
@@ -321,12 +318,10 @@ export function Rocket3D() {
       ref={containerRef} 
       className="overflow-visible"
       style={{
-        width: '50vmin', // Fixed size based on viewport minimum dimension
-        height: '50vmin', // Square aspect ratio, scales with viewport but consistent
-        minWidth: '300px', // Minimum size to prevent too small on mobile
-        minHeight: '300px',
-        maxWidth: '500px', // Maximum size to prevent too large on desktop
-        maxHeight: '500px',
+        width: '100%', // Fill parent width
+        height: '100%', // Fill parent height
+        maxWidth: '800px', // Increased max width
+        maxHeight: '800px', // Increased max height
       }}
     >
       <Suspense fallback={<LoadingSpinner />}>
