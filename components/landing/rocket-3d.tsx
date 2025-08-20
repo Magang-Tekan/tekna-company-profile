@@ -1,7 +1,18 @@
 'use client';
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame, extend } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Preload } from "@react-three/drei";
-import { Suspense, useEffect, useState, memo } from "react";
+import { Suspense, useEffect, useState, memo, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import * as THREE from "three";
+
+// Extend Three.js objects for React Three Fiber
+extend(THREE);
+
+// Register ScrollTrigger plugin
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 interface RocketViewerProps {
   src: string;
@@ -9,22 +20,54 @@ interface RocketViewerProps {
   enableRotation?: boolean;
   theme?: "light" | "dark";
   onLoad?: () => void;
+  animationProgress?: number;
 }
 
-const Model: React.FC<{ src: string; onLoad?: () => void }> = memo(
-  ({ src, onLoad }) => {
+interface ModelProps {
+  src: string;
+  onLoad?: () => void;
+  animationProgress?: number;
+}
+
+const Model: React.FC<ModelProps> = memo(
+  ({ src, onLoad, animationProgress = 0 }) => {
     const { scene } = useGLTF(src);
+    const modelRef = useRef<THREE.Group>(null);
     
     useEffect(() => {
       if (onLoad) onLoad();
     }, [scene, onLoad]);
 
+    // Update model SUBTLE animation based on scroll progress
+    useFrame(() => {
+      if (modelRef.current) {
+        // GENTLE rotation based on scroll progress
+        modelRef.current.rotation.y = Math.PI / 4 + (animationProgress * Math.PI * 2);
+        
+        // SUBTLE floating effect based on scroll progress
+        const scrollFloat = Math.sin(animationProgress * Math.PI * 2) * 0.15;
+        modelRef.current.position.y = scrollFloat;
+        
+        // MINIMAL forward movement
+        modelRef.current.position.z = animationProgress * 0.2;
+        
+        // STABLE scale - almost no change
+        const scale = 1.8 + (animationProgress * 0.05);
+        modelRef.current.scale.set(scale, scale, scale);
+      }
+    });
+
     return (
-      <primitive
-        object={scene}
-        rotation={[0, Math.PI / 4, 0]}
-        scale={[2.5, 2.5, 2.5]}
-      />
+      <group ref={modelRef}>
+        <primitive
+          // @ts-expect-error Three.js primitive props
+          object={scene}
+          // @ts-expect-error Three.js primitive props
+          rotation={[0, 0, 0]}
+          // @ts-expect-error Three.js primitive props
+          scale={[1.8, 1.8, 1.8]}
+        />
+      </group>
     );
   },
 );
@@ -40,6 +83,7 @@ const RocketViewer: React.FC<Readonly<RocketViewerProps>> = memo(
     enableRotation = true,
     theme = "light",
     onLoad,
+    animationProgress = 0,
   }) => {
     const [isLoaded, setIsLoaded] = useState(false);
 
@@ -212,7 +256,7 @@ const RocketViewer: React.FC<Readonly<RocketViewerProps>> = memo(
         />
 
         <Suspense fallback={null}>
-          <Model src={src} onLoad={handleModelLoad} />
+          <Model src={src} onLoad={handleModelLoad} animationProgress={animationProgress} />
           {(enableInteraction || enableRotation) && (
             <OrbitControls
               enablePan={false}
@@ -220,7 +264,7 @@ const RocketViewer: React.FC<Readonly<RocketViewerProps>> = memo(
               enableRotate={enableRotation}
               minDistance={3}
               maxDistance={8}
-              autoRotate={enableRotation}
+              autoRotate={false}
               autoRotateSpeed={0.5}
               maxPolarAngle={Math.PI * 0.65}
               minPolarAngle={Math.PI * 0.2}
@@ -244,14 +288,37 @@ function LoadingSpinner() {
 }
 
 export function Rocket3D() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [animationProgress, setAnimationProgress] = useState(0);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Setup GSAP ScrollTrigger for rocket animation - SLOW and subtle
+    const ctx = gsap.context(() => {
+      ScrollTrigger.create({
+        trigger: "body", // Trigger on whole page scroll
+        start: "top top",
+        end: "+=200vh", // Longer duration for slower animation
+        scrub: 0.5, // SLOWER scrub for rocket (text uses scrub: 2)
+        onUpdate: (self) => {
+          setAnimationProgress(self.progress);
+        },
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <div className="w-full h-[400px] md:h-[500px] lg:h-[600px]">
+    <div ref={containerRef} className="w-full h-[300px] md:h-[400px] lg:h-[500px]">
       <Suspense fallback={<LoadingSpinner />}>
         <RocketViewer
           src="/rocket.glb"
-          enableRotation={true}
+          enableRotation={false}
           enableInteraction={false}
           theme="light"
+          animationProgress={animationProgress}
         />
       </Suspense>
     </div>

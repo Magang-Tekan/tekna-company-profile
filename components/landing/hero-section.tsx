@@ -1,36 +1,79 @@
+'use client';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Rocket3D } from "./rocket-3d";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+// Register ScrollTrigger plugin
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export function HeroSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current || !textRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // Langsung buat animasi tanpa fromTo, cukup to() saja
+      gsap.to(textRef.current, {
+        y: "200vh",
+        opacity: 0,
+        scale: 0.7,
+        ease: "none",
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top top",
+          end: "bottom top", 
+          scrub: 2,
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="w-full py-24 md:py-32 lg:py-40 bg-gradient-to-b from-background to-background/80">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Text Content */}
-          <div className="text-center lg:text-left">
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl leading-tight">
-              Membangun Masa Depan Digital, Bersama
-            </h1>
-            <p className="mt-6 text-lg md:text-xl text-muted-foreground">
-              Kami adalah agensi digital yang bersemangat dalam menciptakan solusi inovatif dan pengalaman pengguna yang luar biasa melalui teknologi dan desain.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button asChild size="lg" className="text-lg px-8 py-6">
-                <Link href="/projects">Lihat Portofolio</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6">
-                <Link href="/contact">Hubungi Kami</Link>
-              </Button>
-            </div>
-          </div>
-          
-          {/* 3D Rocket */}
-          <div className="flex justify-center">
-            <Rocket3D />
+    <>
+      {/* Fixed Rocket - Always centered in viewport */}
+      <div className="fixed inset-0 flex items-center justify-center z-30 pointer-events-none">
+        <Rocket3D />
+      </div>
+
+      {/* Hero Section Content - Normal scroll flow */}
+      <section 
+        ref={sectionRef}
+        className="relative w-full h-screen bg-gradient-to-b from-background to-background/80 flex items-center justify-center z-20"
+      >
+        {/* Text Content - Will move down with parallax */}
+        <div 
+          ref={textRef}
+          className="text-center max-w-4xl px-4 pointer-events-auto bg-background/70 backdrop-blur-sm rounded-lg p-8"
+        >
+          <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl leading-tight text-foreground mb-6">
+            Membangun Masa Depan Digital, Bersama
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground mb-8">
+            Kami adalah agensi digital yang bersemangat dalam menciptakan solusi inovatif dan pengalaman pengguna yang luar biasa melalui teknologi dan desain.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild size="lg" className="text-lg px-8 py-6">
+              <Link href="/projects">Lihat Portofolio</Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6">
+              <Link href="/contact">Hubungi Kami</Link>
+            </Button>
           </div>
         </div>
-      </div>
-    </section>
+
+      </section>
+
+      {/* Spacer for scroll effect */}
+      <div className="h-screen bg-gradient-to-b from-background/80 to-background"></div>
+    </>
   );
 }
