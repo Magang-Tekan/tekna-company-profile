@@ -1,11 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
-import {
-  SidebarProvider,
-  SidebarInset,
-} from "@/components/ui/sidebar";
+import { AppLayout } from "@/components/layout/app-layout";
+import { AppSidebarNew } from "@/components/layout/app-sidebar-new";
+import { AppHeader } from "@/components/layout/app-header";
 
 export default async function ProtectedLayout({
   children,
@@ -20,19 +17,11 @@ export default async function ProtectedLayout({
   }
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "16rem",
-          "--header-height": "4rem",
-        } as React.CSSProperties
-      }
+    <AppLayout
+      sidebar={<AppSidebarNew />}
+      header={<AppHeader />}
     >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        {children}
-      </SidebarInset>
-    </SidebarProvider>
+      {children}
+    </AppLayout>
   );
 }

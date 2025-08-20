@@ -10,6 +10,23 @@ import {
   IconWorld
 } from "@tabler/icons-react";
 
+// Utility functions for status mapping
+const getProjectStatusBadge = (status: string) => {
+  switch (status) {
+    case 'completed': return 'default';
+    case 'in-progress': return 'secondary';
+    default: return 'outline';
+  }
+};
+
+const getProjectStatusText = (status: string) => {
+  switch (status) {
+    case 'completed': return 'Selesai';
+    case 'in-progress': return 'Berjalan';
+    default: return 'Perencanaan';
+  }
+};
+
 export default async function ProtectedPage() {
   // Mock data untuk dashboard - nantinya bisa diambil dari database
   const dashboardData = {
@@ -105,9 +122,9 @@ export default async function ProtectedPage() {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="space-y-6">
       {/* Welcome Section */}
-      <div className="mb-8">
+      <div>
         <h1 className="text-3xl font-bold tracking-tight">Selamat Datang di Dashboard</h1>
         <p className="text-muted-foreground mt-2">
           Kelola website company profile Tekna Company dengan mudah dan efisien.
@@ -115,9 +132,9 @@ export default async function ProtectedPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-6 mb-8 md:grid-cols-2 lg:grid-cols-4">
-        {dashboardData.stats.map((stat, index) => (
-          <Card key={index}>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {dashboardData.stats.map((stat) => (
+          <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {stat.title}
@@ -143,7 +160,7 @@ export default async function ProtectedPage() {
       </div>
 
       {/* Recent Projects & Posts */}
-      <div className="grid gap-6 mb-8 md:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2">
         {/* Recent Projects */}
         <Card>
           <CardHeader>
@@ -161,12 +178,8 @@ export default async function ProtectedPage() {
                     <p className="text-sm text-muted-foreground">{project.client}</p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Badge variant={
-                      project.status === 'completed' ? 'default' : 
-                      project.status === 'in-progress' ? 'secondary' : 'outline'
-                    }>
-                      {project.status === 'completed' ? 'Selesai' : 
-                        project.status === 'in-progress' ? 'Berjalan' : 'Perencanaan'}
+                    <Badge variant={getProjectStatusBadge(project.status)}>
+                      {getProjectStatusText(project.status)}
                     </Badge>
                     <span className="text-sm text-muted-foreground">
                       {project.progress}%
