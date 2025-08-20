@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { ClientOnly } from "@/components/ui/client-only"
+import Image from "next/image";
 import { 
   LayoutDashboard, 
   FolderOpen, 
@@ -53,18 +55,20 @@ const bottomNavigationItems = [
 ]
 
 export function AppSidebarNew() {
-  const pathname = usePathname()
-
   return (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
       {/* Logo/Brand */}
-      <div className="flex items-center gap-2 p-4 border-b border-sidebar-border">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">T</span>
-          </div>
-          <span className="font-semibold text-sidebar-foreground">Tekna Company</span>
-        </div>
+      <div className="flex items-center justify-center p-3 border-b border-sidebar-border">
+        <Link href="/protected" className="flex items-center justify-center">
+          <Image 
+            src="/logo.webp" 
+            alt="Tekna Company Logo" 
+            width={100} 
+            height={25} 
+            className="object-contain"
+            priority
+          />
+        </Link>
       </div>
 
       {/* Quick Create Button */}
@@ -76,48 +80,14 @@ export function AppSidebarNew() {
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 px-4 space-y-1">
-        {navigationItems.map((item) => {
-          const isActive = pathname === item.href
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              )}
-            >
-              <item.icon className="w-4 h-4" />
-              {item.title}
-            </Link>
-          )
-        })}
-      </nav>
+      <ClientOnly>
+        <NavigationItems />
+      </ClientOnly>
 
       {/* Bottom Navigation */}
-      <div className="p-4 space-y-1 border-t border-sidebar-border">
-        {bottomNavigationItems.map((item) => {
-          const isActive = pathname === item.href
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              )}
-            >
-              <item.icon className="w-4 h-4" />
-              {item.title}
-            </Link>
-          )
-        })}
-      </div>
+      <ClientOnly>
+        <BottomNavigationItems />
+      </ClientOnly>
 
       {/* User Profile */}
       <div className="p-4 border-t border-sidebar-border">
@@ -135,6 +105,60 @@ export function AppSidebarNew() {
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+function NavigationItems() {
+  const pathname = usePathname()
+  
+  return (
+    <nav className="flex-1 px-4 space-y-1">
+      {navigationItems.map((item) => {
+        const isActive = pathname === item.href
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+              isActive
+                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            )}
+          >
+            <item.icon className="w-4 h-4" />
+            {item.title}
+          </Link>
+        )
+      })}
+    </nav>
+  )
+}
+
+function BottomNavigationItems() {
+  const pathname = usePathname()
+  
+  return (
+    <div className="p-4 space-y-1 border-t border-sidebar-border">
+      {bottomNavigationItems.map((item) => {
+        const isActive = pathname === item.href
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={cn(
+              "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+              isActive
+                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            )}
+          >
+            <item.icon className="w-4 h-4" />
+            {item.title}
+          </Link>
+        )
+      })}
     </div>
   )
 }
