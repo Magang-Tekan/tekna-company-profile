@@ -21,17 +21,17 @@ import {
 const navigationItems = [
   {
     title: "Dashboard",
-    href: "/protected",
+    href: "/dashboard",
     icon: LayoutDashboard,
   },
   {
     title: "Proyek",
-    href: "/protected/projects",
+    href: "/dashboard/projects",
     icon: FolderOpen,
   },
   {
     title: "Blog",
-    href: "/protected/blog",
+    href: "/dashboard/blog",
     icon: FileText,
   },
 ]
@@ -39,17 +39,17 @@ const navigationItems = [
 const bottomNavigationItems = [
   {
     title: "Pengaturan",
-    href: "/protected/settings",
+    href: "/dashboard/settings",
     icon: Settings,
   },
   {
     title: "Bantuan",
-    href: "/protected/help",
+    href: "/dashboard/help",
     icon: HelpCircle,
   },
   {
     title: "Pencarian",
-    href: "/protected/search",
+    href: "/dashboard/search",
     icon: Search,
   },
 ]
@@ -58,8 +58,8 @@ export function AppSidebarNew() {
   return (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
       {/* Logo/Brand */}
-      <div className="flex items-center justify-center p-3 border-b border-sidebar-border">
-        <Link href="/protected" className="flex items-center justify-center">
+      <div className="flex items-center justify-center p-2 border-b border-sidebar-border">
+        <Link href="/dashboard" className="flex items-center justify-center">
           <Image 
             src="/logo.webp" 
             alt="Tekna Company Logo" 
