@@ -1,9 +1,3 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -110,194 +104,181 @@ export default function TestimonialsPage() {
   };
 
   return (
-    <SidebarProvider
-      style={
-        {
-          "--sidebar-width": "calc(var(--spacing) * 72)",
-          "--header-height": "calc(var(--spacing) * 12)",
-        } as React.CSSProperties
-      }
-    >
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              {/* Header */}
-              <div className="px-4 lg:px-6">
-                <div className="flex flex-col gap-2">
-                  <h1 className="text-3xl font-bold tracking-tight">Kelola Testimonial</h1>
-                  <p className="text-muted-foreground">
-                    Kelola testimonial dan review dari klien
-                  </p>
-                </div>
-              </div>
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+          {/* Header */}
+          <div className="px-4 lg:px-6">
+            <div className="flex flex-col gap-2">
+              <h1 className="text-3xl font-bold tracking-tight">Kelola Testimonial</h1>
+              <p className="text-muted-foreground">
+                Kelola testimonial dan review dari klien
+              </p>
+            </div>
+          </div>
 
-              {/* Actions Bar */}
-              <div className="px-4 lg:px-6">
-                <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                  <div className="flex gap-2 w-full sm:w-auto">
-                    <div className="relative w-full sm:w-80">
-                      <IconSearch className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Cari testimonial..."
-                        className="pl-8"
-                      />
-                    </div>
-                    <Button variant="outline" size="icon">
-                      <IconFilter className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Button className="w-full sm:w-auto">
-                    <IconPlus className="h-4 w-4 mr-2" />
-                    Tambah Testimonial
-                  </Button>
+          {/* Actions Bar */}
+          <div className="px-4 lg:px-6">
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+              <div className="flex gap-2 w-full sm:w-auto">
+                <div className="relative w-full sm:w-80">
+                  <IconSearch className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Cari testimonial..."
+                    className="pl-8"
+                  />
                 </div>
+                <Button variant="outline" size="icon">
+                  <IconFilter className="h-4 w-4" />
+                </Button>
               </div>
+              <Button className="w-full sm:w-auto">
+                <IconPlus className="h-4 w-4 mr-2" />
+                Tambah Testimonial
+              </Button>
+            </div>
+          </div>
 
-              {/* Testimonials Grid */}
-              <div className="px-4 lg:px-6">
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {testimonials.map((testimonial) => (
-                    <Card key={testimonial.id} className="hover:shadow-lg transition-shadow">
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center space-x-3">
-                            <Avatar className="h-12 w-12">
-                              <AvatarImage src={testimonial.clientAvatarUrl} alt={testimonial.clientName} />
-                              <AvatarFallback>
-                                <IconUser className="h-6 w-6" />
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <CardTitle className="text-lg">{testimonial.clientName}</CardTitle>
-                              <CardDescription className="text-sm">
-                                {testimonial.clientPosition} at {testimonial.clientCompany}
-                              </CardDescription>
-                            </div>
-                          </div>
-                          <div className="flex flex-col items-end space-y-2">
-                            {getStatusBadge(testimonial.isActive)}
-                            {getFeaturedBadge(testimonial.isFeatured)}
-                          </div>
+          {/* Testimonials Grid */}
+          <div className="px-4 lg:px-6">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {testimonials.map((testimonial) => (
+                <Card key={testimonial.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-12 w-12">
+                          <AvatarImage src={testimonial.clientAvatarUrl} alt={testimonial.clientName} />
+                          <AvatarFallback>
+                            <IconUser className="h-6 w-6" />
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <CardTitle className="text-lg">{testimonial.clientName}</CardTitle>
+                          <CardDescription className="text-sm">
+                            {testimonial.clientPosition} at {testimonial.clientCompany}
+                          </CardDescription>
                         </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-3">
-                          {/* Rating */}
-                          <div className="flex items-center justify-between">
-                            {getRatingStars(testimonial.rating)}
-                            <Badge variant="outline">#{testimonial.sortOrder}</Badge>
-                          </div>
-                          
-                          {/* Content */}
-                          <div className="text-sm">
-                            <p className="text-muted-foreground line-clamp-4">{testimonial.content}</p>
-                          </div>
-                          
-                          {/* Company Info */}
-                          <div className="flex items-center space-x-2 text-sm">
-                            <IconBuilding className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-muted-foreground">Company:</span>
-                            <span className="font-medium">{testimonial.clientCompany}</span>
-                          </div>
-                          
-                          {/* Date */}
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Tanggal:</span>
-                            <span className="font-medium text-xs">{testimonial.createdAt}</span>
-                          </div>
-                          
-                          {/* Actions */}
-                          <div className="flex gap-2 pt-2">
-                            <Button variant="outline" size="sm" className="flex-1">
-                              <IconEdit className="h-4 w-4 mr-2" />
-                              Edit
-                            </Button>
-                            <Button variant="outline" size="sm" className="flex-1">
-                              <IconTrash className="h-4 w-4 mr-2" />
-                              Hapus
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-
-              {/* Stats Cards */}
-              <div className="px-4 lg:px-6">
-                <div className="grid gap-4 md:grid-cols-5">
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Total Testimonial</CardTitle>
-                      <IconMessageCircle className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{testimonials.length}</div>
-                      <p className="text-xs text-muted-foreground">
-                        Testimonial tersedia
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Aktif</CardTitle>
-                      <Badge variant="default">{testimonials.filter(t => t.isActive).length}</Badge>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{testimonials.filter(t => t.isActive).length}</div>
-                      <p className="text-xs text-muted-foreground">
-                        Testimonial aktif
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Featured</CardTitle>
-                      <Badge variant="outline">{testimonials.filter(t => t.isFeatured).length}</Badge>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{testimonials.filter(t => t.isFeatured).length}</div>
-                      <p className="text-xs text-muted-foreground">
-                        Testimonial unggulan
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Rating 5</CardTitle>
-                      <Badge variant="default">{testimonials.filter(t => t.rating === 5).length}</Badge>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{testimonials.filter(t => t.rating === 5).length}</div>
-                      <p className="text-xs text-muted-foreground">
-                        Rating sempurna
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Rata-rata Rating</CardTitle>
-                      <IconStar className="h-4 w-4 text-yellow-400" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">
-                        {(testimonials.reduce((acc, t) => acc + t.rating, 0) / testimonials.length).toFixed(1)}
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        Rating rata-rata
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
+                      <div className="flex flex-col items-end space-y-2">
+                        {getStatusBadge(testimonial.isActive)}
+                        {getFeaturedBadge(testimonial.isFeatured)}
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {/* Rating */}
+                      <div className="flex items-center justify-between">
+                        {getRatingStars(testimonial.rating)}
+                        <Badge variant="outline">#{testimonial.sortOrder}</Badge>
+                      </div>
+                      
+                      {/* Content */}
+                      <div className="text-sm">
+                        <p className="text-muted-foreground line-clamp-4">{testimonial.content}</p>
+                      </div>
+                      
+                      {/* Company Info */}
+                      <div className="flex items-center space-x-2 text-sm">
+                        <IconBuilding className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-muted-foreground">Company:</span>
+                        <span className="font-medium">{testimonial.clientCompany}</span>
+                      </div>
+                      
+                      {/* Date */}
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Tanggal:</span>
+                        <span className="font-medium text-xs">{testimonial.createdAt}</span>
+                      </div>
+                      
+                      {/* Actions */}
+                      <div className="flex gap-2 pt-2">
+                        <Button variant="outline" size="sm" className="flex-1">
+                          <IconEdit className="h-4 w-4 mr-2" />
+                          Edit
+                        </Button>
+                        <Button variant="outline" size="sm" className="flex-1">
+                          <IconTrash className="h-4 w-4 mr-2" />
+                          Hapus
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="px-4 lg:px-6">
+            <div className="grid gap-4 md:grid-cols-5">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Testimonial</CardTitle>
+                  <IconMessageCircle className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{testimonials.length}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Testimonial tersedia
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Aktif</CardTitle>
+                  <Badge variant="default">{testimonials.filter(t => t.isActive).length}</Badge>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{testimonials.filter(t => t.isActive).length}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Testimonial aktif
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Featured</CardTitle>
+                  <Badge variant="outline">{testimonials.filter(t => t.isFeatured).length}</Badge>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{testimonials.filter(t => t.isFeatured).length}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Testimonial unggulan
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Rating 5</CardTitle>
+                  <Badge variant="default">{testimonials.filter(t => t.rating === 5).length}</Badge>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{testimonials.filter(t => t.rating === 5).length}</div>
+                  <p className="text-xs text-muted-foreground">
+                    Rating sempurna
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Rata-rata Rating</CardTitle>
+                  <IconStar className="h-4 w-4 text-yellow-400" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {(testimonials.reduce((acc, t) => acc + t.rating, 0) / testimonials.length).toFixed(1)}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Rating rata-rata
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </div>
   );
 }
