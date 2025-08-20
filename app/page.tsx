@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/layout/public-header";
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-background via-background/50 to-background">
       {/* Header overlay khusus untuk landing page - tidak mengganggu scroll flow */}
       <div className="fixed top-0 left-0 right-0 z-40 bg-transparent">
         <AppHeader />

@@ -38,21 +38,22 @@ const Model: React.FC<ModelProps> = memo(
       if (onLoad) onLoad();
     }, [scene, onLoad]);
 
-    // Update model SUBTLE animation based on scroll progress
+    // Continuous animation based on scroll progress throughout entire page
     useFrame(() => {
       if (modelRef.current) {
-        // GENTLE rotation based on scroll progress
-        modelRef.current.rotation.y = Math.PI / 4 + (animationProgress * Math.PI * 2);
+        // CONTINUOUS rotation - multiple rotations throughout entire scroll
+        // animationProgress goes from 0 to 1 for entire page, so multiply for more rotations
+        modelRef.current.rotation.y = Math.PI / 4 + (animationProgress * Math.PI * 8); // 4 full rotations
         
-        // SUBTLE floating effect based on scroll progress
-        const scrollFloat = Math.sin(animationProgress * Math.PI * 2) * 0.15;
+        // CONTINUOUS floating effect - multiple wave cycles throughout scroll
+        const scrollFloat = Math.sin(animationProgress * Math.PI * 6) * 0.3; // 3 float cycles
         modelRef.current.position.y = scrollFloat;
         
-        // MINIMAL forward movement
-        modelRef.current.position.z = animationProgress * 0.2;
+        // Progressive forward movement throughout scroll
+        modelRef.current.position.z = animationProgress * 0.5;
         
-        // STABLE scale - almost no change
-        const scale = 1.8 + (animationProgress * 0.05);
+        // Gradual scale change throughout scroll
+        const scale = 1.8 + (animationProgress * 0.2);
         modelRef.current.scale.set(scale, scale, scale);
       }
     });
@@ -134,12 +135,12 @@ const RocketViewer: React.FC<Readonly<RocketViewerProps>> = memo(
           transition: "opacity 0.3s ease-in-out",
           background: "transparent",
           position: "relative",
-          overflow: "hidden",
+          overflow: "visible",
         }}
         shadows={false}
         camera={{
           position: [0, 0, 4],
-          fov: 50,
+          fov: 60, // Increased FOV to show more of the model
           near: 0.1,
           far: 1000,
         }}
@@ -294,14 +295,15 @@ export function Rocket3D() {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // Setup GSAP ScrollTrigger for rocket animation - SLOW and subtle
+    // Setup GSAP ScrollTrigger for continuous rocket animation throughout the entire page
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
-        trigger: "body", // Trigger on whole page scroll
+        trigger: "body", // Trigger on entire page scroll
         start: "top top",
-        end: "+=200vh", // Longer duration for slower animation
-        scrub: 0.5, // SLOWER scrub for rocket (text uses scrub: 2)
+        end: "max", // Animate throughout the ENTIRE page height
+        scrub: 1, // Smooth 1:1 scrubbing with scroll
         onUpdate: (self) => {
+          // Animation progress from 0 to 1 throughout entire page scroll
           setAnimationProgress(self.progress);
         },
       });
@@ -311,7 +313,7 @@ export function Rocket3D() {
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full h-[300px] md:h-[400px] lg:h-[500px]">
+    <div ref={containerRef} className="w-full h-[300px] md:h-[400px] lg:h-[500px] overflow-visible">
       <Suspense fallback={<LoadingSpinner />}>
         <RocketViewer
           src="/rocket.glb"
