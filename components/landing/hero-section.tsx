@@ -55,17 +55,19 @@ export function HeroSection() {
           className="text-center max-w-4xl px-4 pointer-events-auto"
         >
           <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl leading-tight text-foreground mb-6 drop-shadow-lg">
-            Membangun Masa Depan Digital, Bersama
+            With Tekna
+            <br />
+            Serving The Universe
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground mb-8 drop-shadow-md">
-            Kami adalah agensi digital yang bersemangat dalam menciptakan solusi inovatif dan pengalaman pengguna yang luar biasa melalui teknologi dan desain.
+            Building scalable websites, mobile apps, and IoT solutions for the future.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" className="text-lg px-8 py-6">
-              <Link href="/projects">Lihat Portofolio</Link>
+              <Link href="/projects">Portofolio</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6">
-              <Link href="/contact">Hubungi Kami</Link>
+              <Link href="/contact">Reach Us</Link>
             </Button>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { HeroSection } from "@/components/landing/hero-section";
-import { FeaturesSection } from "@/components/landing/features-section";
+import { ProjectsSection } from "@/components/landing/projects-section";
 import { TestimonialsSection } from "@/components/landing/testimonials-section";
 import { AppHeader } from "@/components/layout/public-header";
 
@@ -14,7 +14,7 @@ export default function LandingPage() {
       {/* Content tanpa layout wrapper */}
       <main className="flex-1">
         <HeroSection />
-        <FeaturesSection />
+        <ProjectsSection />
         <TestimonialsSection />
       </main>
       
