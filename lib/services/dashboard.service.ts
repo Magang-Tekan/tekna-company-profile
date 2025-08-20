@@ -344,7 +344,7 @@ export class DashboardService {
   }
 
   /**
-   * Get blog posts data
+   * Get all blog posts - Server side
    */
   static async getBlogPosts() {
     const supabase = await createClient();
@@ -355,20 +355,27 @@ export class DashboardService {
         .select(`
           id,
           title,
+          slug,
+          excerpt,
+          featured_image_url,
+          author_id,
+          category_id,
           status,
-          view_count,
           published_at,
           is_featured,
-          is_active
+          is_active,
+          view_count,
+          created_at,
+          updated_at
         `)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data;
+      return data || [];
     } catch (error) {
       console.error('Error fetching blog posts:', error);
-      throw new Error('Gagal mengambil data artikel blog');
+      return [];
     }
   }
 

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import type { ProjectStatus } from "@/lib/types/dashboard";
+import type { ProjectStatus, PostStatus } from "@/lib/types/dashboard";
 
 export class ClientDashboardService {
   /**
@@ -128,6 +128,137 @@ export class ClientDashboardService {
     } catch (error) {
       console.error('Error fetching project:', error);
       throw new Error('Gagal mengambil data proyek');
+    }
+  }
+
+  // ===============================
+  // BLOG/POST CRUD OPERATIONS
+  // ===============================
+
+  /**
+   * Create new blog post - Client side
+   */
+  static async createPost(postData: {
+    title: string;
+    slug: string;
+    excerpt?: string;
+    featured_image_url?: string;
+    author_id?: string;
+    category_id?: string;
+    status: PostStatus;
+    published_at?: string;
+    is_featured?: boolean;
+  }) {
+    const supabase = createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .insert({
+          ...postData,
+          is_active: true
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error creating post:', error);
+      throw new Error('Gagal membuat artikel baru');
+    }
+  }
+
+  /**
+   * Update existing blog post - Client side
+   */
+  static async updatePost(
+    postId: string, 
+    postData: {
+      title?: string;
+      slug?: string;
+      excerpt?: string;
+      featured_image_url?: string;
+      author_id?: string;
+      category_id?: string;
+      status?: PostStatus;
+      published_at?: string;
+      is_featured?: boolean;
+    }
+  ) {
+    const supabase = createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .update(postData)
+        .eq('id', postId)
+        .eq('is_active', true)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error updating post:', error);
+      throw new Error('Gagal mengupdate artikel');
+    }
+  }
+
+  /**
+   * Delete blog post (soft delete) - Client side
+   */
+  static async deletePost(postId: string) {
+    const supabase = createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .update({ is_active: false })
+        .eq('id', postId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      throw new Error('Gagal menghapus artikel');
+    }
+  }
+
+  /**
+   * Get single blog post by ID - Client side
+   */
+  static async getPostById(postId: string) {
+    const supabase = createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select(`
+          id,
+          title,
+          slug,
+          excerpt,
+          featured_image_url,
+          author_id,
+          category_id,
+          status,
+          published_at,
+          is_featured,
+          is_active,
+          view_count
+        `)
+        .eq('id', postId)
+        .eq('is_active', true)
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching post:', error);
+      throw new Error('Gagal mengambil data artikel');
     }
   }
 }
