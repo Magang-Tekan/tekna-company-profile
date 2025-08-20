@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/client';
-import { createServerClient } from '@/lib/supabase/server';
+import { createClient as createServerClient } from '@/lib/supabase/server';
 
 export interface MediaFile {
   id: string;
@@ -48,9 +48,15 @@ export class MediaService {
       const filename = `${timestamp}-${randomString}.${extension}`;
       const filePath = `${folder}/${filename}`;
 
+      // Determine bucket based on file type
+      let bucketName = 'media';
+      if (file.type.startsWith('application/') || file.type === 'text/plain' || file.type === 'text/csv') {
+        bucketName = 'documents';
+      }
+
       // Upload file to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('media')
+        .from(bucketName)
         .upload(filePath, file, {
           cacheControl: '3600',
           upsert: false
@@ -66,7 +72,7 @@ export class MediaService {
 
       // Get public URL
       const { data: urlData } = supabase.storage
-        .from('media')
+        .from(bucketName)
         .getPublicUrl(filePath);
 
       // Get image dimensions if it's an image
@@ -239,9 +245,12 @@ export class MediaService {
       const file = await this.getMediaFileById(fileId);
       if (!file) return false;
 
+      // Determine bucket from file path
+      const bucketName = file.file_path.includes('/documents/') ? 'documents' : 'media';
+      
       // Delete from storage
       const { error: storageError } = await supabase.storage
-        .from('media')
+        .from(bucketName)
         .remove([file.file_path]);
 
       if (storageError) {

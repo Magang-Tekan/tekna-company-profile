@@ -1,26 +1,14 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { IconUpload, IconImage, IconX, IconCopy, IconDownload } from '@tabler/icons-react';
-
-interface MediaFile {
-  id: string;
-  filename: string;
-  original_filename: string;
-  file_url: string;
-  file_size: number;
-  mime_type: string;
-  width?: number;
-  height?: number;
-  alt_text?: string;
-  caption?: string;
-  uploaded_at: string;
-}
+import { MediaService, MediaFile } from '@/lib/services/media.service';
+import { MediaUpload } from './media-upload';
+import { IconUpload, IconX, IconCopy, IconDownload } from '@tabler/icons-react';
 
 interface MediaLibraryProps {
   onSelect?: (file: MediaFile) => void;
@@ -28,59 +16,38 @@ interface MediaLibraryProps {
 }
 
 export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-
-    setIsUploading(true);
-    setUploadProgress(0);
-
+  // Load media files on component mount
+  const loadMediaFiles = async () => {
+    setIsLoading(true);
     try {
-      // TODO: Implement file upload to Supabase Storage
-      // For now, we'll simulate the upload
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        
-        // Simulate upload progress
-        for (let progress = 0; progress <= 100; progress += 10) {
-          setUploadProgress(progress);
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-
-        // Create mock media file
-        const mockFile: MediaFile = {
-          id: `mock-${Date.now()}-${i}`,
-          filename: file.name,
-          original_filename: file.name,
-          file_url: URL.createObjectURL(file),
-          file_size: file.size,
-          mime_type: file.type,
-          width: 800,
-          height: 600,
-          alt_text: '',
-          caption: '',
-          uploaded_at: new Date().toISOString()
-        };
-
-        setMediaFiles(prev => [mockFile, ...prev]);
-      }
+      const files = await MediaService.getMediaFiles();
+      setMediaFiles(files);
     } catch (error) {
-      console.error('Error uploading files:', error);
-      alert('Gagal mengupload file');
+      console.error('Error loading media files:', error);
     } finally {
-      setIsUploading(false);
-      setUploadProgress(0);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
+      setIsLoading(false);
     }
   };
+
+  // Handle upload success
+  const handleUploadSuccess = (file: MediaFile) => {
+    setMediaFiles(prev => [file, ...prev]);
+  };
+
+  // Handle upload error
+  const handleUploadError = (error: string) => {
+    console.error('Upload error:', error);
+    alert(error);
+  };
+
+  // Load media files on mount
+  useEffect(() => {
+    loadMediaFiles();
+  }, []);
 
   const handleFileSelect = (file: MediaFile) => {
     if (onSelect) {
@@ -97,8 +64,12 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
     }
 
     try {
-      // TODO: Implement file deletion from Supabase Storage
-      setMediaFiles(prev => prev.filter(file => file.id !== fileId));
+      const success = await MediaService.deleteMediaFile(fileId);
+      if (success) {
+        setMediaFiles(prev => prev.filter(file => file.id !== fileId));
+      } else {
+        alert('Gagal menghapus file');
+      }
     } catch (error) {
       console.error('Error deleting file:', error);
       alert('Gagal menghapus file');
@@ -194,14 +165,14 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
                 type="text"
                 placeholder="Cari berdasarkan nama file, alt text, atau caption..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearch(e.target.value)}
               />
             </div>
 
             {/* Media Grid */}
             {filteredFiles.length === 0 ? (
               <div className="text-center py-12">
-                <IconImage className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <IconUpload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500">
                   {searchQuery ? 'Tidak ada file yang cocok dengan pencarian' : 'Belum ada file yang diupload'}
                 </p>
