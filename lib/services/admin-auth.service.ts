@@ -183,36 +183,43 @@ export class AdminAuthService {
     const supabase = createClient();
     
     try {
-      // Get all users with roles and profiles
+      // 1. Get all active user roles
       const { data: userRoles, error: roleError } = await supabase
         .from('user_roles')
-        .select(`
-          *,
-          user_profiles (*)
-        `)
+        .select('user_id, role, is_active')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
       if (roleError) throw roleError;
+      if (!userRoles) return [];
 
-      // Get user emails from Supabase Auth
-      const adminUsers: AdminUser[] = [];
-      
-      for (const userRole of userRoles || []) {
-        try {
-          // Get user email from Supabase Auth (this would typically be done server-side)
-          // For now, we'll return the data we have
-          adminUsers.push({
-            id: userRole.user_id,
-            email: 'user@example.com', // This should come from Supabase Auth
-            role: userRole.role,
-            is_active: userRole.is_active,
-            profile: userRole.user_profiles || undefined
-          });
-        } catch (error) {
-          console.error(`Error getting user ${userRole.user_id}:`, error);
-        }
-      }
+      const userIds = userRoles.map(ur => ur.user_id);
+
+      // 2. Get all corresponding user profiles
+      const { data: userProfiles, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .in('user_id', userIds);
+
+      if (profileError) throw profileError;
+
+      // 3. Get user data (like email) from auth.users
+      // This is tricky on the client-side for all users. The original code also had a placeholder.
+      // For now, we'll keep the placeholder and focus on fixing the data fetching.
+      // A server-side call would be needed to get all user emails securely.
+
+      const profilesByUserId = new Map(userProfiles?.map(p => [p.user_id, p]));
+
+      const adminUsers: AdminUser[] = userRoles.map(userRole => {
+        const profile = profilesByUserId.get(userRole.user_id);
+        return {
+          id: userRole.user_id,
+          email: 'user@example.com', // Placeholder, as in original code
+          role: userRole.role,
+          is_active: userRole.is_active,
+          profile: profile || undefined
+        };
+      });
 
       return adminUsers;
     } catch (error) {
