@@ -128,11 +128,9 @@ CREATE POLICY "Authenticated users can view user roles" ON user_roles
 
 CREATE POLICY "Super admins can manage all user roles" ON user_roles
     FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role = 'super_admin'
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role = 'super_admin' AND is_active = true
         )
     );
 
@@ -149,11 +147,9 @@ CREATE POLICY "Users can update their own profile" ON user_profiles
 
 CREATE POLICY "Super admins can manage all user profiles" ON user_profiles
     FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role = 'super_admin'
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role = 'super_admin' AND is_active = true
         )
     );
 
@@ -162,131 +158,107 @@ CREATE POLICY "Super admins can manage all user profiles" ON user_profiles
 -- Companies: Only admins can manage
 CREATE POLICY "Admins can manage companies" ON companies
     FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role IN ('super_admin', 'admin')
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role IN ('super_admin', 'admin') AND is_active = true
         )
     );
 
 -- Company translations: Only admins can manage
 CREATE POLICY "Admins can manage company translations" ON company_translations
     FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role IN ('super_admin', 'admin')
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role IN ('super_admin', 'admin') AND is_active = true
         )
     );
 
 -- Categories: Only admins can manage
 CREATE POLICY "Admins can manage categories" ON categories
     FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role IN ('super_admin', 'admin', 'editor')
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role IN ('super_admin', 'admin', 'editor') AND is_active = true
         )
     );
 
 -- Tags: Only admins can manage
 CREATE POLICY "Admins can manage tags" ON tags
     FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role IN ('super_admin', 'admin', 'editor')
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role IN ('super_admin', 'admin', 'editor') AND is_active = true
         )
     );
 
 -- Posts: Admins and editors can manage
 CREATE POLICY "Admins and editors can manage posts" ON posts
     FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role IN ('super_admin', 'admin', 'editor')
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role IN ('super_admin', 'admin', 'editor') AND is_active = true
         )
     );
 
 -- Post translations: Admins and editors can manage
 CREATE POLICY "Admins and editors can manage post translations" ON post_translations
     FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role IN ('super_admin', 'admin', 'editor')
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role IN ('super_admin', 'admin', 'editor') AND is_active = true
         )
     );
 
 -- Post tags: Admins and editors can manage
 CREATE POLICY "Admins and editors can manage post tags" ON post_tags
     FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role IN ('super_admin', 'admin', 'editor')
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role IN ('super_admin', 'admin', 'editor') AND is_active = true
         )
     );
 
 -- Projects: Admins and editors can manage
 CREATE POLICY "Admins and editors can manage projects" ON projects
     FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role IN ('super_admin', 'admin', 'editor')
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role IN ('super_admin', 'admin', 'editor') AND is_active = true
         )
     );
 
 -- Project translations: Admins and editors can manage
 CREATE POLICY "Admins and editors can manage project translations" ON project_translations
     FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role IN ('super_admin', 'admin', 'editor')
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role IN ('super_admin', 'admin', 'editor') AND is_active = true
         )
     );
 
 -- Project images: Admins and editors can manage
 CREATE POLICY "Admins and editors can manage project images" ON project_images
     FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role IN ('super_admin', 'admin', 'editor')
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role IN ('super_admin', 'admin', 'editor') AND is_active = true
         )
     );
 
 -- Newsletter subscriptions: Only super admins can view/manage
 CREATE POLICY "Super admins can view newsletter subscriptions" ON newsletter_subscriptions
     FOR SELECT USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role = 'super_admin'
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role = 'super_admin' AND is_active = true
         )
     );
 
 CREATE POLICY "Super admins can manage newsletter subscriptions" ON newsletter_subscriptions
     FOR ALL USING (
-        EXISTS (
-            SELECT 1 FROM user_roles ur 
-            WHERE ur.user_id = auth.uid() 
-            AND ur.role = 'super_admin'
-            AND ur.is_active = true
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role = 'super_admin' AND is_active = true
         )
     );
 

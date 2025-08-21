@@ -399,9 +399,9 @@ BEGIN
       ''
     ) RETURNING id INTO admin_id;
     
-    -- Assign super admin role
-    INSERT INTO user_roles (user_id, role, is_active) VALUES 
-      (admin_id, 'super_admin', true);
+                       -- Assign admin role
+                   INSERT INTO user_roles (user_id, role, is_active) VALUES 
+                     (admin_id, 'admin', true);
     
     -- Create admin profile
     INSERT INTO user_profiles (user_id, first_name, last_name) VALUES 

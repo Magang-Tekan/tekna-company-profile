@@ -25,11 +25,10 @@ export function usePermissions() {
     fetchUser();
   }, []);
 
-  const hasPermission = (requiredRole: 'super_admin' | 'admin' | 'editor'): boolean => {
+  const hasPermission = (requiredRole: 'admin' | 'editor'): boolean => {
     if (!currentUser) return false;
     
     const roleHierarchy: Record<string, number> = {
-      'super_admin': 3,
       'admin': 2,
       'editor': 1
     };
@@ -75,7 +74,7 @@ export function usePermissions() {
 }
 
 export function usePermissionGuard(config: {
-  requiredRole?: 'super_admin' | 'admin' | 'editor';
+  requiredRole?: 'admin' | 'editor';
   redirectTo?: string;
   onUnauthorized?: () => void;
 }) {
@@ -106,7 +105,6 @@ export function useRoleBasedUI() {
 
   const getRoleDisplayName = (role: string): string => {
     switch (role) {
-      case 'super_admin': return 'Super Admin';
       case 'admin': return 'Admin';
       case 'editor': return 'Editor';
       default: return role;
@@ -115,7 +113,6 @@ export function useRoleBasedUI() {
 
   const getRoleBadgeVariant = (role: string): 'default' | 'secondary' | 'destructive' => {
     switch (role) {
-      case 'super_admin': return 'destructive';
       case 'admin': return 'default';
       case 'editor': return 'secondary';
       default: return 'default';
@@ -124,7 +121,6 @@ export function useRoleBasedUI() {
 
   const getRoleColor = (role: string): string => {
     switch (role) {
-      case 'super_admin': return 'text-red-600';
       case 'admin': return 'text-blue-600';
       case 'editor': return 'text-green-600';
       default: return 'text-gray-600';

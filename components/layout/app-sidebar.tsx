@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { ClientOnly } from "@/components/ui/client-only"
-import Image from "next/image";
+import Image from "next/image"
+import { useSession } from "@/components/session-provider"
 import { 
   LayoutDashboard, 
   FolderOpen, 
@@ -15,46 +16,146 @@ import {
   Settings, 
   HelpCircle, 
   Search,
-  Plus
+  Plus,
+  Users,
+  Mail,
+  Shield
 } from "lucide-react"
 
-const navigationItems = [
+interface NavigationItem {
+  title: string
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  roles: ('admin' | 'editor')[]
+}
+
+const navigationItems: NavigationItem[] = [
   {
     title: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+    roles: ['admin', 'editor']
   },
   {
     title: "Proyek",
     href: "/dashboard/projects",
     icon: FolderOpen,
+    roles: ['admin', 'editor']
   },
   {
     title: "Blog",
     href: "/dashboard/blog",
     icon: FileText,
+    roles: ['admin', 'editor']
   },
+  {
+    title: "Admin Panel",
+    href: "/dashboard/admin",
+    icon: Shield,
+    roles: ['admin']
+  },
+  {
+    title: "User Management",
+    href: "/dashboard/users",
+    icon: Users,
+    roles: ['admin']
+  },
+  {
+    title: "Newsletter",
+    href: "/dashboard/newsletter",
+    icon: Mail,
+    roles: ['admin']
+  }
 ]
 
-const bottomNavigationItems = [
+const bottomNavigationItems: NavigationItem[] = [
   {
     title: "Pengaturan",
     href: "/dashboard/settings",
     icon: Settings,
+    roles: ['admin']
   },
   {
     title: "Bantuan",
     href: "/dashboard/help",
     icon: HelpCircle,
+    roles: ['admin', 'editor']
   },
   {
     title: "Pencarian",
     href: "/dashboard/search",
     icon: Search,
-  },
+    roles: ['admin', 'editor']
+  }
 ]
 
+function NavigationItems() {
+  const pathname = usePathname()
+
+  // Show all items for now - role filtering will be handled by RLS policies
+  const filteredItems = navigationItems
+
+  return (
+    <nav className="flex-1 px-4 space-y-2">
+      {filteredItems.map((item) => {
+        const Icon = item.icon
+        const isActive = pathname === item.href
+        
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              isActive 
+                ? "bg-primary text-primary-foreground" 
+                : "hover:bg-accent hover:text-accent-foreground"
+            )}
+          >
+            <Icon className="w-4 h-4" />
+            {item.title}
+          </Link>
+        )
+      })}
+    </nav>
+  )
+}
+
+function BottomNavigationItems() {
+  const pathname = usePathname()
+
+  // Show all items for now - role filtering will be handled by RLS policies
+  const filteredItems = bottomNavigationItems
+
+  return (
+    <nav className="px-4 space-y-2">
+      {filteredItems.map((item) => {
+        const Icon = item.icon
+        const isActive = pathname === item.href
+        
+        return (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              isActive 
+                ? "bg-primary text-primary-foreground" 
+                : "hover:bg-accent hover:text-accent-foreground"
+            )}
+          >
+            <Icon className="w-4 h-4" />
+            {item.title}
+          </Link>
+        )
+      })}
+    </nav>
+  )
+}
+
 export function AppSidebarNew() {
+  const { user } = useSession()
+
   return (
     <div className="flex flex-col h-full bg-sidebar text-sidebar-foreground">
       {/* Logo/Brand */}
@@ -93,72 +194,20 @@ export function AppSidebarNew() {
       <div className="p-4 border-t border-sidebar-border">
         <div className="flex items-center gap-3">
           <Avatar className="w-8 h-8">
-            <AvatarFallback>A</AvatarFallback>
+            <AvatarFallback>
+              {user?.email?.charAt(0).toUpperCase() || 'A'}
+            </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-sidebar-foreground truncate">
-              Admin
+              {user?.email || 'Admin'}
             </p>
-            <p className="text-xs text-sidebar-foreground/70 truncate">
-              admin@tekna.com
+            <p className="text-xs text-muted-foreground truncate">
+              {user?.email ? 'Admin' : 'Loading...'}
             </p>
           </div>
         </div>
       </div>
-    </div>
-  )
-}
-
-function NavigationItems() {
-  const pathname = usePathname()
-  
-  return (
-    <nav className="flex-1 px-4 space-y-1">
-      {navigationItems.map((item) => {
-        const isActive = pathname === item.href
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-              isActive
-                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            )}
-          >
-            <item.icon className="w-4 h-4" />
-            {item.title}
-          </Link>
-        )
-      })}
-    </nav>
-  )
-}
-
-function BottomNavigationItems() {
-  const pathname = usePathname()
-  
-  return (
-    <div className="p-4 space-y-1 border-t border-sidebar-border">
-      {bottomNavigationItems.map((item) => {
-        const isActive = pathname === item.href
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-              isActive
-                ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            )}
-          >
-            <item.icon className="w-4 h-4" />
-            {item.title}
-          </Link>
-        )
-      })}
     </div>
   )
 }

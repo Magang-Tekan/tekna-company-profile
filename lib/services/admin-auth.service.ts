@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/client";
 export interface UserRole {
   id: string;
   user_id: string;
-  role: 'super_admin' | 'admin' | 'editor';
+  role: 'admin' | 'editor';
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -24,7 +24,7 @@ export interface UserProfile {
 export interface AdminUser {
   id: string;
   email: string;
-  role: 'super_admin' | 'admin' | 'editor';
+  role: 'admin' | 'editor';
   is_active: boolean;
   profile?: UserProfile;
 }
@@ -327,12 +327,11 @@ export class AdminAuthService {
   /**
    * Check if user has permission
    */
-  static async hasPermission(requiredRole: 'super_admin' | 'admin' | 'editor') {
+  static async hasPermission(requiredRole: 'admin' | 'editor') {
     try {
       const currentAdmin = await this.getCurrentAdmin();
       
       const roleHierarchy: Record<string, number> = {
-        'super_admin': 3,
         'admin': 2,
         'editor': 1
       };
