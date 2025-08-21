@@ -1,18 +1,61 @@
-import { PublicService } from "@/lib/services/public.service";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 
-async function getTestimonials() {
-  try {
-    return await PublicService.getFeaturedTestimonials();
-  } catch (error) {
-    console.error(error);
-    return [];
+// Hardcoded testimonials data
+const hardcodedTestimonials = [
+  {
+    id: 1,
+    client_name: "Ahmad Rizki",
+    client_position: "CEO",
+    client_company: "PT Maju Bersama",
+    client_avatar_url: undefined,
+    testimonial_text: "Tekna telah membantu kami mengembangkan platform digital yang sangat efektif. Tim mereka profesional dan hasilnya melebihi ekspektasi kami."
+  },
+  {
+    id: 2,
+    client_name: "Sarah Wijaya",
+    client_position: "Marketing Director",
+    client_company: "Global Solutions Indonesia",
+    client_avatar_url: undefined,
+    testimonial_text: "Kolaborasi dengan Tekna sangat menyenangkan. Mereka memahami kebutuhan bisnis kami dan memberikan solusi yang tepat sasaran."
+  },
+  {
+    id: 3,
+    client_name: "Budi Santoso",
+    client_position: "CTO",
+    client_company: "TechStart Indonesia",
+    client_avatar_url: undefined,
+    testimonial_text: "Kualitas kerja Tekna sangat tinggi. Mereka tidak hanya mengembangkan aplikasi, tapi juga memastikan skalabilitas dan keamanan yang optimal."
+  },
+  {
+    id: 4,
+    client_name: "Diana Putri",
+    client_position: "Product Manager",
+    client_company: "Innovate Digital",
+    client_avatar_url: undefined,
+    testimonial_text: "Tim Tekna sangat responsif dan komunikatif. Mereka selalu memberikan update yang jelas dan mengakomodasi feedback kami dengan baik."
+  },
+  {
+    id: 5,
+    client_name: "Rendra Kusuma",
+    client_position: "Founder",
+    client_company: "StartupHub Jakarta",
+    client_avatar_url: undefined,
+    testimonial_text: "Tekna membantu startup kami dari ide hingga produk yang siap diluncurkan. Keahlian mereka dalam teknologi modern sangat mengesankan."
+  },
+  {
+    id: 6,
+    client_name: "Maya Sari",
+    client_position: "Operations Director",
+    client_company: "E-Commerce Pro",
+    client_avatar_url: undefined,
+    testimonial_text: "Platform e-commerce yang dikembangkan Tekna telah meningkatkan penjualan kami secara signifikan. User experience yang mereka buat sangat user-friendly."
   }
-}
+];
 
 export async function TestimonialsSection() {
-  const testimonials = await getTestimonials();
+  // Use hardcoded testimonials instead of fetching from database
+  const testimonials = hardcodedTestimonials;
 
   if (testimonials.length === 0) {
     return null; // Don't render the section if there are no testimonials
