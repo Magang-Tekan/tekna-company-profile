@@ -15,12 +15,12 @@ interface Author {
   id: string;
   first_name: string;
   last_name: string;
-  email: string;
+  email?: string;
   position: string;
   department: string | null;
   avatar_url: string | null;
   is_active: boolean;
-  sort_order: number;
+  sort_order?: number;
 }
 
 interface AuthorsPageClientProps {
@@ -47,7 +47,7 @@ export function AuthorsPageClient({ initialAuthors }: AuthorsPageClientProps) {
   });
 
   const handleDelete = async (authorId: string, name: string) => {
-    if (!confirm(`Apakah Anda yakin ingin menghapus author "${name}"?`)) {
+    if (!confirm(`Are you sure you want to delete the author "${name}"?`)) {
       return;
     }
 
@@ -57,7 +57,7 @@ export function AuthorsPageClient({ initialAuthors }: AuthorsPageClientProps) {
       setAuthors(prev => prev.filter(author => author.id !== authorId));
     } catch (error) {
       console.error('Error deleting author:', error);
-      alert(error instanceof Error ? error.message : 'Gagal menghapus author');
+      alert(error instanceof Error ? error.message : 'Failed to delete author');
     } finally {
       setIsLoading(false);
     }
@@ -80,15 +80,15 @@ export function AuthorsPageClient({ initialAuthors }: AuthorsPageClientProps) {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Author</h1>
+          <h1 className="text-3xl font-bold">Authors</h1>
           <p className="text-muted-foreground flex items-center gap-2">
-            Kelola author/team members untuk artikel blog
+            Manage authors/team members for blog articles
             <RealtimeStatus isConnected={isConnected} showLabel />
           </p>
         </div>
         <Button onClick={handleAddNew}>
           <IconPlus className="h-4 w-4 mr-2" />
-          Tambah Author
+          Add Author
         </Button>
       </div>
 
@@ -96,10 +96,10 @@ export function AuthorsPageClient({ initialAuthors }: AuthorsPageClientProps) {
       {authors.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
-            <p className="text-muted-foreground mb-4">Belum ada author yang dibuat</p>
+            <p className="text-muted-foreground mb-4">No authors created yet</p>
             <Button onClick={handleAddNew}>
               <IconPlus className="h-4 w-4 mr-2" />
-              Buat Author Pertama
+              Create First Author
             </Button>
           </CardContent>
         </Card>

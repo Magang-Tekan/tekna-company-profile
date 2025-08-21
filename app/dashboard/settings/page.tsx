@@ -96,13 +96,13 @@ export default function SettingsPage() {
     setSettings(prev => {
       const newSettings = { ...prev };
       const keys = path.split('.');
-      let current: CompanySettings | CompanySettings['social_media'] | CompanySettings['seo'] | CompanySettings['features'] = newSettings;
+      let current: Record<string, unknown> = newSettings;
       
       for (let i = 0; i < keys.length - 1; i++) {
-        current = current[keys[i] as keyof typeof current];
+        current = current[keys[i]] as Record<string, unknown>;
       }
       
-      (current as Record<string, any>)[keys[keys.length - 1]] = value;
+      current[keys[keys.length - 1]] = value;
       return newSettings;
     });
   };

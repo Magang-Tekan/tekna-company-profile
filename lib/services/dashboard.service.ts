@@ -493,7 +493,38 @@ export class DashboardService {
       return data;
     } catch (error) {
       console.error('Error fetching testimonials:', error);
-      throw new Error('Gagal mengambil data testimonial');
+      throw new Error('Failed to fetch testimonials data');
+    }
+  }
+
+  /**
+   * Get categories data
+   */
+  static async getCategories() {
+    const supabase = await createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          color,
+          is_active,
+          sort_order,
+          created_at,
+          updated_at
+        `)
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      throw new Error('Failed to fetch categories data');
     }
   }
 }

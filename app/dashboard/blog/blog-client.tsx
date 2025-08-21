@@ -15,7 +15,7 @@ interface BlogPost {
   title: string;
   slug: string;
   excerpt: string | null;
-  content: string;
+  content?: string;
   featured_image_url: string | null;
   author_name: string | null;
   category_id: string | null;
@@ -23,7 +23,7 @@ interface BlogPost {
   published_at: string | null;
   is_featured: boolean;
   is_active: boolean;
-  view_count: number;
+  view_count?: number;
   created_at: string;
   updated_at: string;
   meta_title?: string;
@@ -56,7 +56,7 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
   });
 
   const handleDelete = async (postId: string, title: string) => {
-    if (!confirm(`Apakah Anda yakin ingin menghapus artikel "${title}"?`)) {
+    if (!confirm(`Are you sure you want to delete the article "${title}"?`)) {
       return;
     }
 
@@ -66,7 +66,7 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
       setPosts(prev => prev.filter(post => post.id !== postId));
     } catch (error) {
       console.error('Error deleting post:', error);
-      alert(error instanceof Error ? error.message : 'Gagal menghapus artikel');
+      alert(error instanceof Error ? error.message : 'Failed to delete article');
     } finally {
       setIsLoading(false);
     }
@@ -97,7 +97,7 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('id-ID', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

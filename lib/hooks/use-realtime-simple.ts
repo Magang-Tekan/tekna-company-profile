@@ -1,59 +1,77 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 
-export function useRealtimeSync(table: string, onDataChange?: () => void) {
+export function useRealtimeCategories(onDataChange?: () => void) {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
     
-    // Subscribe to realtime changes
     const channel = supabase
-      .channel(`realtime-${table}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: table
-        },
-        () => {
-          console.log(`Realtime change detected in ${table}`);
-          if (onDataChange) {
-            onDataChange();
-          }
+      .channel('categories-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'categories' }, () => {
+        if (onDataChange) {
+          onDataChange();
         }
-      )
+      })
       .subscribe((status) => {
-        console.log(`Realtime status for ${table}:`, status);
         setIsConnected(status === 'SUBSCRIBED');
       });
 
-    // Cleanup function
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [table, onDataChange]);
+  }, [onDataChange]);
 
   return { isConnected };
 }
 
-// Hook khusus untuk blog posts
-export function useRealtimeBlogPosts(onDataChange?: () => void) {
-  return useRealtimeSync('posts', onDataChange);
-}
-
-// Hook khusus untuk categories
-export function useRealtimeCategories(onDataChange?: () => void) {
-  return useRealtimeSync('categories', onDataChange);
-}
-
-// Hook khusus untuk authors
 export function useRealtimeAuthors(onDataChange?: () => void) {
-  return useRealtimeSync('team_members', onDataChange);
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    const channel = supabase
+      .channel('authors-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members' }, () => {
+        if (onDataChange) {
+          onDataChange();
+        }
+      })
+      .subscribe((status) => {
+        setIsConnected(status === 'SUBSCRIBED');
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [onDataChange]);
+
+  return { isConnected };
 }
 
-// Hook khusus untuk media files
-export function useRealtimeMediaFiles(onDataChange?: () => void) {
-  return useRealtimeSync('media_files', onDataChange);
+export function useRealtimeBlogPosts(onDataChange?: () => void) {
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    
+    const channel = supabase
+      .channel('posts-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
+        if (onDataChange) {
+          onDataChange();
+        }
+      })
+      .subscribe((status) => {
+        setIsConnected(status === 'SUBSCRIBED');
+      });
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [onDataChange]);
+
+  return { isConnected };
 }

@@ -17,7 +17,7 @@ import {
   IconListNumbers,
   IconQuote,
   IconLink,
-  IconImage,
+  IconPhoto,
   IconCode,
   IconEye,
   IconEyeOff
@@ -320,7 +320,7 @@ export function RichTextEditor({ value, onChange, placeholder, label }: RichText
                     className="h-8 px-2"
                     title="Insert Image"
                   >
-                    <IconImage className="h-4 w-4" />
+                    <IconPhoto className="h-4 w-4" />
                   </Button>
                 </div>
               </div>

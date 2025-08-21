@@ -55,7 +55,7 @@ export class PaginationService {
       const total_pages = Math.ceil(total_count / params.page_size);
 
       return {
-        data: data.map((item) => ({
+        data: data.map((item: any) => ({
           id: item.id,
           title: item.title,
           author: item.author_name,
@@ -109,7 +109,7 @@ export class PaginationService {
       const total_pages = Math.ceil(total_count / params.page_size);
 
       return {
-        data: data.map((item) => ({
+        data: data.map((item: any) => ({
           id: item.id,
           name: item.name,
           status: item.status,

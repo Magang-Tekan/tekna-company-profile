@@ -86,7 +86,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
       router.refresh();
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert(mode === 'create' ? 'Gagal membuat proyek' : 'Gagal mengupdate proyek');
+      alert(mode === 'create' ? 'Failed to create project' : 'Failed to update project');
     } finally {
       setIsLoading(false);
     }
@@ -101,17 +101,17 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
             <div className="flex items-center gap-4 mb-4">
               <Button variant="outline" size="sm" onClick={() => router.back()}>
                 <IconArrowLeft className="h-4 w-4 mr-2" />
-                Kembali
+                Back
               </Button>
             </div>
             <div className="flex flex-col gap-2">
               <h1 className="text-3xl font-bold tracking-tight">
-                {mode === 'create' ? 'Tambah Proyek Baru' : 'Edit Proyek'}
+                {mode === 'create' ? 'Add New Project' : 'Edit Project'}
               </h1>
               <p className="text-muted-foreground">
                 {mode === 'create' 
-                  ? 'Buat proyek baru untuk portofolio perusahaan'
-                  : 'Perbarui informasi proyek'
+                  ? 'Create a new project for company portfolio'
+                  : 'Update project information'
                 }
               </p>
             </div>

@@ -47,10 +47,12 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
 
     try {
       for (const file of Array.from(files)) {
-        const newFile = await MediaService.uploadFile(file, (progress) => {
-          setUploadProgress(progress);
-        });
-        setMediaFiles(prev => [newFile, ...prev]);
+        const result = await MediaService.uploadFile(file);
+        if (result.success && result.file) {
+          setMediaFiles(prev => [result.file!, ...prev]);
+        } else {
+          console.error('Upload failed:', result.error);
+        }
       }
     } catch (error) {
       console.error('Upload error:', error);
@@ -75,7 +77,7 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
   };
 
   const handleFileDelete = async (fileId: string) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus file ini?')) {
+    if (!confirm('Are you sure you want to delete this file?')) {
       return;
     }
 
@@ -84,17 +86,17 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
       if (success) {
         setMediaFiles(prev => prev.filter(file => file.id !== fileId));
       } else {
-        alert('Gagal menghapus file');
+        alert('Failed to delete file');
       }
     } catch (error) {
       console.error('Error deleting file:', error);
-      alert('Gagal menghapus file');
+      alert('Failed to delete file');
     }
   };
 
   const copyFileUrl = (url: string) => {
     navigator.clipboard.writeText(url);
-    alert('URL file berhasil disalin!');
+    alert('File URL copied successfully!');
   };
 
   const formatFileSize = (bytes: number) => {
@@ -135,10 +137,10 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
               <IconUpload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Upload File Baru
+                Upload New File
               </h3>
               <p className="text-gray-500 mb-4">
-                Drag and drop file gambar ke sini, atau klik untuk memilih file
+                Drag and drop image files here, or click to select files
               </p>
               
               <Input

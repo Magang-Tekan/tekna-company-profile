@@ -65,11 +65,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
       initialData={{
         name: project.name,
         slug: project.slug,
-        client_name: project.client_name || '',
         project_url: project.project_url || '',
-        github_url: project.github_url || '',
-        start_date: project.start_date || '',
-        end_date: project.end_date || '',
         status: project.status as ProjectStatus,
         featured_image_url: project.featured_image_url || '',
         is_featured: project.is_featured || false,

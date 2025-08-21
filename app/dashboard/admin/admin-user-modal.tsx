@@ -74,7 +74,6 @@ export const AdminUserModal: FC<AdminUserModalProps> = ({
       if (mode === 'create') {
         await AdminAuthService.createAdminUser({
           user_id: `new-user-${Date.now()}`,
-          email: formData.email,
           first_name: formData.first_name,
           last_name: formData.last_name,
           role: formData.role,
@@ -84,10 +83,14 @@ export const AdminUserModal: FC<AdminUserModalProps> = ({
           role: formData.role,
           is_active: formData.is_active,
           profile: {
-            ...user.profile,
+            id: user.profile?.id || '',
+            user_id: user.id,
             first_name: formData.first_name,
             last_name: formData.last_name,
             bio: formData.bio,
+            preferences: user.profile?.preferences || {},
+            created_at: user.profile?.created_at || new Date().toISOString(),
+            updated_at: new Date().toISOString(),
           }
         });
       }

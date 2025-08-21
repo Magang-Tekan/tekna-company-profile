@@ -10,8 +10,8 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "Tekna - Inovasi Digital & Desain",
-  description: "Agensi digital yang bersemangat dalam menciptakan solusi inovatif dan pengalaman pengguna yang luar biasa.",
+  title: "Tekna - Digital Innovation & Design",
+  description: "A passionate digital agency creating innovative solutions and exceptional user experiences.",
 };
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className={`${plusJakartaSans.className} antialiased bg-background text-foreground`}>
         <ThemeProvider
           attribute="class"

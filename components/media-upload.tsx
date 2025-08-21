@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MediaService, type MediaFile } from '@/lib/services/media.service';
-import { IconUpload, IconX, IconFile, IconImage, IconDocument } from '@tabler/icons-react';
+import { IconUpload, IconX, IconFile, IconPhoto, IconFileText } from '@tabler/icons-react';
 
 interface MediaUploadProps {
   onUploadSuccess?: (file: MediaFile) => void;
@@ -55,12 +55,12 @@ export function MediaUpload({
     
     Array.from(files).forEach(file => {
       if (!isFileTypeAllowed(file)) {
-        onUploadError?.(`File type ${file.type} tidak didukung`);
+        onUploadError?.(`File type ${file.type} is not supported`);
         return;
       }
       
       if (!isFileSizeAllowed(file)) {
-        onUploadError?.(`File ${file.name} terlalu besar (max ${Math.round(maxFileSize / 1024 / 1024)}MB)`);
+        onUploadError?.(`File ${file.name} is too large (max ${Math.round(maxFileSize / 1024 / 1024)}MB)`);
         return;
       }
       
@@ -81,8 +81,9 @@ export function MediaUpload({
       const file = validFiles[i];
       const fileIndex = uploadingFiles.length + i;
       
+      let progressInterval: NodeJS.Timeout | null = null;
       try {
-        const progressInterval = setInterval(() => {
+        progressInterval = setInterval(() => {
           setUploadingFiles(prev => prev.map((f, idx) => 
             idx === fileIndex ? { ...f, progress: Math.min(f.progress + 10, 90) } : f
           ));
@@ -90,7 +91,9 @@ export function MediaUpload({
 
         const result = await MediaService.uploadFile(file, folder);
         
-        clearInterval(progressInterval);
+        if (progressInterval) {
+          clearInterval(progressInterval);
+        }
         
         if (result.success && result.file) {
           setUploadingFiles(prev => prev.map((f, idx) => 
@@ -107,15 +110,17 @@ export function MediaUpload({
             idx === fileIndex ? { ...f, status: 'error', error: result.error } : f
           ));
           
-          onUploadError?.(result.error || 'Upload gagal');
+          onUploadError?.(result.error || 'Upload failed');
         }
       } catch (error) {
-        clearInterval(progressInterval);
+        if (progressInterval) {
+          clearInterval(progressInterval);
+        }
         setUploadingFiles(prev => prev.map((f, idx) => 
-          idx === fileIndex ? { ...f, status: 'error', error: 'Upload gagal' } : f
+          idx === fileIndex ? { ...f, status: 'error', error: 'Upload failed' } : f
         ));
         
-        onUploadError?.(error instanceof Error ? error.message : 'Upload gagal');
+        onUploadError?.(error instanceof Error ? error.message : 'Upload failed');
       }
     }
   }, [folder, onUploadSuccess, onUploadError, uploadingFiles.length, isFileTypeAllowed, isFileSizeAllowed, maxFileSize]);
@@ -153,9 +158,9 @@ export function MediaUpload({
 
   const getFileIcon = (file: File) => {
     if (file.type.startsWith('image/')) {
-      return <IconImage className="h-8 w-8 text-blue-500" />;
+      return <IconPhoto className="h-8 w-8 text-blue-500" />;
     } else if (file.type === 'application/pdf') {
-      return <IconDocument className="h-8 w-8 text-red-500" />;
+              return <IconFileText className="h-8 w-8 text-red-500" />;
     } else {
       return <IconFile className="h-8 w-8 text-gray-500" />;
     }
@@ -187,19 +192,19 @@ export function MediaUpload({
               Upload File
             </h3>
             <p className="text-gray-600 mb-4">
-              Drag & drop file ke sini atau{' '}
+              Drag & drop files here or{' '}
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 className="text-blue-600 hover:text-blue-500 underline"
               >
-                pilih file
+                select files
               </button>
             </p>
             
             <div className="text-sm text-gray-500 space-y-1">
-              <p>File yang didukung: {allowedTypes.join(', ')}</p>
-              <p>Ukuran maksimal: {Math.round(maxFileSize / 1024 / 1024)}MB</p>
+              <p>Supported files: {allowedTypes.join(', ')}</p>
+              <p>Maximum size: {Math.round(maxFileSize / 1024 / 1024)}MB</p>
             </div>
           </div>
         </CardContent>

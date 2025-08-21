@@ -12,7 +12,7 @@ import {
   IconFolder, 
   IconUsers, 
   IconSettings, 
-  IconNewsletter,
+  IconLetterA,
   IconChevronLeft,
   IconChevronRight,
   IconLogout
@@ -85,7 +85,7 @@ const navigationItems: NavItem[] = [
   {
     title: "Newsletter",
     href: "/dashboard/newsletter",
-    icon: IconNewsletter,
+    icon: IconLetterA,
     requiredRole: "super_admin",
     badge: "Admin Only"
   },
@@ -252,12 +252,12 @@ export function AdminSidebar() {
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
                 <span className="text-primary font-semibold text-sm">
-                  {currentUser.first_name[0]}{currentUser.last_name[0]}
+                  {currentUser.profile?.first_name?.[0] || ''}{currentUser.profile?.last_name?.[0] || ''}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">
-                  {currentUser.first_name} {currentUser.last_name}
+                  {currentUser.profile?.first_name || ''} {currentUser.profile?.last_name || ''}
                 </p>
                 <p className="text-xs text-muted-foreground truncate capitalize">
                   {currentUser.role.replace('_', ' ')}

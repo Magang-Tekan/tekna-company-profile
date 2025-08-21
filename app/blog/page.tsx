@@ -29,10 +29,10 @@ export default async function BlogIndexPage() {
         {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Wawasan & Berita Terbaru
+            Insights & Latest News
           </h1>
           <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-            Jelajahi artikel kami tentang teknologi, desain, dan inovasi yang membentuk masa depan.
+            Explore our articles about technology, design, and innovation that shape the future.
           </p>
         </div>
 
@@ -63,17 +63,17 @@ export default async function BlogIndexPage() {
                   <CardFooter className="p-6 pt-0 flex items-center justify-between text-sm text-muted-foreground">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={post.team_members?.avatar_url || undefined} alt={`${post.team_members?.first_name} ${post.team_members?.last_name}`} />
+                        <AvatarImage src={post.team_members?.[0]?.avatar_url || undefined} alt={`${post.team_members?.[0]?.first_name} ${post.team_members?.[0]?.last_name}`} />
                         <AvatarFallback>
-                          {post.team_members ? getAuthorInitials(post.team_members.first_name, post.team_members.last_name) : 'AD'}
+                          {post.team_members?.[0] ? getAuthorInitials(post.team_members[0].first_name, post.team_members[0].last_name) : 'AD'}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-semibold text-foreground">
-                          {post.team_members ? `${post.team_members.first_name} ${post.team_members.last_name}` : 'Admin'}
+                          {post.team_members?.[0] ? `${post.team_members[0].first_name} ${post.team_members[0].last_name}` : 'Admin'}
                         </p>
                         <time dateTime={post.published_at ? new Date(post.published_at).toISOString() : undefined}>
-                          {post.published_at ? new Date(post.published_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
+                          {post.published_at ? new Date(post.published_at).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) : ''}
                         </time>
                       </div>
                     </div>
@@ -83,8 +83,8 @@ export default async function BlogIndexPage() {
             ))
           ) : (
             <div className="md:col-span-2 lg:col-span-3 text-center py-16">
-              <h2 className="text-2xl font-semibold">Segera Hadir</h2>
-              <p className="mt-2 text-muted-foreground">Belum ada artikel yang dipublikasikan. Silakan periksa kembali nanti!</p>
+              <h2 className="text-2xl font-semibold">Coming Soon</h2>
+              <p className="mt-2 text-muted-foreground">No articles published yet. Please check back later!</p>
             </div>
           )}
         </div>

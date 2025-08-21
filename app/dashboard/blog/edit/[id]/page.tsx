@@ -35,19 +35,19 @@ export default function EditPostPage() {
           title: post.title || '',
           slug: post.slug || '',
           excerpt: post.excerpt || '',
-          content: post.content || '',
+          content: '',
           featured_image_url: post.featured_image_url || '',
           author_name: post.author_name || '',
           category_id: post.category_id || '',
           status: post.status,
           published_at: post.published_at || '',
           is_featured: post.is_featured || false,
-          meta_title: post.meta_title || post.title || '',
-          meta_description: post.meta_description || post.excerpt || '',
-          meta_keywords: post.meta_keywords || '',
+          meta_title: post.title || '',
+          meta_description: post.excerpt || '',
+          meta_keywords: '',
         });
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Gagal memuat data artikel');
+        setError(err instanceof Error ? err.message : 'Failed to load article data');
       } finally {
         setIsLoading(false);
       }
@@ -64,7 +64,7 @@ export default function EditPostPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-            <p>Memuat data artikel...</p>
+            <p>Loading article data...</p>
           </div>
         </div>
       </div>
@@ -81,7 +81,7 @@ export default function EditPostPage() {
               onClick={() => window.history.back()}
               className="text-blue-600 hover:underline"
             >
-              Kembali
+              Back
             </button>
           </div>
         </div>

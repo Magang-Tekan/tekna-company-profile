@@ -703,7 +703,42 @@ export class ClientDashboardService {
       return data;
     } catch (error) {
       console.error('Error deleting category:', error);
-      throw new Error('Gagal menghapus kategori');
+      throw new Error('Failed to delete category');
+    }
+  }
+
+  /**
+   * Get blog posts - Client side
+   */
+  static async getBlogPosts() {
+    const supabase = createClient();
+    
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select(`
+          id,
+          title,
+          slug,
+          excerpt,
+          featured_image_url,
+          author_name,
+          category_id,
+          status,
+          published_at,
+          is_featured,
+          is_active,
+          created_at,
+          updated_at
+        `)
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching blog posts:', error);
+      throw new Error('Failed to fetch blog posts');
     }
   }
 }

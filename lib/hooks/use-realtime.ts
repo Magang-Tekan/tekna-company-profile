@@ -31,26 +31,13 @@ export function useRealtime(
           table: options.table,
           filter: options.filter
         },
-        (payload) => {
+        (payload: unknown) => {
           console.log('Realtime change:', payload);
           if (onDataChange) {
             onDataChange(payload);
           }
         }
       )
-      .on('presence', { event: 'sync' }, () => {
-        console.log('Presence sync');
-      })
-      .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        console.log('Presence join:', key, newPresences);
-      })
-      .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-        console.log('Presence leave:', key, leftPresences);
-      })
-      .on('error', (error) => {
-        console.error('Realtime error:', error);
-        setError(error.message);
-      })
       .subscribe((status) => {
         console.log('Realtime status:', status);
         setIsConnected(status === 'SUBSCRIBED');

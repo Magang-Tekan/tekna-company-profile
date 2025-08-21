@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +27,7 @@ interface CategoriesPageClientProps {
 }
 
 export function CategoriesPageClient({ initialCategories }: CategoriesPageClientProps) {
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,7 +37,7 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
     const refreshCategories = async () => {
       try {
         const updatedCategories = await ClientDashboardService.getCategories();
-        setCategories(updatedCategories);
+        setCategories(updatedCategories as Category[]);
       } catch (error) {
         console.error('Error refreshing categories:', error);
       }
@@ -44,7 +46,7 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
   });
 
   const handleDelete = async (categoryId: string, name: string) => {
-    if (!confirm(`Apakah Anda yakin ingin menghapus kategori "${name}"?`)) {
+    if (!confirm(`Are you sure you want to delete the category "${name}"?`)) {
       return;
     }
 
@@ -54,7 +56,7 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
       setCategories(prev => prev.filter(category => category.id !== categoryId));
     } catch (error) {
       console.error('Error deleting category:', error);
-      alert(error instanceof Error ? error.message : 'Gagal menghapus kategori');
+      alert(error instanceof Error ? error.message : 'Failed to delete category');
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +71,7 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -81,15 +83,15 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Kategori</h1>
+          <h1 className="text-3xl font-bold">Categories</h1>
           <p className="text-muted-foreground flex items-center gap-2">
-            Kelola kategori untuk artikel blog
+            Manage categories for blog articles
             <RealtimeStatus isConnected={isConnected} showLabel />
           </p>
         </div>
         <Button onClick={handleAddNew}>
           <IconPlus className="h-4 w-4 mr-2" />
-          Tambah Kategori
+          Add Category
         </Button>
       </div>
 
@@ -97,10 +99,10 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
       {categories.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
-            <p className="text-muted-foreground mb-4">Belum ada kategori yang dibuat</p>
+            <p className="text-muted-foreground mb-4">No categories created yet</p>
             <Button onClick={handleAddNew}>
               <IconPlus className="h-4 w-4 mr-2" />
-              Buat Kategori Pertama
+              Create First Category
             </Button>
           </CardContent>
         </Card>
@@ -139,7 +141,7 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
                   
                   <div className="flex items-center justify-between mb-4">
                     <Badge variant={category.is_active ? "default" : "secondary"}>
-                      {category.is_active ? 'Aktif' : 'Tidak Aktif'}
+                      {category.is_active ? 'Active' : 'Inactive'}
                     </Badge>
                     <span className="text-xs text-muted-foreground">
                       {formatDate(category.updated_at)}

@@ -30,7 +30,7 @@ export class PublicService {
       return data || [];
     } catch (error) {
       console.error('Error fetching published blog posts:', error);
-      throw new Error('Gagal mengambil data artikel blog.');
+      throw new Error('Failed to fetch blog articles data.');
     }
   }
 
