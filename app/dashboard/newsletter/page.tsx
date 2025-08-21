@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { IconDownload, IconMail, IconUsers, IconActivity } from "@tabler/icons-react";
-import { PaginationService, PaginatedResult } from "@/lib/services/pagination.service";
+import { PaginationService, type PaginatedResult } from "@/lib/services/pagination.service";
 import { SearchFilter } from "@/components/ui/search-filter";
 import { Pagination } from "@/components/ui/pagination";
 
@@ -26,11 +26,7 @@ export default function NewsletterPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [pageSize] = useState(20);
 
-  useEffect(() => {
-    loadSubscriptions();
-  }, [currentPage, searchQuery]);
-
-  const loadSubscriptions = async () => {
+  const loadSubscriptions = useCallback(async () => {
     try {
       setIsLoading(true);
       const result = await PaginationService.getPaginatedNewsletterSubscriptions(
@@ -44,7 +40,11 @@ export default function NewsletterPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage, pageSize, searchQuery]);
+
+  useEffect(() => {
+    loadSubscriptions();
+  }, [loadSubscriptions]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -68,7 +68,7 @@ export default function NewsletterPage() {
         sub.is_active ? "Active" : "Inactive",
         new Date(sub.subscribed_at).toLocaleDateString(),
         sub.source || ""
-      ].join(","))
+      ].join(','))
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });

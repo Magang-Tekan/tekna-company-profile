@@ -88,3 +88,29 @@ export interface SupabaseTestimonial {
   is_active: boolean;
   is_featured: boolean;
 }
+
+export interface NewsletterSubscription {
+  id: string;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+  is_active: boolean;
+  subscribed_at: string;
+  source?: string;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  color: string;
+  is_active: boolean;
+  sort_order: number;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+}

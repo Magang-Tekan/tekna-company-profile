@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import type { Post, Project, NewsletterSubscription, Category, Tag } from "@/lib/types/dashboard";
 
 export interface PaginationParams {
   page_number: number;
@@ -23,17 +24,17 @@ export class PaginationService {
   /**
    * Get paginated posts with search and filtering
    */
-  static async getPaginatedPosts(params: PaginationParams): Promise<PaginatedResult<any>> {
+  static async getPaginatedPosts(params: PaginationParams): Promise<PaginatedResult<Post>> {
     const supabase = createClient();
     
     try {
       const { data, error } = await supabase.rpc('get_paginated_posts', {
-        search_query: params.search_query || '',
-        category_id: params.category_id || null,
-        status_filter: params.status_filter || 'published',
-        page_number: params.page_number,
-        page_size: params.page_size,
-        language_code: params.language_code || 'en'
+        p_search_query: params.search_query || '',
+        p_category_id: params.category_id || null,
+        p_status_filter: params.status_filter || 'published',
+        p_page_number: params.page_number,
+        p_page_size: params.page_size,
+        p_language_code: params.language_code || 'en'
       });
 
       if (error) throw error;
@@ -54,15 +55,13 @@ export class PaginationService {
       const total_pages = Math.ceil(total_count / params.page_size);
 
       return {
-        data: data.map(item => ({
+        data: data.map((item) => ({
           id: item.id,
           title: item.title,
-          excerpt: item.excerpt,
-          featured_image_url: item.featured_image_url,
-          author_name: item.author_name,
+          author: item.author_name,
           status: item.status,
-          published_at: item.published_at,
-          is_featured: item.is_featured
+          views: item.view_count,
+          publishedAt: item.published_at,
         })),
         total_count,
         page_number: params.page_number,
@@ -80,16 +79,16 @@ export class PaginationService {
   /**
    * Get paginated projects with search and filtering
    */
-  static async getPaginatedProjects(params: PaginationParams): Promise<PaginatedResult<any>> {
+  static async getPaginatedProjects(params: PaginationParams): Promise<PaginatedResult<Project>> {
     const supabase = createClient();
     
     try {
       const { data, error } = await supabase.rpc('get_paginated_projects', {
-        search_query: params.search_query || '',
-        status_filter: params.status_filter || 'all',
-        page_number: params.page_number,
-        page_size: params.page_size,
-        language_code: params.language_code || 'en'
+        p_search_query: params.search_query || '',
+        p_status_filter: params.status_filter || 'all',
+        p_page_number: params.page_number,
+        p_page_size: params.page_size,
+        p_language_code: params.language_code || 'en'
       });
 
       if (error) throw error;
@@ -110,15 +109,11 @@ export class PaginationService {
       const total_pages = Math.ceil(total_count / params.page_size);
 
       return {
-        data: data.map(item => ({
+        data: data.map((item) => ({
           id: item.id,
           name: item.name,
-          slug: item.slug,
-          project_url: item.project_url,
           status: item.status,
-          featured_image_url: item.featured_image_url,
           description: item.description,
-          short_description: item.short_description
         })),
         total_count,
         page_number: params.page_number,
@@ -140,7 +135,7 @@ export class PaginationService {
     page_number: number = 1,
     page_size: number = 20,
     search_query?: string
-  ): Promise<PaginatedResult<any>> {
+  ): Promise<PaginatedResult<NewsletterSubscription>> {
     const supabase = createClient();
     
     try {
@@ -184,7 +179,7 @@ export class PaginationService {
     page_number: number = 1,
     page_size: number = 50,
     search_query?: string
-  ): Promise<PaginatedResult<any>> {
+  ): Promise<PaginatedResult<Category>> {
     const supabase = createClient();
     
     try {
@@ -229,7 +224,7 @@ export class PaginationService {
     page_number: number = 1,
     page_size: number = 100,
     search_query?: string
-  ): Promise<PaginatedResult<any>> {
+  ): Promise<PaginatedResult<Tag>> {
     const supabase = createClient();
     
     try {

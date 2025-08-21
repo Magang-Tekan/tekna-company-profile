@@ -1,16 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
-import { IconSave, IconX, IconUser, IconUpload } from '@tabler/icons-react';
+import { IconDeviceFloppy, IconX, IconUser, IconUpload } from '@tabler/icons-react';
 
 interface AuthorFormProps {
   authorId?: string;
@@ -470,7 +469,7 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
               Batal
             </Button>
             <Button type="submit" disabled={isLoading} className="flex-1">
-              <IconSave className="h-4 w-4 mr-2" />
+              <IconDeviceFloppy className="h-4 w-4 mr-2" />
               {isLoading 
                 ? (authorId ? 'Menyimpan...' : 'Membuat...') 
                 : (authorId ? 'Simpan Perubahan' : 'Buat Author')

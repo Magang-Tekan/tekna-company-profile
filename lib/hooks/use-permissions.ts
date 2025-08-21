@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
-import { AdminAuthService, AdminUser } from '@/lib/services/admin-auth.service';
+import { AdminAuthService, type AdminUser } from '@/lib/services/admin-auth.service';
 
 export function usePermissions() {
   const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
@@ -39,11 +38,11 @@ export function usePermissions() {
     return userRoleLevel >= requiredRoleLevel;
   };
 
-  const canManageUsers = (): boolean => hasPermission('super_admin');
-  const canManageSettings = (): boolean => hasPermission('super_admin');
+  const canManageUsers = (): boolean => hasPermission('admin');
+  const canManageSettings = (): boolean => hasPermission('admin');
   const canManageContent = (): boolean => hasPermission('editor');
   const canAccessAdminPanel = (): boolean => hasPermission('admin');
-  const canAccessNewsletter = (): boolean => hasPermission('super_admin');
+  const canAccessNewsletter = (): boolean => hasPermission('admin');
 
   const refreshUser = async () => {
     setIsLoading(true);
@@ -128,6 +127,7 @@ export function useRoleBasedUI() {
   };
 
   return {
+    currentUser,
     getRoleDisplayName,
     getRoleBadgeVariant,
     getRoleColor

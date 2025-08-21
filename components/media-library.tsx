@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { MediaService, MediaFile } from '@/lib/services/media.service';
-import { MediaUpload } from './media-upload';
-import { IconUpload, IconX, IconCopy, IconDownload } from '@tabler/icons-react';
+import { MediaService, type MediaFile } from '@/lib/services/media.service';
+import { IconUpload, IconX, IconCopy, IconDownload, IconLoader2 } from '@tabler/icons-react';
+import Image from 'next/image';
 
 interface MediaLibraryProps {
   onSelect?: (file: MediaFile) => void;
@@ -19,6 +19,9 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
   const [mediaFiles, setMediaFiles] = useState<MediaFile[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load media files on component mount
   const loadMediaFiles = async () => {
@@ -33,15 +36,28 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
     }
   };
 
-  // Handle upload success
-  const handleUploadSuccess = (file: MediaFile) => {
-    setMediaFiles(prev => [file, ...prev]);
-  };
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || files.length === 0) {
+      return;
+    }
 
-  // Handle upload error
-  const handleUploadError = (error: string) => {
-    console.error('Upload error:', error);
-    alert(error);
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    try {
+      for (const file of Array.from(files)) {
+        const newFile = await MediaService.uploadFile(file, (progress) => {
+          setUploadProgress(progress);
+        });
+        setMediaFiles(prev => [newFile, ...prev]);
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      alert(error instanceof Error ? error.message : 'An error occurred during upload.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   // Load media files on mount
@@ -165,12 +181,16 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
                 type="text"
                 placeholder="Cari berdasarkan nama file, alt text, atau caption..."
                 value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
 
             {/* Media Grid */}
-            {filteredFiles.length === 0 ? (
+            {isLoading ? (
+              <div className="flex justify-center items-center py-12">
+                <IconLoader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : filteredFiles.length === 0 ? (
               <div className="text-center py-12">
                 <IconUpload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-500">
@@ -184,10 +204,12 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
                     <CardContent className="p-3">
                       {/* Image Preview */}
                       <div className="relative aspect-square mb-3 overflow-hidden rounded-md">
-                        <img
+                        <Image
                           src={file.file_url}
                           alt={file.alt_text || file.original_filename}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                          layout="fill"
+                          objectFit="cover"
+                          className="group-hover:scale-105 transition-transform duration-200"
                         />
                         
                         {/* Overlay Actions */}

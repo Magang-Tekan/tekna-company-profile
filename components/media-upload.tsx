@@ -3,12 +3,9 @@
 import { useState, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { MediaService, MediaFile } from '@/lib/services/media.service';
-import { IconUpload, IconX, IconFile, IconImage, IconDocument, IconTrash } from '@tabler/icons-react';
+import { MediaService, type MediaFile } from '@/lib/services/media.service';
+import { IconUpload, IconX, IconFile, IconImage, IconDocument } from '@tabler/icons-react';
 
 interface MediaUploadProps {
   onUploadSuccess?: (file: MediaFile) => void;
@@ -40,26 +37,22 @@ export function MediaUpload({
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Check if file type is allowed
-  const isFileTypeAllowed = (file: File): boolean => {
+  const isFileTypeAllowed = useCallback((file: File): boolean => {
     return allowedTypes.some(type => {
       if (type.endsWith('/*')) {
         return file.type.startsWith(type.slice(0, -1));
       }
       return file.type === type;
     });
-  };
+  }, [allowedTypes]);
 
-  // Check if file size is within limit
-  const isFileSizeAllowed = (file: File): boolean => {
+  const isFileSizeAllowed = useCallback((file: File): boolean => {
     return file.size <= maxFileSize;
-  };
+  }, [maxFileSize]);
 
-  // Handle file selection
   const handleFiles = useCallback(async (files: FileList) => {
     const validFiles: File[] = [];
     
-    // Validate files
     Array.from(files).forEach(file => {
       if (!isFileTypeAllowed(file)) {
         onUploadError?.(`File type ${file.type} tidak didukung`);
@@ -76,7 +69,6 @@ export function MediaUpload({
 
     if (validFiles.length === 0) return;
 
-    // Add files to uploading state
     const newUploadingFiles: UploadingFile[] = validFiles.map(file => ({
       file,
       progress: 0,
@@ -85,20 +77,17 @@ export function MediaUpload({
 
     setUploadingFiles(prev => [...prev, ...newUploadingFiles]);
 
-    // Upload each file
     for (let i = 0; i < validFiles.length; i++) {
       const file = validFiles[i];
       const fileIndex = uploadingFiles.length + i;
       
       try {
-        // Simulate upload progress
         const progressInterval = setInterval(() => {
           setUploadingFiles(prev => prev.map((f, idx) => 
             idx === fileIndex ? { ...f, progress: Math.min(f.progress + 10, 90) } : f
           ));
         }, 100);
 
-        // Upload file
         const result = await MediaService.uploadFile(file, folder);
         
         clearInterval(progressInterval);
@@ -110,7 +99,6 @@ export function MediaUpload({
           
           onUploadSuccess?.(result.file);
           
-          // Remove from uploading list after delay
           setTimeout(() => {
             setUploadingFiles(prev => prev.filter((_, idx) => idx !== fileIndex));
           }, 2000);
@@ -130,16 +118,14 @@ export function MediaUpload({
         onUploadError?.(error instanceof Error ? error.message : 'Upload gagal');
       }
     }
-  }, [folder, maxFileSize, allowedTypes, onUploadSuccess, onUploadError, uploadingFiles.length]);
+  }, [folder, onUploadSuccess, onUploadError, uploadingFiles.length, isFileTypeAllowed, isFileSizeAllowed, maxFileSize]);
 
-  // Handle file input change
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       handleFiles(e.target.files);
     }
   };
 
-  // Handle drag events
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -161,12 +147,10 @@ export function MediaUpload({
     }
   }, [handleFiles]);
 
-  // Remove uploading file
   const removeUploadingFile = (index: number) => {
     setUploadingFiles(prev => prev.filter((_, idx) => idx !== index));
   };
 
-  // Get file icon based on type
   const getFileIcon = (file: File) => {
     if (file.type.startsWith('image/')) {
       return <IconImage className="h-8 w-8 text-blue-500" />;
@@ -177,7 +161,6 @@ export function MediaUpload({
     }
   };
 
-  // Format file size
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
@@ -188,7 +171,6 @@ export function MediaUpload({
 
   return (
     <div className={`space-y-4 ${className}`}>
-      {/* Upload Area */}
       <Card className={`border-2 border-dashed transition-colors ${
         dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
       }`}>
@@ -223,7 +205,6 @@ export function MediaUpload({
         </CardContent>
       </Card>
 
-      {/* Hidden file input */}
       <input
         ref={fileInputRef}
         type="file"
@@ -233,7 +214,6 @@ export function MediaUpload({
         className="hidden"
       />
 
-      {/* Uploading Files */}
       {uploadingFiles.length > 0 && (
         <Card>
           <CardHeader>
@@ -271,7 +251,6 @@ export function MediaUpload({
                     )}
                   </div>
                   
-                  {/* Progress bar */}
                   {uploadingFile.status === 'uploading' && (
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
@@ -281,7 +260,6 @@ export function MediaUpload({
                     </div>
                   )}
                   
-                  {/* Error message */}
                   {uploadingFile.status === 'error' && uploadingFile.error && (
                     <p className="text-xs text-red-600 mt-1">
                       {uploadingFile.error}
@@ -296,4 +274,3 @@ export function MediaUpload({
     </div>
   );
 }
-

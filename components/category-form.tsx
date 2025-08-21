@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
-import { IconSave, IconX, IconPalette } from '@tabler/icons-react';
+import { IconDeviceFloppy, IconX, IconPalette } from '@tabler/icons-react';
 
 interface CategoryFormProps {
   categoryId?: string;
@@ -282,7 +282,7 @@ export function CategoryForm({ categoryId, initialData, onSuccess, onCancel }: C
               Batal
             </Button>
             <Button type="submit" disabled={isLoading} className="flex-1">
-              <IconSave className="h-4 w-4 mr-2" />
+              <IconDeviceFloppy className="h-4 w-4 mr-2" />
               {isLoading 
                 ? (categoryId ? 'Menyimpan...' : 'Membuat...') 
                 : (categoryId ? 'Simpan Perubahan' : 'Buat Kategori')

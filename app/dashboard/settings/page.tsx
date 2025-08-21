@@ -7,9 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { IconSettings, IconSave, IconRefresh, IconBuilding, IconGlobe } from "@tabler/icons-react";
-import { AdminAuthService, AdminUser } from "@/lib/services/admin-auth.service";
+import { IconSettings, IconDeviceFloppy, IconRefresh, IconBuilding, IconGlobe } from "@tabler/icons-react";
 
 interface CompanySettings {
   name: string;
@@ -38,7 +36,6 @@ interface CompanySettings {
 }
 
 export default function SettingsPage() {
-  const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState<CompanySettings>({
@@ -68,24 +65,13 @@ export default function SettingsPage() {
   });
 
   useEffect(() => {
-    loadCurrentUser();
     loadSettings();
   }, []);
-
-  const loadCurrentUser = async () => {
-    try {
-      const user = await AdminAuthService.getCurrentAdmin();
-      setCurrentUser(user);
-    } catch (error) {
-      console.error("Error loading current user:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const loadSettings = async () => {
     // TODO: Implement loading settings from database
     // For now, using default values
+    setIsLoading(false);
   };
 
   const handleSave = async () => {
@@ -106,17 +92,17 @@ export default function SettingsPage() {
     console.log("Settings reset");
   };
 
-  const updateSettings = (path: string, value: any) => {
+  const updateSettings = (path: string, value: string | boolean) => {
     setSettings(prev => {
       const newSettings = { ...prev };
       const keys = path.split('.');
-      let current: any = newSettings;
+      let current: CompanySettings | CompanySettings['social_media'] | CompanySettings['seo'] | CompanySettings['features'] = newSettings;
       
       for (let i = 0; i < keys.length - 1; i++) {
-        current = current[keys[i]];
+        current = current[keys[i] as keyof typeof current];
       }
       
-      current[keys[keys.length - 1]] = value;
+      (current as Record<string, any>)[keys[keys.length - 1]] = value;
       return newSettings;
     });
   };
@@ -148,7 +134,7 @@ export default function SettingsPage() {
             Reset
           </Button>
           <Button onClick={handleSave} disabled={isSaving}>
-            <IconSave className="h-4 w-4 mr-2" />
+            <IconDeviceFloppy className="h-4 w-4 mr-2" />
             {isSaving ? "Saving..." : "Save Changes"}
           </Button>
         </div>

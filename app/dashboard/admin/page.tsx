@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { IconPlus, IconUsers, IconShield, IconActivity } from "@tabler/icons-react";
-import { AdminAuthService, AdminUser } from "@/lib/services/admin-auth.service";
+import { IconPlus, IconUsers } from "@tabler/icons-react";
+import { AdminAuthService, type AdminUser } from "@/lib/services/admin-auth.service";
 import { AdminUserModal } from "./admin-user-modal";
 import { AdminStats } from "./admin-stats";
 
@@ -13,12 +13,10 @@ export default function AdminManagementPage() {
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showUserModal, setShowUserModal] = useState(false);
-  const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
-  const [canManageUsers, setCanManageUsers] = useState(false);
+  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
 
   useEffect(() => {
     loadAdminUsers();
-    checkPermissions();
   }, []);
 
   const loadAdminUsers = async () => {
@@ -33,42 +31,25 @@ export default function AdminManagementPage() {
     }
   };
 
-  const checkPermissions = async () => {
-    try {
-      const canManage = await AdminAuthService.hasPermission("super_admin");
-      setCanManageUsers(canManage);
-      
-      const current = await AdminAuthService.getCurrentAdmin();
-      setCurrentUser(current);
-    } catch (error) {
-      console.error("Error checking permissions:", error);
-    }
+  const handleModalOpen = (user: AdminUser | null = null) => {
+    setEditingUser(user);
+    setShowUserModal(true);
   };
 
-  const handleUserCreated = () => {
-    loadAdminUsers();
+  const handleModalClose = () => {
+    setEditingUser(null);
     setShowUserModal(false);
   };
 
-  const handleUserUpdated = () => {
+  const handleSuccess = () => {
+    handleModalClose();
     loadAdminUsers();
   };
 
-  const handleUserDeactivated = async (userId: string) => {
-    try {
-      await AdminAuthService.deactivateAdminUser(userId);
-      loadAdminUsers();
-    } catch (error) {
-      console.error("Error deactivating user:", error);
-    }
-  };
-
-  const getRoleBadgeVariant = (role: string) => {
+  const getRoleBadgeVariant = (role: string): "default" | "destructive" | "secondary" | "outline" => {
     switch (role) {
-      case "super_admin":
-        return "destructive";
       case "admin":
-        return "default";
+        return "destructive";
       case "editor":
         return "secondary";
       default:
@@ -78,8 +59,6 @@ export default function AdminManagementPage() {
 
   const getRoleDisplayName = (role: string) => {
     switch (role) {
-      case "super_admin":
-        return "Super Admin";
       case "admin":
         return "Admin";
       case "editor":
@@ -110,12 +89,10 @@ export default function AdminManagementPage() {
             Manage admin users, roles, and system settings
           </p>
         </div>
-        {canManageUsers && (
-          <Button onClick={() => setShowUserModal(true)}>
-            <IconPlus className="h-4 w-4 mr-2" />
-            Add Admin User
-          </Button>
-        )}
+        <Button onClick={() => handleModalOpen()}>
+          <IconPlus className="h-4 w-4 mr-2" />
+          Add Admin User
+        </Button>
       </div>
 
       {/* Stats Cards */}
@@ -142,12 +119,13 @@ export default function AdminManagementPage() {
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                     <span className="text-primary font-semibold">
-                      {user.first_name[0]}{user.last_name[0]}
+                      {user.profile?.first_name?.[0]}
+                      {user.profile?.last_name?.[0]}
                     </span>
                   </div>
                   <div>
                     <div className="font-medium">
-                      {user.first_name} {user.last_name}
+                      {user.profile?.first_name} {user.profile?.last_name}
                     </div>
                     <div className="text-sm text-muted-foreground">
                       {user.email}
@@ -168,27 +146,15 @@ export default function AdminManagementPage() {
                     )}
                   </div>
 
-                  {canManageUsers && user.id !== currentUser?.id && (
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          // TODO: Implement edit user modal
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleUserDeactivated(user.id)}
-                        disabled={!user.is_active}
-                      >
-                        {user.is_active ? "Deactivate" : "Activate"}
-                      </Button>
-                    </div>
-                  )}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleModalOpen(user)}
+                    >
+                      Edit
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -203,13 +169,13 @@ export default function AdminManagementPage() {
       </Card>
 
       {/* Admin User Modal */}
-      {showUserModal && (
-        <AdminUserModal
-          isOpen={showUserModal}
-          onClose={() => setShowUserModal(false)}
-          onSuccess={handleUserCreated}
-        />
-      )}
+      <AdminUserModal
+        isOpen={showUserModal}
+        onClose={handleModalClose}
+        onSuccess={handleSuccess}
+        user={editingUser}
+        mode={editingUser ? 'edit' : 'create'}
+      />
     </div>
   );
 }
