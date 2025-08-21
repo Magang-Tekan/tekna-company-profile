@@ -21,21 +21,23 @@ interface Category {
   color: string;
 }
 
+type SortOption = 'newest' | 'oldest' | 'popular';
+
 interface BlogFiltersProps {
-  categories: Category[];
+  readonly categories: Category[];
   onFilterChange: (filters: {
     search: string;
     category: string;
     featured: boolean;
-    sortBy: 'newest' | 'oldest' | 'popular';
+    sortBy: SortOption;
   }) => void;
-  initialFilters?: {
+  readonly initialFilters?: {
     search?: string;
     category?: string;
     featured?: boolean;
-    sortBy?: 'newest' | 'oldest' | 'popular';
+    sortBy?: SortOption;
   };
-  isLoading?: boolean;
+  readonly isLoading?: boolean;
 }
 
 export function BlogFilters({ 
@@ -85,7 +87,7 @@ export function BlogFilters({
     setFilters(prev => ({ ...prev, category: value }));
   };
 
-  const handleSortChange = (value: 'newest' | 'oldest' | 'popular') => {
+  const handleSortChange = (value: SortOption) => {
     setFilters(prev => ({ ...prev, sortBy: value }));
   };
 
@@ -107,43 +109,56 @@ export function BlogFilters({
   const hasActiveFilters = filters.search || filters.category || filters.featured;
 
   return (
-    <Card className="mb-8">
+    <Card className="mb-8 shadow-sm border-2 border-muted/50">
       <CardContent className="p-6">
-        <div className="space-y-4">
-          {/* Search Bar - Always Visible */}
+        <div className="space-y-6">
+          {/* Enhanced Search Bar with better accessibility */}
           <div className="relative">
-            <IconSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <label htmlFor="blog-search" className="sr-only">
+              Search articles by title, content, or keywords
+            </label>
+            <IconSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
             <Input
+              id="blog-search"
               placeholder="Search articles..."
               value={filters.search}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-10 pr-10"
+              className="pl-10 pr-10 h-11 text-base focus:ring-2 focus:ring-primary"
               disabled={isLoading}
+              aria-describedby={filters.search ? "search-description" : undefined}
             />
             {filters.search && (
-              <button
-                onClick={() => handleSearchChange('')}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                disabled={isLoading}
-              >
-                <IconX className="h-4 w-4" />
-              </button>
+              <>
+                <button
+                  onClick={() => handleSearchChange('')}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm"
+                  disabled={isLoading}
+                  aria-label="Clear search"
+                >
+                  <IconX className="h-4 w-4" />
+                </button>
+                <div id="search-description" className="sr-only">
+                  Search results are being filtered by: {filters.search}
+                </div>
+              </>
             )}
           </div>
 
-          {/* Filter Toggle Button */}
+          {/* Enhanced Filter Toggle with better visual feedback */}
           <div className="flex items-center justify-between">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="gap-2"
+              className="gap-2 transition-all duration-200 hover:bg-primary hover:text-primary-foreground"
               disabled={isLoading}
+              aria-expanded={isExpanded}
+              aria-controls="advanced-filters"
             >
-              <IconFilter className="h-4 w-4" />
-              {isExpanded ? 'Hide Filters' : 'Show Filters'}
+              <IconFilter className="h-4 w-4" aria-hidden="true" />
+              {isExpanded ? 'Hide Advanced Filters' : 'Show Advanced Filters'}
               {hasActiveFilters && (
-                <Badge variant="secondary" className="ml-1 px-1.5 py-0.5 text-xs">
+                <Badge variant="secondary" className="ml-1 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground">
                   {[filters.category, filters.featured].filter(Boolean).length}
                 </Badge>
               )}
@@ -155,25 +170,33 @@ export function BlogFilters({
                 size="sm"
                 onClick={clearFilters}
                 disabled={isLoading}
+                className="gap-2 text-muted-foreground hover:text-foreground"
               >
+                <IconX className="h-3 w-3" />
                 Clear All
               </Button>
             )}
           </div>
 
-          {/* Expanded Filters */}
+          {/* Enhanced Advanced Filters with proper accessibility */}
           {isExpanded && (
-            <div className="space-y-4 pt-4 border-t">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Category Filter */}
+            <div className="space-y-6 pt-6 border-t border-muted/50" id="advanced-filters">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Enhanced Category Filter */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Category</label>
+                  <label htmlFor="category-select" className="text-sm font-medium text-foreground">
+                    Category
+                  </label>
                   <Select
                     value={filters.category}
                     onValueChange={handleCategoryChange}
                     disabled={isLoading}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger 
+                      id="category-select"
+                      className="h-10 focus:ring-2 focus:ring-primary"
+                      aria-label="Select article category"
+                    >
                       <SelectValue placeholder="All categories" />
                     </SelectTrigger>
                     <SelectContent>
@@ -184,6 +207,7 @@ export function BlogFilters({
                             <div 
                               className="w-3 h-3 rounded-full flex-shrink-0"
                               style={{ backgroundColor: category.color }}
+                              aria-hidden="true"
                             />
                             {category.name}
                           </div>
@@ -193,15 +217,21 @@ export function BlogFilters({
                   </Select>
                 </div>
 
-                {/* Sort By */}
+                {/* Enhanced Sort Filter */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Sort By</label>
+                  <label htmlFor="sort-select" className="text-sm font-medium text-foreground">
+                    Sort By
+                  </label>
                   <Select
                     value={filters.sortBy}
                     onValueChange={handleSortChange}
                     disabled={isLoading}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger 
+                      id="sort-select"
+                      className="h-10 focus:ring-2 focus:ring-primary"
+                      aria-label="Select sort order"
+                    >
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -212,15 +242,17 @@ export function BlogFilters({
                   </Select>
                 </div>
 
-                {/* Featured Toggle */}
+                {/* Enhanced Featured Toggle */}
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Content Type</label>
+                  <span className="text-sm font-medium text-foreground">Content Type</span>
                   <Button
                     variant={filters.featured ? "default" : "outline"}
                     size="sm"
                     onClick={handleFeaturedToggle}
                     disabled={isLoading}
-                    className="w-full justify-start"
+                    className="w-full justify-start h-10 transition-all duration-200"
+                    aria-pressed={filters.featured}
+                    aria-label={filters.featured ? "Show all articles" : "Show only featured articles"}
                   >
                     {filters.featured ? '★ Featured Only' : '☆ All Articles'}
                   </Button>
@@ -229,28 +261,30 @@ export function BlogFilters({
             </div>
           )}
 
-          {/* Active Filters Display */}
+          {/* Enhanced Active Filters Display */}
           {hasActiveFilters && (
-            <div className="flex flex-wrap gap-2 pt-2 border-t">
+            <div className="flex flex-wrap gap-2 pt-4 border-t border-muted/50">
               {filters.category && (
-                <Badge variant="secondary" className="gap-2">
+                <Badge variant="secondary" className="gap-2 px-3 py-1">
                   Category: {categories.find(c => c.slug === filters.category)?.name}
                   <button
                     onClick={() => handleCategoryChange('')}
-                    className="hover:text-foreground"
+                    className="hover:text-foreground transition-colors focus:outline-none focus:ring-1 focus:ring-primary rounded-sm"
                     disabled={isLoading}
+                    aria-label="Remove category filter"
                   >
                     <IconX className="h-3 w-3" />
                   </button>
                 </Badge>
               )}
               {filters.featured && (
-                <Badge variant="secondary" className="gap-2">
+                <Badge variant="secondary" className="gap-2 px-3 py-1">
                   Featured Articles
                   <button
                     onClick={handleFeaturedToggle}
-                    className="hover:text-foreground"
+                    className="hover:text-foreground transition-colors focus:outline-none focus:ring-1 focus:ring-primary rounded-sm"
                     disabled={isLoading}
+                    aria-label="Remove featured filter"
                   >
                     <IconX className="h-3 w-3" />
                   </button>

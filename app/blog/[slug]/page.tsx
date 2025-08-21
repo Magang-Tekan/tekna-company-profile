@@ -3,14 +3,13 @@ import { PublicLayout } from '@/components/layout/public-layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ImageWithFallback } from '@/components/ui/image-with-fallback';
 import { ShareButton } from '@/components/ui/share-button';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { IconArrowLeft, IconCalendar, IconEye } from '@tabler/icons-react';
+import { IconCalendar, IconEye } from '@tabler/icons-react';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -104,89 +103,77 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <PublicLayout>
-      <article className="container mx-auto px-4 py-8 md:px-6 lg:py-12">
-        {/* Back Button */}
-        <div className="mb-8">
-          <Link href="/blog">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <IconArrowLeft className="h-4 w-4" />
-              Back to Blog
-            </Button>
-          </Link>
-        </div>
-
+      <article className="container mx-auto px-4 py-12 md:px-6 lg:py-16">
+        
         {/* Article Header */}
-        <header className="mb-8 lg:mb-12">
+        <header className="mb-12 lg:mb-16">
           <div className="max-w-4xl mx-auto text-center">
             {/* Category Badge */}
             {post.category && (
-              <div className="mb-4">
-                <Badge variant="secondary" className="text-sm">
+              <div className="mb-6">
+                <Badge variant="secondary" className="text-sm px-4 py-1.5 rounded-full">
                   {post.category.name}
                 </Badge>
               </div>
             )}
 
             {/* Title */}
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl mb-6">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl mb-8 leading-tight">
               {post.title}
             </h1>
 
             {/* Excerpt */}
             {post.excerpt && (
-              <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
                 {post.excerpt}
               </p>
             )}
 
             {/* Author & Meta Info */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
-                  <AvatarFallback>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm">
+              <div className="flex items-center gap-4">
+                <Avatar className="h-12 w-12 border-2 border-border">
+                  <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
                     {getAuthorInitials(post.author_name || '')}
                   </AvatarFallback>
                 </Avatar>
                 <div className="text-left">
-                  <p className="font-semibold text-foreground">
+                  <p className="font-semibold text-foreground text-base">
                     {post.author_name || 'Admin'}
                   </p>
-                  <p className="text-xs">
+                  <p className="text-muted-foreground">
                     Content Writer
                   </p>
                 </div>
               </div>
 
-              <Separator orientation="vertical" className="h-6 hidden sm:block" />
+              <Separator orientation="vertical" className="h-8 hidden sm:block" />
 
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1">
-                  <IconCalendar className="h-4 w-4" />
-                  <time dateTime={post.published_at}>
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <IconCalendar className="h-5 w-5" />
+                  <time dateTime={post.published_at} className="font-medium">
                     {formatDate(post.published_at)}
                   </time>
                 </div>
                 
                 {post.view_count && (
-                  <>
-                    <span>•</span>
-                    <div className="flex items-center gap-1">
-                      <IconEye className="h-4 w-4" />
-                      <span>{post.view_count} views</span>
-                    </div>
-                  </>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <IconEye className="h-5 w-5" />
+                    <span className="font-medium">{post.view_count} views</span>
+                  </div>
                 )}
               </div>
 
-              <Separator orientation="vertical" className="h-6 hidden sm:block" />
+              <Separator orientation="vertical" className="h-8 hidden sm:block" />
 
               {/* Share Button */}
               <ShareButton 
                 title={post.title}
                 text={post.excerpt || ''}
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                className="gap-2"
+                className="gap-2 px-4"
               />
             </div>
           </div>
@@ -194,9 +181,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
         {/* Featured Image */}
         {post.featured_image_url && (
-          <div className="mb-8 lg:mb-12">
+          <div className="mb-12 lg:mb-16">
             <div className="max-w-5xl mx-auto">
-              <div className="aspect-video relative rounded-xl overflow-hidden">
+              <div className="aspect-video relative rounded-2xl overflow-hidden shadow-2xl border">
                 <ImageWithFallback
                   src={post.featured_image_url}
                   alt={post.title}
@@ -210,111 +197,60 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
         )}
 
-        {/* Article Content */}
+        {/* Article Content - Single Column Layout */}
         <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-3">
-              <div 
-                className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-muted-foreground prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-img:rounded-lg prose-pre:bg-muted prose-pre:border"
-                dangerouslySetInnerHTML={{ __html: post.content }}
-              />
-            </div>
-
-            {/* Sidebar */}
-            <aside className="lg:col-span-1">
-              <div className="sticky top-8 space-y-6">
-                {/* Table of Contents (could be implemented with a TOC generator) */}
-                
-                {/* Related Posts */}
-                {relatedPosts.length > 0 && (
-                  <Card>
-                    <CardContent className="p-6">
-                      <h3 className="font-semibold mb-4">Related Articles</h3>
-                      <div className="space-y-4">
-                        {relatedPosts.map((relatedPost) => (
-                          <Link 
-                            key={relatedPost.id} 
-                            href={`/blog/${relatedPost.slug}`}
-                            className="block group"
-                          >
-                            <div className="space-y-2">
-                              {relatedPost.featured_image_url && (
-                                <div className="aspect-video relative rounded-md overflow-hidden">
-                                  <ImageWithFallback
-                                    src={relatedPost.featured_image_url}
-                                    alt={relatedPost.title}
-                                    fill
-                                    className="object-cover transition-transform group-hover:scale-105"
-                                  />
-                                </div>
-                              )}
-                              <h4 className="font-medium text-sm leading-tight group-hover:text-primary transition-colors line-clamp-2">
-                                {relatedPost.title}
-                              </h4>
-                              <p className="text-xs text-muted-foreground">
-                                {formatDate(relatedPost.published_at || relatedPost.created_at)}
-                              </p>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Newsletter Signup */}
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="font-semibold mb-2">Stay Updated</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Get the latest articles and insights delivered to your inbox.
-                    </p>
-                    <Button className="w-full" size="sm">
-                      Subscribe to Newsletter
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-            </aside>
-          </div>
+          <div 
+            className="prose prose-xl max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-h4:text-xl prose-p:text-muted-foreground prose-p:leading-relaxed prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-img:rounded-xl prose-img:shadow-lg prose-pre:bg-muted prose-pre:border prose-pre:rounded-xl prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-muted/50 prose-blockquote:rounded-r-lg prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:not-italic prose-li:my-2"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
         </div>
+
 
         {/* Related Posts Section */}
         {relatedPosts.length > 0 && (
-          <section className="mt-16 pt-16 border-t">
-            <div className="max-w-5xl mx-auto">
-              <h2 className="text-2xl font-bold mb-8 text-center">More Articles You Might Like</h2>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <section className="mt-20 pt-20 border-t">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold mb-4">Continue Reading</h2>
+                <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                  Discover more articles that might interest you
+                </p>
+              </div>
+              
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {relatedPosts.map((relatedPost) => (
                   <Link 
                     key={relatedPost.id} 
                     href={`/blog/${relatedPost.slug}`} 
                     className="group block"
                   >
-                    <Card className="h-full overflow-hidden transition-all duration-300 ease-in-out group-hover:shadow-lg group-hover:-translate-y-1">
+                    <Card className="h-full overflow-hidden transition-all duration-300 ease-in-out group-hover:shadow-xl group-hover:-translate-y-2 border-0 shadow-lg">
                       {relatedPost.featured_image_url && (
-                        <div className="aspect-video relative overflow-hidden">
+                        <div className="aspect-[16/10] relative overflow-hidden">
                           <ImageWithFallback
                             src={relatedPost.featured_image_url}
                             alt={relatedPost.title}
                             fill
-                            className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                            className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
                           />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                         </div>
                       )}
                       <CardContent className="p-6">
-                        <h3 className="font-semibold leading-tight group-hover:text-primary transition-colors line-clamp-2 mb-2">
+                        <h3 className="text-xl font-bold leading-tight group-hover:text-primary transition-colors line-clamp-2 mb-3">
                           {relatedPost.title}
                         </h3>
                         {relatedPost.excerpt && (
-                          <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                          <p className="text-muted-foreground line-clamp-2 mb-4 leading-relaxed">
                             {relatedPost.excerpt}
                           </p>
                         )}
-                        <p className="text-xs text-muted-foreground">
-                          {formatDate(relatedPost.published_at || relatedPost.created_at)}
-                        </p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <IconCalendar className="h-4 w-4" />
+                          <time dateTime={relatedPost.published_at || relatedPost.created_at}>
+                            {formatDate(relatedPost.published_at || relatedPost.created_at)}
+                          </time>
+                        </div>
                       </CardContent>
                     </Card>
                   </Link>

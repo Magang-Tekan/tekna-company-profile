@@ -10,7 +10,7 @@ import { BlogFilters } from '@/components/blog/blog-filters';
 import { Pagination, PaginationInfo } from '@/components/blog/pagination';
 import { ImageWithFallback } from '@/components/ui/image-with-fallback';
 import Link from 'next/link';
-import { IconCalendar, IconEye, IconStar } from '@tabler/icons-react';
+import { IconCalendar, IconEye, IconStar, IconSearch, IconX } from '@tabler/icons-react';
 
 interface BlogPost {
   id: string;
@@ -40,9 +40,9 @@ interface Category {
 }
 
 interface BlogGridProps {
-  initialPosts: BlogPost[];
-  initialCategories: Category[];
-  initialPagination: {
+  readonly initialPosts: BlogPost[];
+  readonly initialCategories: Category[];
+  readonly initialPagination: {
     page: number;
     limit: number;
     total: number;
@@ -50,7 +50,7 @@ interface BlogGridProps {
     hasNext: boolean;
     hasPrev: boolean;
   };
-  initialFilters?: {
+  readonly initialFilters?: {
     search?: string;
     category?: string;
     featured?: boolean;
@@ -156,8 +156,8 @@ export function BlogGrid({
   };
 
   return (
-    <div className="space-y-8">
-      {/* Filters */}
+    <section className="space-y-8" aria-label="Blog articles and filters">
+      {/* Enhanced Filters with better accessibility */}
       <BlogFilters
         categories={categories}
         onFilterChange={handleFilterChange}
@@ -165,29 +165,39 @@ export function BlogGrid({
         isLoading={isLoading}
       />
 
-      {/* Results Info */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      {/* Enhanced Results Info with better visual hierarchy */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-4 bg-muted/30 rounded-lg border">
         <PaginationInfo
           currentPage={pagination.page}
           totalItems={pagination.total}
           itemsPerPage={pagination.limit}
         />
         
-        {/* Active Filters Summary */}
+        {/* Active Filters Summary with enhanced styling */}
         {(filters.search || filters.category || filters.featured) && (
-          <div className="text-sm text-muted-foreground">
-            {filters.search && `Search: "${filters.search}"`}
-            {filters.category && ` • Category: ${categories.find(c => c.slug === filters.category)?.name}`}
-            {filters.featured && ` • Featured only`}
+          <div className="text-sm text-muted-foreground bg-background px-3 py-1.5 rounded-md border">
+            {filters.search && (
+              <span className="font-medium">Search: <em>&quot;{filters.search}&quot;</em></span>
+            )}
+            {filters.category && (
+              <span className="font-medium">
+                {filters.search ? ' • ' : ''}Category: {categories.find(c => c.slug === filters.category)?.name}
+              </span>
+            )}
+            {filters.featured && (
+              <span className="font-medium">
+                {(filters.search || filters.category) ? ' • ' : ''}Featured only
+              </span>
+            )}
           </div>
         )}
       </div>
 
-      {/* Posts Grid */}
+      {/* Enhanced Posts Grid with better loading states */}
       {isLoading ? (
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="overflow-hidden">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3" aria-live="polite" aria-label="Loading articles">
+          {Array.from({ length: 6 }, (_, i) => `skeleton-${i}`).map((skeletonId) => (
+            <Card key={skeletonId} className="overflow-hidden">
               <Skeleton className="aspect-video w-full" />
               <CardContent className="p-6 space-y-3">
                 <Skeleton className="h-6 w-full" />
@@ -206,135 +216,149 @@ export function BlogGrid({
             </Card>
           ))}
         </div>
-      ) : posts.length > 0 ? (
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <Link href={`/blog/${post.slug}`} key={post.id} className="group block">
-              <Card className="h-full overflow-hidden transition-all duration-300 ease-in-out group-hover:shadow-xl group-hover:-translate-y-1">
-                <CardHeader className="p-0 relative">
-                  <div className="aspect-video relative overflow-hidden bg-muted">
-                    <ImageWithFallback
-                      src={post.featured_image_url}
-                      alt={post.title}
-                      fill
-                      className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
-                    />
-                  </div>
-                  
-                  {/* Featured Badge */}
-                  {post.is_featured && (
-                    <div className="absolute top-4 left-4">
-                      <Badge variant="default" className="gap-1">
-                        <IconStar className="h-3 w-3" />
-                        Featured
-                      </Badge>
-                    </div>
-                  )}
-
-                  {/* Category Badge */}
-                  {post.categories && (
-                    <div className="absolute top-4 right-4">
-                      <Badge 
-                        variant="secondary" 
-                        className="text-white border-0"
-                        style={{ backgroundColor: post.categories.color }}
-                      >
-                        {post.categories.name}
-                      </Badge>
-                    </div>
-                  )}
-                </CardHeader>
-
-                <CardContent className="p-6">
-                  <CardTitle className="text-xl font-semibold leading-snug group-hover:text-primary transition-colors line-clamp-2 mb-3">
-                    {post.title}
-                  </CardTitle>
-                  {post.excerpt && (
-                    <p className="text-muted-foreground line-clamp-3">
-                      {post.excerpt}
-                    </p>
-                  )}
-                </CardContent>
-
-                <CardFooter className="p-6 pt-0">
-                  <div className="w-full space-y-4">
-                    {/* Author Info */}
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback>
-                          {getAuthorInitials(post.author_name || '')}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-foreground text-sm">
-                          {post.author_name || 'Admin'}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          Content Writer
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Meta Info */}
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <IconCalendar className="h-3 w-3" />
-                        <time dateTime={post.published_at}>
-                          {formatDate(post.published_at)}
-                        </time>
-                      </div>
-                      
-                      {post.view_count && (
-                        <div className="flex items-center gap-1">
-                          <IconEye className="h-3 w-3" />
-                          <span>{post.view_count.toLocaleString()} views</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </CardFooter>
-              </Card>
-            </Link>
-          ))}
-        </div>
       ) : (
-        <div className="text-center py-16">
-          <div className="max-w-md mx-auto">
-            <h3 className="text-lg font-semibold mb-2">No articles found</h3>
-            <p className="text-muted-foreground mb-6">
-              {filters.search || filters.category || filters.featured
-                ? "Try adjusting your filters to see more results."
-                : "No articles have been published yet. Please check back later!"
-              }
-            </p>
-            {(filters.search || filters.category || filters.featured) && (
-              <Button
-                variant="outline"
-                onClick={() => handleFilterChange({
-                  search: '',
-                  category: '',
-                  featured: false,
-                  sortBy: 'newest',
-                })}
-              >
-                Clear Filters
-              </Button>
-            )}
-          </div>
-        </div>
+        <>
+          {posts.length > 0 ? (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3" aria-label="Blog articles">
+              {posts.map((post) => (
+                <article key={post.id} className="flex flex-col">
+                  <Link href={`/blog/${post.slug}`} className="group block h-full">
+                    <Card className="h-full overflow-hidden transition-all duration-300 ease-in-out group-hover:shadow-xl group-hover:-translate-y-1 group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2">
+                      <CardHeader className="p-0 relative">
+                        <div className="aspect-video relative overflow-hidden bg-muted">
+                          <ImageWithFallback
+                            src={post.featured_image_url}
+                            alt={post.title}
+                            fill
+                            className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+                          />
+                        </div>
+                        
+                        {/* Enhanced Feature Badge with better contrast */}
+                        {post.is_featured && (
+                          <div className="absolute top-4 left-4">
+                            <Badge variant="default" className="gap-1 shadow-lg">
+                              <IconStar className="h-3 w-3" aria-hidden="true" />
+                              <span className="sr-only">Featured article:</span>
+                              <span>Featured</span>
+                            </Badge>
+                          </div>
+                        )}
+
+                        {/* Enhanced Category Badge with better styling */}
+                        {post.categories && (
+                          <div className="absolute top-4 right-4">
+                            <Badge 
+                              variant="secondary" 
+                              className="text-white border-0 shadow-lg font-medium"
+                              style={{ backgroundColor: post.categories.color }}
+                            >
+                              {post.categories.name}
+                            </Badge>
+                          </div>
+                        )}
+                      </CardHeader>
+
+                      <CardContent className="p-6">
+                        <CardTitle className="text-xl font-semibold leading-snug group-hover:text-primary transition-colors line-clamp-2 mb-3">
+                          {post.title}
+                        </CardTitle>
+                        {post.excerpt && (
+                          <p className="text-muted-foreground line-clamp-3 leading-relaxed">
+                            {post.excerpt}
+                          </p>
+                        )}
+                      </CardContent>
+
+                      <CardFooter className="p-6 pt-0 mt-auto">
+                        <div className="w-full space-y-4">
+                          {/* Enhanced Author Info with better spacing */}
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-8 w-8 ring-2 ring-muted">
+                              <AvatarFallback className="bg-primary/10 text-primary font-medium text-xs">
+                                {getAuthorInitials(post.author_name || '')}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-foreground text-sm">
+                                {post.author_name || 'Admin'}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                Content Writer
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Enhanced Meta Info with better visual hierarchy */}
+                          <div className="flex items-center justify-between text-xs text-muted-foreground border-t pt-3">
+                            <div className="flex items-center gap-1">
+                              <IconCalendar className="h-3 w-3" aria-hidden="true" />
+                              <time dateTime={post.published_at}>
+                                {formatDate(post.published_at)}
+                              </time>
+                            </div>
+                            
+                            {post.view_count && (
+                              <div className="flex items-center gap-1">
+                                <IconEye className="h-3 w-3" aria-hidden="true" />
+                                <span>{post.view_count.toLocaleString()} views</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardFooter>
+                    </Card>
+                  </Link>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <div className="max-w-md mx-auto space-y-6">
+                <div className="w-24 h-24 mx-auto bg-muted/50 rounded-full flex items-center justify-center">
+                  <IconSearch className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold">No articles found</h3>
+                  <p className="text-muted-foreground">
+                    {filters.search || filters.category || filters.featured
+                      ? "Try adjusting your filters to see more results."
+                      : "No articles have been published yet. Please check back later!"
+                    }
+                  </p>
+                </div>
+                {(filters.search || filters.category || filters.featured) && (
+                  <Button
+                    variant="outline"
+                    onClick={() => handleFilterChange({
+                      search: '',
+                      category: '',
+                      featured: false,
+                      sortBy: 'newest',
+                    })}
+                    className="gap-2"
+                  >
+                    <IconX className="h-4 w-4" />
+                    Clear Filters
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
-      {/* Pagination */}
+      {/* Enhanced Pagination with better accessibility */}
       {pagination.totalPages > 1 && (
-        <div className="flex justify-center mt-12">
+        <nav className="flex justify-center mt-12" aria-label="Blog pagination">
           <Pagination
             currentPage={pagination.page}
             totalPages={pagination.totalPages}
             onPageChange={handlePageChange}
             isLoading={isLoading}
           />
-        </div>
+        </nav>
       )}
-    </div>
+    </section>
   );
 }

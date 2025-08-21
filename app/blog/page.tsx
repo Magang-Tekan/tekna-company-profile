@@ -62,31 +62,51 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
   return (
     <PublicLayout>
       <div className="container mx-auto px-4 py-12 md:px-6 lg:py-16">
-        {/* Header Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Insights & Latest News
-          </h1>
-          <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-            Explore our articles about technology, design, and innovation that shape the future.
-          </p>
-        </div>
+        {/* Enhanced Header Section with better visual hierarchy */}
+        <header className="text-center mb-16 space-y-6">
+          <div className="space-y-4">
+            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+              Insights & Latest News
+            </h1>
+            <p className="mt-6 max-w-3xl mx-auto text-lg sm:text-xl text-muted-foreground leading-relaxed">
+              Explore our articles about technology, design, and innovation that shape the future of digital experiences.
+            </p>
+          </div>
+          
+          {/* Stats Display */}
+          <div className="flex flex-wrap items-center justify-center gap-8 pt-8 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-primary rounded-full"></div>
+              <span>{pagination.total} Articles</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-secondary rounded-full"></div>
+              <span>{categories.length} Categories</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-accent rounded-full"></div>
+              <span>Weekly Updates</span>
+            </div>
+          </div>
+        </header>
 
-        {/* Blog Grid with Filters and Pagination */}
-        <BlogGrid
-          initialPosts={posts.map(post => ({
-            ...post,
-            categories: post.categories?.[0] || null,
-          }))}
-          initialCategories={categories}
-          initialPagination={pagination}
-          initialFilters={{
-            search,
-            category,
-            featured,
-            sortBy: 'newest',
-          }}
-        />
+        {/* Enhanced Blog Grid with better accessibility */}
+        <main role="main" aria-label="Blog articles">
+          <BlogGrid
+            initialPosts={posts.map(post => ({
+              ...post,
+              categories: post.categories?.[0] || null,
+            }))}
+            initialCategories={categories}
+            initialPagination={pagination}
+            initialFilters={{
+              search,
+              category,
+              featured,
+              sortBy: 'newest',
+            }}
+          />
+        </main>
       </div>
     </PublicLayout>
   );
