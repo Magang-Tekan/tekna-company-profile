@@ -16,10 +16,19 @@ export class PublicService {
           excerpt,
           cover_image_url,
           published_at,
+          view_count,
+          category_id,
+          categories(
+            id,
+            name,
+            slug,
+            color
+          ),
           team_members(
             first_name,
             last_name,
-            avatar_url
+            avatar_url,
+            position
           )
         `)
         .eq('status', 'published')
@@ -31,6 +40,308 @@ export class PublicService {
     } catch (error) {
       console.error('Error fetching published blog posts:', error);
       throw new Error('Failed to fetch blog articles data.');
+    }
+  }
+
+  /**
+   * Get paginated published blog posts with search and category filtering
+   */
+  static async getPaginatedPublishedPosts(params: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    category?: string;
+    featured?: boolean;
+  } = {}) {
+    const supabase = await createClient();
+    const { page = 1, limit = 12, search, category, featured } = params;
+    const offset = (page - 1) * limit;
+
+    try {
+      let query = supabase
+        .from('posts')
+        .select(`
+          id,
+          title,
+          slug,
+          excerpt,
+          cover_image_url,
+          published_at,
+          view_count,
+          category_id,
+          is_featured,
+          categories(
+            id,
+            name,
+            slug,
+            color
+          ),
+          team_members(
+            first_name,
+            last_name,
+            avatar_url,
+            position
+          )
+        `, { count: 'exact' })
+        .eq('status', 'published')
+        .eq('is_active', true);
+
+      // Apply filters
+      if (search) {
+        query = query.or(`title.ilike.%${search}%,excerpt.ilike.%${search}%`);
+      }
+
+      if (category) {
+        query = query.eq('categories.slug', category);
+      }
+
+      if (featured) {
+        query = query.eq('is_featured', true);
+      }
+
+      // Apply pagination and ordering
+      const { data, error, count } = await query
+        .order('published_at', { ascending: false })
+        .range(offset, offset + limit - 1);
+
+      if (error) throw error;
+
+      const totalPages = Math.ceil((count || 0) / limit);
+
+      return {
+        data: data || [],
+        pagination: {
+          page,
+          limit,
+          total: count || 0,
+          totalPages,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
+        },
+      };
+    } catch (error) {
+      console.error('Error fetching paginated blog posts:', error);
+      throw new Error('Failed to fetch blog articles data.');
+    }
+  }
+
+  /**
+   * Get single published blog post by slug
+   */
+  static async getPublishedPostBySlug(slug: string) {
+    const supabase = await createClient();
+    try {
+      // Get the main post data
+      const { data: post, error: postError } = await supabase
+        .from('posts')
+        .select(`
+          id,
+          title,
+          slug,
+          excerpt,
+          cover_image_url,
+          published_at,
+          created_at,
+          view_count,
+          category_id,
+          is_featured,
+          meta_title,
+          meta_description,
+          meta_keywords,
+          categories(
+            id,
+            name,
+            slug,
+            color,
+            description
+          ),
+          team_members(
+            first_name,
+            last_name,
+            avatar_url,
+            position,
+            bio
+          )
+        `)
+        .eq('slug', slug)
+        .eq('status', 'published')
+        .eq('is_active', true)
+        .single();
+
+      if (postError) throw postError;
+
+      // Get the post content from translations
+      const { data: translation, error: translationError } = await supabase
+        .from('post_translations')
+        .select('content')
+        .eq('post_id', post.id)
+        .single();
+
+      if (translationError) {
+        console.warn('No translation found for post:', slug);
+      }
+
+      return {
+        ...post,
+        content: translation?.content || '',
+        category: post.categories ? post.categories[0] : null,
+      };
+    } catch (error) {
+      console.error('Error fetching blog post by slug:', error);
+      throw new Error('Failed to fetch blog article.');
+    }
+  }
+
+  /**
+   * Get related posts based on category or recent posts
+   */
+  static async getRelatedPosts(currentPostId: string, categoryId?: string, limit: number = 3) {
+    const supabase = await createClient();
+    try {
+      let query = supabase
+        .from('posts')
+        .select(`
+          id,
+          title,
+          slug,
+          excerpt,
+          cover_image_url,
+          published_at,
+          created_at,
+          categories(
+            name,
+            slug
+          )
+        `)
+        .eq('status', 'published')
+        .eq('is_active', true)
+        .neq('id', currentPostId)
+        .limit(limit);
+
+      // Prioritize posts from the same category
+      if (categoryId) {
+        query = query.eq('category_id', categoryId);
+      }
+
+      const { data, error } = await query.order('published_at', { ascending: false });
+
+      if (error) throw error;
+
+      // If we don't have enough related posts from the same category, get recent posts
+      if (data && data.length < limit && categoryId) {
+        const { data: additionalPosts, error: additionalError } = await supabase
+          .from('posts')
+          .select(`
+            id,
+            title,
+            slug,
+            excerpt,
+            cover_image_url,
+            published_at,
+            created_at,
+            categories(
+              name,
+              slug
+            )
+          `)
+          .eq('status', 'published')
+          .eq('is_active', true)
+          .neq('id', currentPostId)
+          .neq('category_id', categoryId)
+          .order('published_at', { ascending: false })
+          .limit(limit - data.length);
+
+        if (!additionalError && additionalPosts) {
+          data.push(...additionalPosts);
+        }
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching related posts:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get all active categories
+   */
+  static async getActiveCategories() {
+    const supabase = await createClient();
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select(`
+          id,
+          name,
+          slug,
+          description,
+          color,
+          sort_order
+        `)
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Search published blog posts
+   */
+  static async searchPosts(query: string, limit: number = 10) {
+    const supabase = await createClient();
+    try {
+      const { data, error } = await supabase
+        .from('posts')
+        .select(`
+          id,
+          title,
+          slug,
+          excerpt,
+          cover_image_url,
+          published_at,
+          categories(
+            name,
+            slug
+          ),
+          team_members(
+            first_name,
+            last_name
+          )
+        `)
+        .eq('status', 'published')
+        .eq('is_active', true)
+        .or(`title.ilike.%${query}%,excerpt.ilike.%${query}%`)
+        .order('published_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error searching posts:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Increment view count for a blog post
+   */
+  static async incrementViewCount(postId: string) {
+    const supabase = await createClient();
+    try {
+      const { error } = await supabase.rpc('increment_post_views', {
+        post_id: postId
+      });
+
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error incrementing view count:', error);
+      // Don't throw error as this is not critical
     }
   }
 
