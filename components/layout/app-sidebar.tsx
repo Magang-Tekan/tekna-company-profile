@@ -17,7 +17,6 @@ import {
   HelpCircle, 
   Search,
   Plus,
-  Users,
   Mail,
   Shield
 } from "lucide-react"
@@ -49,15 +48,9 @@ const navigationItems: NavigationItem[] = [
     roles: ['admin', 'editor']
   },
   {
-    title: "Admin Panel",
+    title: "Admin",
     href: "/dashboard/admin",
     icon: Shield,
-    roles: ['admin']
-  },
-  {
-    title: "User Management",
-    href: "/dashboard/users",
-    icon: Users,
     roles: ['admin']
   },
   {

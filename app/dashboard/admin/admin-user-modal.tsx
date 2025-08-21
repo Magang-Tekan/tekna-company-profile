@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, type FC } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,23 +9,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { IconUserPlus, IconUserEdit } from "@tabler/icons-react";
-import { AdminAuthService, AdminUser } from "@/lib/services/admin-auth.service";
+import { AdminAuthService, type AdminUser } from "@/lib/services/admin-auth.service";
 
 interface AdminUserModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSuccess: () => void;
-  user?: AdminUser | null;
-  mode?: 'create' | 'edit';
+  readonly isOpen: boolean;
+  readonly onClose: () => void;
+  readonly onSuccess: () => void;
+  readonly user?: AdminUser | null;
+  readonly mode?: 'create' | 'edit';
 }
 
-export function AdminUserModal({
+export const AdminUserModal: FC<AdminUserModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
   user = null,
   mode = 'create'
-}: AdminUserModalProps) {
+}) => {
   const [formData, setFormData] = useState({
     email: "",
     first_name: "",
@@ -33,7 +33,6 @@ export function AdminUserModal({
     role: "editor" as 'admin' | 'editor',
     is_active: true,
     bio: "",
-    preferences: {}
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -43,12 +42,11 @@ export function AdminUserModal({
     if (user && mode === 'edit') {
       setFormData({
         email: user.email,
-        first_name: user.first_name,
-        last_name: user.last_name,
+        first_name: user.profile?.first_name || "",
+        last_name: user.profile?.last_name || "",
         role: user.role,
         is_active: user.is_active,
-        bio: "",
-        preferences: {}
+        bio: user.profile?.bio || "",
       });
     } else {
       resetForm();
@@ -63,7 +61,6 @@ export function AdminUserModal({
       role: "editor",
       is_active: true,
       bio: "",
-      preferences: {}
     });
     setError(null);
   };
@@ -75,30 +72,31 @@ export function AdminUserModal({
 
     try {
       if (mode === 'create') {
-        // For create mode, we need to create auth user first
-        // This would typically be done through Supabase Auth
-        // For now, we'll just create the admin user record
         await AdminAuthService.createAdminUser({
+          user_id: `new-user-${Date.now()}`,
           email: formData.email,
           first_name: formData.first_name,
           last_name: formData.last_name,
-          role: formData.role
+          role: formData.role,
         });
       } else if (user) {
-        // Update existing user
         await AdminAuthService.updateAdminUser(user.id, {
-          first_name: formData.first_name,
-          last_name: formData.last_name,
           role: formData.role,
-          is_active: formData.is_active
+          is_active: formData.is_active,
+          profile: {
+            ...user.profile,
+            first_name: formData.first_name,
+            last_name: formData.last_name,
+            bio: formData.bio,
+          }
         });
       }
 
       onSuccess();
-      resetForm();
-    } catch (error) {
-      console.error("Error saving admin user:", error);
-      setError(error instanceof Error ? error.message : "An error occurred");
+      handleClose();
+    } catch (err) {
+      console.error("Error saving admin user:", err);
+      setError(err instanceof Error ? err.message : "An unexpected error occurred.");
     } finally {
       setIsLoading(false);
     }
@@ -109,33 +107,46 @@ export function AdminUserModal({
     onClose();
   };
 
+  const renderTitle = () => {
+    const isCreateMode = mode === 'create';
+    const Icon = isCreateMode ? IconUserPlus : IconUserEdit;
+    const title = isCreateMode ? "Add New Admin User" : "Edit Admin User";
+    
+    return (
+      <div className="flex items-center gap-2">
+        <Icon className="h-5 w-5" />
+        {title}
+      </div>
+    );
+  };
+
+  const renderDescription = () => {
+    return mode === 'create'
+      ? "Create a new admin user with a specific role and permissions."
+      : "Update the user's information, role, and status.";
+  };
+
+  const renderSubmitButtonContent = () => {
+    if (isLoading) {
+      return (
+        <>
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+          Saving...
+        </>
+      );
+    }
+    return mode === 'create' ? 'Create User' : 'Update User';
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {mode === 'create' ? (
-              <>
-                <IconUserPlus className="h-5 w-5" />
-                Add New Admin User
-              </>
-            ) : (
-              <>
-                <IconUserEdit className="h-5 w-5" />
-                Edit Admin User
-              </>
-            )}
-          </DialogTitle>
-          <DialogDescription>
-            {mode === 'create' 
-              ? "Create a new admin user with specific role and permissions"
-              : "Update admin user information and role"
-            }
-          </DialogDescription>
+          <DialogTitle>{renderTitle()}</DialogTitle>
+          <DialogDescription>{renderDescription()}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email */}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
@@ -145,37 +156,35 @@ export function AdminUserModal({
               value={formData.email}
               onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
               required
-              disabled={mode === 'edit'} // Email cannot be changed for existing users
+              disabled={mode === 'edit'}
             />
           </div>
 
-          {/* First Name */}
-          <div className="space-y-2">
-            <Label htmlFor="first_name">First Name</Label>
-            <Input
-              id="first_name"
-              type="text"
-              placeholder="John"
-              value={formData.first_name}
-              onChange={(e) => setFormData(prev => ({ ...prev, first_name: e.target.value }))}
-              required
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="first_name">First Name</Label>
+              <Input
+                id="first_name"
+                type="text"
+                placeholder="John"
+                value={formData.first_name}
+                onChange={(e) => setFormData(prev => ({ ...prev, first_name: e.target.value }))}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="last_name">Last Name</Label>
+              <Input
+                id="last_name"
+                type="text"
+                placeholder="Doe"
+                value={formData.last_name}
+                onChange={(e) => setFormData(prev => ({ ...prev, last_name: e.target.value }))}
+                required
+              />
+            </div>
           </div>
 
-          {/* Last Name */}
-          <div className="space-y-2">
-            <Label htmlFor="last_name">Last Name</Label>
-            <Input
-              id="last_name"
-              type="text"
-              placeholder="Doe"
-              value={formData.last_name}
-              onChange={(e) => setFormData(prev => ({ ...prev, last_name: e.target.value }))}
-              required
-            />
-          </div>
-
-          {/* Role */}
           <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
             <Select
@@ -194,27 +203,30 @@ export function AdminUserModal({
             </Select>
             <p className="text-xs text-muted-foreground">
               {formData.role === 'editor' 
-                ? "Editors can manage blog posts and projects"
-                : "Admins can manage all content and system settings"
+                ? "Editors can manage blog posts and projects."
+                : "Admins can manage all content and system settings."
               }
             </p>
           </div>
 
-          {/* Active Status */}
           {mode === 'edit' && (
-            <div className="flex items-center justify-between">
-              <Label htmlFor="is_active">Active Status</Label>
+            <div className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+              <div className="space-y-0.5">
+                <Label htmlFor="is_active">Active Status</Label>
+                <p className="text-xs text-muted-foreground">
+                  Inactive users cannot log in.
+                </p>
+              </div>
               <Switch
                 id="is_active"
                 checked={formData.is_active}
-                onCheckedChange={(checked) => 
+                onCheckedChange={(checked: boolean) => 
                   setFormData(prev => ({ ...prev, is_active: checked }))
                 }
               />
             </div>
           )}
 
-          {/* Bio */}
           <div className="space-y-2">
             <Label htmlFor="bio">Bio (Optional)</Label>
             <Textarea
@@ -226,14 +238,12 @@ export function AdminUserModal({
             />
           </div>
 
-          {/* Error Message */}
           {error && (
-            <div className="text-sm text-red-500 bg-red-50 p-3 rounded-md">
+            <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
               {error}
             </div>
           )}
 
-          {/* Form Actions */}
           <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"
@@ -247,18 +257,11 @@ export function AdminUserModal({
               type="submit"
               disabled={isLoading}
             >
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Saving...
-                </>
-              ) : (
-                mode === 'create' ? 'Create User' : 'Update User'
-              )}
+              {renderSubmitButtonContent()}
             </Button>
           </div>
         </form>
       </DialogContent>
     </Dialog>
   );
-}
+};
