@@ -10,6 +10,7 @@ DROP POLICY IF EXISTS "Users can view their own profile" ON user_profiles;
 DROP POLICY IF EXISTS "Authenticated users can view user profiles" ON user_profiles;
 DROP POLICY IF EXISTS "Users can update their own profile" ON user_profiles;
 DROP POLICY IF EXISTS "Super admins can manage all user profiles" ON user_profiles;
+DROP POLICY IF EXISTS "Admins can manage languages" ON languages;
 
 -- Update user_roles table to only have admin and editor
 ALTER TABLE user_roles DROP CONSTRAINT IF EXISTS user_roles_role_check;
@@ -57,6 +58,14 @@ DROP POLICY IF EXISTS "Super admins can view newsletter subscriptions" ON newsle
 DROP POLICY IF EXISTS "Super admins can manage newsletter subscriptions" ON newsletter_subscriptions;
 
 -- Create simplified policies
+CREATE POLICY "Admins can manage languages" ON languages
+    FOR ALL USING (
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role = 'admin' AND is_active = true
+        )
+    );
+
 CREATE POLICY "Admins can manage companies" ON companies
     FOR ALL USING (
         auth.uid() IN (

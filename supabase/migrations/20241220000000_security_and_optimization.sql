@@ -30,6 +30,7 @@ CREATE TABLE user_profiles (
 -- Row Level Security Policies
 
 -- Enable RLS on all tables
+ALTER TABLE languages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE companies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE company_translations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
@@ -45,6 +46,10 @@ ALTER TABLE user_roles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 
 -- Public Read Access Policies
+
+-- Languages: Public read access
+CREATE POLICY "Languages are viewable by everyone" ON languages
+    FOR SELECT USING (is_active = true);
 
 -- Companies: Public read access for published content
 CREATE POLICY "Companies are viewable by everyone" ON companies
@@ -157,6 +162,15 @@ CREATE POLICY "Super admins can manage all user profiles" ON user_profiles
 
 -- Companies: Only admins can manage
 CREATE POLICY "Admins can manage companies" ON companies
+    FOR ALL USING (
+        auth.uid() IN (
+            SELECT user_id FROM user_roles 
+            WHERE role IN ('super_admin', 'admin') AND is_active = true
+        )
+    );
+
+-- Languages: Only admins can manage
+CREATE POLICY "Admins can manage languages" ON languages
     FOR ALL USING (
         auth.uid() IN (
             SELECT user_id FROM user_roles 
