@@ -17,14 +17,14 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
     id: string;
     name: string;
     slug: string;
-    client_name: string | null;
     project_url: string | null;
-    github_url: string | null;
-    start_date: string | null;
-    end_date: string | null;
     status: string;
     featured_image_url: string | null;
     is_featured: boolean;
+    is_active: boolean;
+    sort_order: number;
+    created_at: string;
+    updated_at: string;
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);

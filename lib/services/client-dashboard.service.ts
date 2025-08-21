@@ -101,15 +101,14 @@ export class ClientDashboardService {
           id,
           name,
           slug,
-          client_name,
           project_url,
-          github_url,
-          start_date,
-          end_date,
           status,
           featured_image_url,
           is_featured,
-          is_active
+          is_active,
+          sort_order,
+          created_at,
+          updated_at
         `)
         .eq('id', projectId)
         .eq('is_active', true)
