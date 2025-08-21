@@ -9,7 +9,22 @@ const nextConfig: NextConfig = {
     });
     return config;
   },
-  // Add headers for GLB files
+  // Image optimization
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+      },
+    ],
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+  // Add headers for GLB files and caching
   async headers() {
     return [
       {
@@ -27,6 +42,15 @@ const nextConfig: NextConfig = {
           {
             key: 'Content-Type',
             value: 'model/gltf+json',
+          },
+        ],
+      },
+      {
+        source: '/images/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

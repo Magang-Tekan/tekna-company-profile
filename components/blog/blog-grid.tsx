@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlogFilters } from '@/components/blog/blog-filters';
 import { Pagination, PaginationInfo } from '@/components/blog/pagination';
-import Image from 'next/image';
+import { ImageWithFallback } from '@/components/ui/image-with-fallback';
 import Link from 'next/link';
 import { IconCalendar, IconEye, IconStar } from '@tabler/icons-react';
 
@@ -17,7 +17,8 @@ interface BlogPost {
   title: string;
   slug: string;
   excerpt: string | null;
-  cover_image_url: string | null;
+  featured_image_url: string | null;
+  author_name: string | null;
   published_at: string;
   view_count: number | null;
   is_featured: boolean;
@@ -28,12 +29,6 @@ interface BlogPost {
     slug: string;
     color: string;
   } | null;
-  team_members: {
-    first_name: string;
-    last_name: string;
-    avatar_url: string | null;
-    position: string | null;
-  }[] | null;
 }
 
 interface Category {
@@ -79,9 +74,20 @@ export function BlogGrid({
     featured: initialFilters.featured || false,
     sortBy: initialFilters.sortBy || 'newest' as const,
   });
+  const [lastFetchKey, setLastFetchKey] = useState('');
 
-  const fetchPosts = async (newFilters = filters, page = 1) => {
+  const fetchPosts = useCallback(async (newFilters = filters, page = 1) => {
+    // Create a unique key for this fetch request
+    const fetchKey = `${newFilters.search}-${newFilters.category}-${newFilters.featured}-${newFilters.sortBy}-${page}`;
+    
+    // Prevent duplicate requests
+    if (fetchKey === lastFetchKey && !isLoading) {
+      return;
+    }
+    
+    setLastFetchKey(fetchKey);
     setIsLoading(true);
+    
     try {
       // Import the server action dynamically
       const { getPaginatedBlogPosts } = await import('@/app/actions/blog');
@@ -118,24 +124,26 @@ export function BlogGrid({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filters, pagination.limit, lastFetchKey, isLoading]);
 
-  const handleFilterChange = (newFilters: typeof filters) => {
+  const handleFilterChange = useCallback((newFilters: typeof filters) => {
     setFilters(newFilters);
     fetchPosts(newFilters, 1); // Reset to page 1 when filters change
-  };
+  }, [fetchPosts]);
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     fetchPosts(filters, page);
     // Scroll to top
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  };
+  }, [fetchPosts, filters]);
 
-  const getAuthorInitials = (firstName: string, lastName: string) => {
-    const firstInitial = firstName ? firstName.charAt(0) : '';
-    const lastInitial = lastName ? lastName.charAt(0) : '';
+  const getAuthorInitials = (authorName: string) => {
+    if (!authorName) return 'AD';
+    const names = authorName.trim().split(' ');
+    const firstInitial = names[0] ? names[0].charAt(0) : '';
+    const lastInitial = names.length > 1 ? names[names.length - 1].charAt(0) : '';
     return `${firstInitial}${lastInitial}`.toUpperCase();
   };
 
@@ -204,9 +212,9 @@ export function BlogGrid({
             <Link href={`/blog/${post.slug}`} key={post.id} className="group block">
               <Card className="h-full overflow-hidden transition-all duration-300 ease-in-out group-hover:shadow-xl group-hover:-translate-y-1">
                 <CardHeader className="p-0 relative">
-                  <div className="aspect-video relative overflow-hidden">
-                    <Image
-                      src={post.cover_image_url || 'https://via.placeholder.com/400x225?text=No+Image'}
+                  <div className="aspect-video relative overflow-hidden bg-muted">
+                    <ImageWithFallback
+                      src={post.featured_image_url}
                       alt={post.title}
                       fill
                       className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
@@ -253,26 +261,16 @@ export function BlogGrid({
                     {/* Author Info */}
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage 
-                          src={post.team_members?.[0]?.avatar_url || undefined} 
-                          alt={`${post.team_members?.[0]?.first_name} ${post.team_members?.[0]?.last_name}`} 
-                        />
                         <AvatarFallback>
-                          {post.team_members?.[0] 
-                            ? getAuthorInitials(post.team_members[0].first_name, post.team_members[0].last_name) 
-                            : 'AD'
-                          }
+                          {getAuthorInitials(post.author_name || '')}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-foreground text-sm">
-                          {post.team_members?.[0] 
-                            ? `${post.team_members[0].first_name} ${post.team_members[0].last_name}` 
-                            : 'Admin'
-                          }
+                          {post.author_name || 'Admin'}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {post.team_members?.[0]?.position || 'Content Writer'}
+                          Content Writer
                         </p>
                       </div>
                     </div>

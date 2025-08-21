@@ -51,10 +51,7 @@ export interface SupabasePost {
   status: string;
   view_count: number | null;
   published_at: string | null;
-  team_members: Array<{
-    first_name: string;
-    last_name: string;
-  }> | null;
+  author_name: string | null;
 }
 
 export interface SupabaseTeamMember {

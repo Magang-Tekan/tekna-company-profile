@@ -33,13 +33,21 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getSession();
 
   const user = session?.user;
-  
-  // Log for debugging
-  console.log('Middleware - Path:', pathname, 'Session Error:', sessionError, 'User:', user ? user.id : 'Not authenticated');
 
   // Public routes that don't require authentication
-  const publicRoutes = ['/', '/auth/login', '/auth/sign-up', '/auth/forgot-password'];
-  const isPublicRoute = publicRoutes.some(route => route === pathname);
+  const publicRoutes = ['/', '/auth/login', '/auth/sign-up', '/auth/forgot-password', '/blog'];
+  const isPublicRoute = publicRoutes.some(route => {
+    if (route === '/blog') {
+      return pathname === '/blog' || pathname.startsWith('/blog/');
+    }
+    return route === pathname;
+  });
+  
+  // Reduce logging for public routes
+  const shouldLog = !isPublicRoute || sessionError || pathname.startsWith('/dashboard');
+  if (shouldLog) {
+    console.log('Middleware - Path:', pathname, 'Session Error:', sessionError, 'User:', user ? user.id : 'Not authenticated');
+  }
 
   // Admin routes that require specific roles
   const adminRoutes = ['/dashboard/admin', '/dashboard/newsletter'];
@@ -47,11 +55,10 @@ export async function middleware(req: NextRequest) {
 
   // Dashboard routes that require authentication
   const dashboardRoutes = ['/dashboard'];
-  const isDashboardRoute = dashboardRoutes.some(route => pathname.startsWith(route));
+  const isDashboardRoute = dashboardRoutes.some(route => pathname.startsWith(route) && !isPublicRoute);
 
-  // Allow access to public routes
+  // Allow access to public routes without authentication checks
   if (isPublicRoute) {
-    console.log('Middleware - Public route, allowing access');
     return res;
   }
 
@@ -97,7 +104,9 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
+     * - images folder
+     * - api routes
      */
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+    '/((?!_next/static|_next/image|favicon.ico|public|images|api).*)',
   ],
 };

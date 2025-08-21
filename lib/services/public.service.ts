@@ -14,7 +14,8 @@ export class PublicService {
           title,
           slug,
           excerpt,
-          cover_image_url,
+          featured_image_url,
+          author_name,
           published_at,
           view_count,
           category_id,
@@ -23,12 +24,6 @@ export class PublicService {
             name,
             slug,
             color
-          ),
-          team_members(
-            first_name,
-            last_name,
-            avatar_url,
-            position
           )
         `)
         .eq('status', 'published')
@@ -39,7 +34,7 @@ export class PublicService {
       return data || [];
     } catch (error) {
       console.error('Error fetching published blog posts:', error);
-      throw new Error('Failed to fetch blog articles data.');
+      return [];
     }
   }
 
@@ -65,7 +60,8 @@ export class PublicService {
           title,
           slug,
           excerpt,
-          cover_image_url,
+          featured_image_url,
+          author_name,
           published_at,
           view_count,
           category_id,
@@ -75,12 +71,6 @@ export class PublicService {
             name,
             slug,
             color
-          ),
-          team_members(
-            first_name,
-            last_name,
-            avatar_url,
-            position
           )
         `, { count: 'exact' })
         .eq('status', 'published')
@@ -121,7 +111,18 @@ export class PublicService {
       };
     } catch (error) {
       console.error('Error fetching paginated blog posts:', error);
-      throw new Error('Failed to fetch blog articles data.');
+      // Return empty data instead of throwing error
+      return {
+        data: [],
+        pagination: {
+          page,
+          limit,
+          total: 0,
+          totalPages: 0,
+          hasNext: false,
+          hasPrev: false,
+        },
+      };
     }
   }
 
@@ -139,7 +140,7 @@ export class PublicService {
           title,
           slug,
           excerpt,
-          cover_image_url,
+          featured_image_url,
           published_at,
           created_at,
           view_count,
@@ -155,20 +156,22 @@ export class PublicService {
             color,
             description
           ),
-          team_members(
-            first_name,
-            last_name,
-            avatar_url,
-            position,
-            bio
-          )
+          author_name
         `)
         .eq('slug', slug)
         .eq('status', 'published')
         .eq('is_active', true)
         .single();
 
-      if (postError) throw postError;
+      if (postError) {
+        console.error('Error fetching post:', postError);
+        throw postError;
+      }
+
+      if (!post) {
+        console.log('No post found for slug:', slug);
+        return null;
+      }
 
       // Get the post content from translations
       const { data: translation, error: translationError } = await supabase
@@ -178,7 +181,7 @@ export class PublicService {
         .single();
 
       if (translationError) {
-        console.warn('No translation found for post:', slug);
+        console.warn('No translation found for post:', slug, translationError);
       }
 
       return {
@@ -188,7 +191,7 @@ export class PublicService {
       };
     } catch (error) {
       console.error('Error fetching blog post by slug:', error);
-      throw new Error('Failed to fetch blog article.');
+      return null;
     }
   }
 
@@ -205,7 +208,7 @@ export class PublicService {
           title,
           slug,
           excerpt,
-          cover_image_url,
+          featured_image_url,
           published_at,
           created_at,
           categories(
@@ -236,7 +239,7 @@ export class PublicService {
             title,
             slug,
             excerpt,
-            cover_image_url,
+            featured_image_url,
             published_at,
             created_at,
             categories(
@@ -303,16 +306,13 @@ export class PublicService {
           title,
           slug,
           excerpt,
-          cover_image_url,
+          featured_image_url,
           published_at,
           categories(
             name,
             slug
           ),
-          team_members(
-            first_name,
-            last_name
-          )
+          author_name
         `)
         .eq('status', 'published')
         .eq('is_active', true)
@@ -473,63 +473,5 @@ export class PublicService {
     return projects;
   }
 
-  /**
-   * Get published blog posts with pagination.
-   */
-  static async getPublishedPosts(page: number = 1, limit: number = 10, language: string = 'en') {
-    // Return hardcoded blog posts since there might be RLS issues
-    const posts = [
-      {
-        id: '1',
-        title: language === 'en' ? 'The Future of Web Development in 2024' : 'Masa Depan Pengembangan Web di 2024',
-        slug: 'future-of-web-development-2024',
-        excerpt: language === 'en' 
-          ? 'Explore the latest trends and technologies that will shape web development in 2024 and beyond.'
-          : 'Jelajahi tren dan teknologi terbaru yang akan membentuk pengembangan web di 2024 dan seterusnya.',
-        featured_image_url: '/images/blog/future-web-dev-2024.jpg',
-        author_name: 'Jane Smith',
-        published_at: new Date().toISOString(),
-        is_featured: true,
-        post_translations: [
-          {
-            title: language === 'en' ? 'The Future of Web Development in 2024' : 'Masa Depan Pengembangan Web di 2024',
-            content: language === 'en' 
-              ? '<h2>Introduction</h2><p>The web development landscape is constantly evolving, with new technologies and frameworks emerging every year.</p>'
-              : '<h2>Pendahuluan</h2><p>Lanskap pengembangan web terus berkembang, dengan teknologi dan framework baru yang muncul setiap tahun.</p>',
-            excerpt: language === 'en' 
-              ? 'Explore the latest trends and technologies that will shape web development in 2024 and beyond.'
-              : 'Jelajahi tren dan teknologi terbaru yang akan membentuk pengembangan web di 2024 dan seterusnya.'
-          }
-        ]
-      },
-      {
-        id: '2',
-        title: language === 'en' ? 'How AI is Transforming Business Operations' : 'Bagaimana AI Mengubah Operasi Bisnis',
-        slug: 'ai-transforming-business-operations',
-        excerpt: language === 'en'
-          ? 'Discover how artificial intelligence is revolutionizing the way businesses operate and make decisions.'
-          : 'Temukan bagaimana kecerdasan buatan merevolusi cara bisnis beroperasi dan membuat keputusan.',
-        featured_image_url: '/images/blog/ai-business-operations.jpg',
-        author_name: 'John Doe',
-        published_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-        is_featured: false,
-        post_translations: [
-          {
-            title: language === 'en' ? 'How AI is Transforming Business Operations' : 'Bagaimana AI Mengubah Operasi Bisnis',
-            content: language === 'en'
-              ? '<h2>Introduction</h2><p>Artificial intelligence is reshaping the business landscape in unprecedented ways.</p>'
-              : '<h2>Pendahuluan</h2><p>Kecerdasan buatan membentuk ulang lanskap bisnis dengan cara yang belum pernah terjadi sebelumnya.</p>',
-            excerpt: language === 'en'
-              ? 'Discover how artificial intelligence is revolutionizing the way businesses operate and make decisions.'
-              : 'Temukan bagaimana kecerdasan buatan merevolusi cara bisnis beroperasi dan membuat keputusan.'
-          }
-        ]
-      }
-    ];
 
-    // Simulate pagination
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    return posts.slice(startIndex, endIndex);
-  }
 }

@@ -2,10 +2,10 @@ import { PublicService } from '@/lib/services/public.service';
 import { PublicLayout } from '@/components/layout/public-layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import Image from 'next/image';
+import { ImageWithFallback } from '@/components/ui/image-with-fallback';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
@@ -47,13 +47,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   return {
     title: `${post.title} | Tekna Solutions Blog`,
     description: post.excerpt || post.title,
-    keywords: post.meta_keywords || '',
+    keywords: '',
     openGraph: {
-      title: post.meta_title || post.title,
-      description: post.meta_description || post.excerpt || post.title,
-      images: post.cover_image_url ? [
+      title: post.title,
+      description: post.excerpt || post.title,
+      images: post.featured_image_url ? [
         {
-          url: post.cover_image_url,
+          url: post.featured_image_url,
           width: 1200,
           height: 630,
           alt: post.title,
@@ -61,13 +61,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       ] : [],
       type: 'article',
       publishedTime: post.published_at || undefined,
-      authors: post.team_members?.length ? [`${post.team_members[0].first_name} ${post.team_members[0].last_name}`] : [],
+      authors: post.author_name ? [post.author_name] : [],
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.meta_title || post.title,
-      description: post.meta_description || post.excerpt || post.title,
-      images: post.cover_image_url ? [post.cover_image_url] : [],
+      title: post.title,
+      description: post.excerpt || post.title,
+      images: post.featured_image_url ? [post.featured_image_url] : [],
     },
   };
 }
@@ -82,9 +82,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   const relatedPosts = await getRelatedPosts(post.id, post.category_id);
 
-  const getAuthorInitials = (firstName: string, lastName: string) => {
-    const firstInitial = firstName ? firstName.charAt(0) : '';
-    const lastInitial = lastName ? lastName.charAt(0) : '';
+  const getAuthorInitials = (authorName: string) => {
+    if (!authorName) return 'AD';
+    const names = authorName.trim().split(' ');
+    const firstInitial = names[0] ? names[0].charAt(0) : '';
+    const lastInitial = names.length > 1 ? names[names.length - 1].charAt(0) : '';
     return `${firstInitial}${lastInitial}`.toUpperCase();
   };
 
@@ -161,26 +163,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage 
-                    src={post.team_members?.[0]?.avatar_url || undefined} 
-                    alt={`${post.team_members?.[0]?.first_name} ${post.team_members?.[0]?.last_name}`} 
-                  />
                   <AvatarFallback>
-                    {post.team_members?.[0] 
-                      ? getAuthorInitials(post.team_members[0].first_name, post.team_members[0].last_name) 
-                      : 'AD'
-                    }
+                    {getAuthorInitials(post.author_name || '')}
                   </AvatarFallback>
                 </Avatar>
                 <div className="text-left">
                   <p className="font-semibold text-foreground">
-                    {post.team_members?.[0] 
-                      ? `${post.team_members[0].first_name} ${post.team_members[0].last_name}` 
-                      : 'Admin'
-                    }
+                    {post.author_name || 'Admin'}
                   </p>
                   <p className="text-xs">
-                    {post.team_members?.[0]?.position || 'Content Writer'}
+                    Content Writer
                   </p>
                 </div>
               </div>
@@ -190,8 +182,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
                   <IconCalendar className="h-4 w-4" />
-                  <time dateTime={post.published_at || post.created_at}>
-                    {formatDate(post.published_at || post.created_at)}
+                  <time dateTime={post.published_at}>
+                    {formatDate(post.published_at)}
                   </time>
                 </div>
                 
@@ -223,16 +215,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </header>
 
         {/* Featured Image */}
-        {post.cover_image_url && (
+        {post.featured_image_url && (
           <div className="mb-8 lg:mb-12">
             <div className="max-w-5xl mx-auto">
               <div className="aspect-video relative rounded-xl overflow-hidden">
-                <Image
-                  src={post.cover_image_url}
+                <ImageWithFallback
+                  src={post.featured_image_url}
                   alt={post.title}
                   fill
                   className="object-cover"
                   priority
+                  size="large"
                 />
               </div>
             </div>
@@ -268,10 +261,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                             className="block group"
                           >
                             <div className="space-y-2">
-                              {relatedPost.cover_image_url && (
+                              {relatedPost.featured_image_url && (
                                 <div className="aspect-video relative rounded-md overflow-hidden">
-                                  <Image
-                                    src={relatedPost.cover_image_url}
+                                  <ImageWithFallback
+                                    src={relatedPost.featured_image_url}
                                     alt={relatedPost.title}
                                     fill
                                     className="object-cover transition-transform group-hover:scale-105"
@@ -322,10 +315,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     className="group block"
                   >
                     <Card className="h-full overflow-hidden transition-all duration-300 ease-in-out group-hover:shadow-lg group-hover:-translate-y-1">
-                      {relatedPost.cover_image_url && (
+                      {relatedPost.featured_image_url && (
                         <div className="aspect-video relative overflow-hidden">
-                          <Image
-                            src={relatedPost.cover_image_url}
+                          <ImageWithFallback
+                            src={relatedPost.featured_image_url}
                             alt={relatedPost.title}
                             fill
                             className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"

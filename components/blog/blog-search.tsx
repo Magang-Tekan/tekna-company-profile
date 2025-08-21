@@ -13,16 +13,13 @@ interface SearchResult {
   title: string;
   slug: string;
   excerpt: string | null;
-  cover_image_url: string | null;
+  featured_image_url: string | null;
+  author_name: string | null;
   published_at: string;
   categories: {
     name: string;
     slug: string;
   } | null;
-  team_members: {
-    first_name: string;
-    last_name: string;
-  }[] | null;
 }
 
 export function BlogSearch() {
@@ -134,11 +131,11 @@ export function BlogSearch() {
                       <CardContent className="p-4">
                         <div className="flex gap-4">
                           {/* Thumbnail */}
-                          {result.cover_image_url && (
+                          {result.featured_image_url && (
                             <div className="flex-shrink-0">
                               <div className="w-20 h-20 relative rounded-md overflow-hidden">
                                 <Image
-                                  src={result.cover_image_url}
+                                  src={result.featured_image_url}
                                   alt={result.title}
                                   fill
                                   className="object-cover"
@@ -165,11 +162,11 @@ export function BlogSearch() {
                                   <span>{result.categories.name}</span>
                                 </>
                               )}
-                              {result.team_members?.[0] && (
+                              {result.author_name && (
                                 <>
                                   <span>•</span>
                                   <span>
-                                    {result.team_members[0].first_name} {result.team_members[0].last_name}
+                                    {result.author_name}
                                   </span>
                                 </>
                               )}

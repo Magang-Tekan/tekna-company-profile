@@ -52,15 +52,30 @@ export function BlogFilters({
   });
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [lastFiltersState, setLastFiltersState] = useState(filters);
 
-  // Debounced search
+  // Only trigger filter change when filters actually change
   useEffect(() => {
-    const timer = setTimeout(() => {
-      onFilterChange(filters);
-    }, 300);
+    const hasChanged = 
+      filters.search !== lastFiltersState.search ||
+      filters.category !== lastFiltersState.category ||
+      filters.featured !== lastFiltersState.featured ||
+      filters.sortBy !== lastFiltersState.sortBy;
 
-    return () => clearTimeout(timer);
-  }, [filters, onFilterChange]);
+    if (hasChanged) {
+      setLastFiltersState(filters);
+      
+      // Debounce search, immediate for others
+      if (filters.search !== lastFiltersState.search) {
+        const timer = setTimeout(() => {
+          onFilterChange(filters);
+        }, 500);
+        return () => clearTimeout(timer);
+      } else {
+        onFilterChange(filters);
+      }
+    }
+  }, [filters, lastFiltersState, onFilterChange]);
 
   const handleSearchChange = (value: string) => {
     setFilters(prev => ({ ...prev, search: value }));
