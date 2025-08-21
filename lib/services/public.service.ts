@@ -146,9 +146,6 @@ export class PublicService {
           view_count,
           category_id,
           is_featured,
-          meta_title,
-          meta_description,
-          meta_keywords,
           categories(
             id,
             name,
@@ -173,10 +170,15 @@ export class PublicService {
         return null;
       }
 
-      // Get the post content from translations
+      // Get the post content and meta data from translations
       const { data: translation, error: translationError } = await supabase
         .from('post_translations')
-        .select('content')
+        .select(`
+          content,
+          meta_title,
+          meta_description,
+          meta_keywords
+        `)
         .eq('post_id', post.id)
         .single();
 
@@ -187,6 +189,9 @@ export class PublicService {
       return {
         ...post,
         content: translation?.content || '',
+        meta_title: translation?.meta_title || post.title,
+        meta_description: translation?.meta_description || post.excerpt,
+        meta_keywords: translation?.meta_keywords || '',
         category: post.categories ? post.categories[0] : null,
       };
     } catch (error) {

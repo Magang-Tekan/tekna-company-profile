@@ -6,10 +6,11 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ImageWithFallback } from '@/components/ui/image-with-fallback';
+import { ShareButton } from '@/components/ui/share-button';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { IconArrowLeft, IconCalendar, IconEye, IconShare3 } from '@tabler/icons-react';
+import { IconArrowLeft, IconCalendar, IconEye } from '@tabler/icons-react';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -98,27 +99,6 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     });
   };
 
-  const handleShare = async () => {
-    if (typeof window !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share({
-          title: post.title,
-          text: post.excerpt || '',
-          url: window.location.href,
-        });
-      } catch (error) {
-        console.log('Error sharing:', error);
-        // Fallback to clipboard
-        if (navigator.clipboard) {
-          navigator.clipboard.writeText(window.location.href);
-        }
-      }
-    } else if (typeof window !== 'undefined' && navigator.clipboard) {
-      // Fallback to clipboard
-      navigator.clipboard.writeText(window.location.href);
-    }
-  };
-
   // Increment view count (this would be done client-side in a real app)
   // await PublicService.incrementViewCount(post.id);
 
@@ -201,15 +181,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <Separator orientation="vertical" className="h-6 hidden sm:block" />
 
               {/* Share Button */}
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleShare}
+              <ShareButton 
+                title={post.title}
+                text={post.excerpt || ''}
+                variant="ghost"
+                size="sm"
                 className="gap-2"
-              >
-                <IconShare3 className="h-4 w-4" />
-                Share
-              </Button>
+              />
             </div>
           </div>
         </header>
