@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { CategoryForm } from '@/components/category-form';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
+import Link from 'next/link';
 
 export default function EditCategoryPage() {
   const params = useParams();
@@ -48,7 +49,7 @@ export default function EditCategoryPage() {
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
             <p>Memuat data kategori...</p>
           </div>
         </div>
@@ -61,13 +62,13 @@ export default function EditCategoryPage() {
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <p className="text-red-600 mb-4">{error}</p>
-            <button 
-              onClick={() => window.history.back()}
-              className="text-blue-600 hover:underline"
+            <p className="text-destructive mb-4">{error}</p>
+            <Link
+              href="/dashboard/categories"
+              className="text-primary hover:underline"
             >
-              Kembali
-            </button>
+              ← Kembali ke Categories
+            </Link>
           </div>
         </div>
       </div>

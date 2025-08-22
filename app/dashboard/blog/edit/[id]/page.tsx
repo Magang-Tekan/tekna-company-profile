@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { PostForm } from '@/components/post-form';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
 import { PostStatus } from '@/lib/types/dashboard';
+import Link from 'next/link';
 
 export default function EditPostPage() {
   const params = useParams();
@@ -63,8 +64,8 @@ export default function EditPostPage() {
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-            <p>Loading article data...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p>Memuat data artikel...</p>
           </div>
         </div>
       </div>
@@ -76,13 +77,13 @@ export default function EditPostPage() {
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <p className="text-red-600 mb-4">{error}</p>
-            <button 
-              onClick={() => window.history.back()}
-              className="text-blue-600 hover:underline"
+            <p className="text-destructive mb-4">{error}</p>
+            <Link
+              href="/dashboard/blog"
+              className="text-primary hover:underline"
             >
-              Back
-            </button>
+              ← Kembali ke Blog
+            </Link>
           </div>
         </div>
       </div>

@@ -133,13 +133,13 @@ export function useRoleBasedUI() {
   const getRoleColor = (role: string): string => {
     switch (role) {
       case 'super_admin':
-        return 'text-red-600';
+        return 'text-destructive';
       case 'admin':
-        return 'text-blue-600';
+        return 'text-primary';
       case 'editor':
-        return 'text-green-600';
+        return 'text-secondary-foreground';
       default:
-        return 'text-gray-600';
+        return 'text-muted-foreground';
     }
   };
 

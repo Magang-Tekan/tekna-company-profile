@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
 import { useRealtimeAuthors } from '@/lib/hooks/use-realtime-simple';
-import { RealtimeStatus } from '@/components/realtime-status';
 import { IconPlus, IconEdit, IconTrash, IconMail } from '@tabler/icons-react';
 
 interface Author {
@@ -81,9 +80,8 @@ export function AuthorsPageClient({ initialAuthors }: AuthorsPageClientProps) {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Authors</h1>
-          <p className="text-muted-foreground flex items-center gap-2">
+          <p className="text-muted-foreground">
             Manage authors/team members for blog articles
-            <RealtimeStatus isConnected={isConnected} showLabel />
           </p>
         </div>
         <Button onClick={handleAddNew}>

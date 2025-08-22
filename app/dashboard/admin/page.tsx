@@ -140,9 +140,9 @@ export default function AdminManagementPage() {
                   
                   <div className="text-sm text-muted-foreground">
                     {user.is_active ? (
-                      <span className="text-green-600">Active</span>
+                      <span className="text-primary">Active</span>
                     ) : (
-                      <span className="text-red-600">Inactive</span>
+                      <span className="text-destructive">Inactive</span>
                     )}
                   </div>
 

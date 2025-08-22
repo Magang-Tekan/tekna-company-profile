@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { AuthorForm } from '@/components/author-form';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
+import Link from 'next/link';
 
 export default function EditAuthorPage() {
   const params = useParams();
@@ -29,20 +30,22 @@ export default function EditAuthorPage() {
     async function fetchAuthor() {
       try {
         const author = await ClientDashboardService.getAuthorById(authorId);
-        setInitialData({
-          first_name: author.first_name || '',
-          last_name: author.last_name || '',
-          email: author.email || '',
-          phone: author.phone || '',
-          position: author.position || '',
-          department: author.department || '',
-          avatar_url: author.avatar_url || '',
-          linkedin_url: author.linkedin_url || '',
-          twitter_url: author.twitter_url || '',
-          github_url: author.github_url || '',
-          is_active: author.is_active ?? true,
-          sort_order: author.sort_order || 0,
-        });
+        if (author) {
+          setInitialData({
+            first_name: author.first_name || '',
+            last_name: author.last_name || '',
+            email: '',
+            phone: '',
+            position: author.position || '',
+            department: author.department || '',
+            avatar_url: author.avatar_url || '',
+            linkedin_url: '',
+            twitter_url: '',
+            github_url: '',
+            is_active: author.is_active ?? true,
+            sort_order: 0,
+          });
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Gagal memuat data author');
       } finally {
@@ -60,7 +63,7 @@ export default function EditAuthorPage() {
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
             <p>Memuat data author...</p>
           </div>
         </div>
@@ -73,13 +76,13 @@ export default function EditAuthorPage() {
       <div className="container mx-auto p-6">
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <p className="text-red-600 mb-4">{error}</p>
-            <button 
-              onClick={() => window.history.back()}
-              className="text-blue-600 hover:underline"
+            <p className="text-destructive mb-4">{error}</p>
+            <Link
+              href="/dashboard/authors"
+              className="text-primary hover:underline"
             >
-              Kembali
-            </button>
+              ← Kembali ke Authors
+            </Link>
           </div>
         </div>
       </div>

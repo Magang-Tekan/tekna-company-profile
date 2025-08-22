@@ -240,13 +240,13 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
                 <Input
                   id="first_name"
                   type="text"
+                  placeholder="Masukkan nama depan"
                   value={formData.first_name}
-                  onChange={(e) => handleInputChange('first_name', e.target.value)}
-                  placeholder="Nama depan"
-                  className={errors.first_name ? 'border-red-500' : ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, first_name: e.target.value }))}
+                  className={errors.first_name ? 'border-destructive' : ''}
                 />
                 {errors.first_name && (
-                  <p className="text-sm text-red-600">{errors.first_name}</p>
+                  <p className="text-sm text-destructive">{errors.first_name}</p>
                 )}
               </div>
 
@@ -256,13 +256,13 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
                 <Input
                   id="last_name"
                   type="text"
+                  placeholder="Masukkan nama belakang"
                   value={formData.last_name}
-                  onChange={(e) => handleInputChange('last_name', e.target.value)}
-                  placeholder="Nama belakang"
-                  className={errors.last_name ? 'border-red-500' : ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, last_name: e.target.value }))}
+                  className={errors.last_name ? 'border-destructive' : ''}
                 />
                 {errors.last_name && (
-                  <p className="text-sm text-red-600">{errors.last_name}</p>
+                  <p className="text-sm text-destructive">{errors.last_name}</p>
                 )}
               </div>
             </div>
@@ -273,13 +273,13 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
               <Input
                 id="email"
                 type="email"
+                placeholder="Masukkan email"
                 value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                placeholder="email@example.com"
-                className={errors.email ? 'border-red-500' : ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                className={errors.email ? 'border-destructive' : ''}
               />
               {errors.email && (
-                <p className="text-sm text-red-600">{errors.email}</p>
+                <p className="text-sm text-destructive">{errors.email}</p>
               )}
             </div>
 
@@ -289,13 +289,13 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
               <Input
                 id="phone"
                 type="tel"
+                placeholder="Masukkan nomor telepon"
                 value={formData.phone}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
-                placeholder="+62-812-3456-7890"
-                className={errors.phone ? 'border-red-500' : ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                className={errors.phone ? 'border-destructive' : ''}
               />
               {errors.phone && (
-                <p className="text-sm text-red-600">{errors.phone}</p>
+                <p className="text-sm text-destructive">{errors.phone}</p>
               )}
             </div>
           </div>
@@ -311,13 +311,13 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
                 <Input
                   id="position"
                   type="text"
+                  placeholder="Masukkan posisi/jabatan"
                   value={formData.position}
-                  onChange={(e) => handleInputChange('position', e.target.value)}
-                  placeholder="CEO, Developer, Designer"
-                  className={errors.position ? 'border-red-500' : ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))}
+                  className={errors.position ? 'border-destructive' : ''}
                 />
                 {errors.position && (
-                  <p className="text-sm text-red-600">{errors.position}</p>
+                  <p className="text-sm text-destructive">{errors.position}</p>
                 )}
               </div>
 
@@ -328,7 +328,7 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
                   value={formData.department}
                   onValueChange={(value) => handleInputChange('department', value)}
                 >
-                  <SelectTrigger className={errors.department ? 'border-red-500' : ''}>
+                  <SelectTrigger className={errors.department ? 'border-destructive' : ''}>
                     <SelectValue placeholder="Pilih departemen" />
                   </SelectTrigger>
                   <SelectContent>
@@ -340,7 +340,7 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
                   </SelectContent>
                 </Select>
                 {errors.department && (
-                  <p className="text-sm text-red-600">{errors.department}</p>
+                  <p className="text-sm text-destructive">{errors.department}</p>
                 )}
               </div>
             </div>
@@ -351,15 +351,13 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
               <Input
                 id="sort_order"
                 type="number"
+                placeholder="Masukkan urutan"
                 value={formData.sort_order}
-                onChange={(e) => handleInputChange('sort_order', parseInt(e.target.value) || 0)}
-                placeholder="0"
-                min="0"
-                max="999"
-                className={errors.sort_order ? 'border-red-500' : ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, sort_order: parseInt(e.target.value) || 0 }))}
+                className={errors.sort_order ? 'border-destructive' : ''}
               />
               {errors.sort_order && (
-                <p className="text-sm text-red-600">{errors.sort_order}</p>
+                <p className="text-sm text-destructive">{errors.sort_order}</p>
               )}
               <p className="text-sm text-muted-foreground">
                 Urutan untuk mengatur posisi author (0 = paling atas)
@@ -378,10 +376,10 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
                 <Input
                   id="avatar_url"
                   type="url"
+                  placeholder="Masukkan URL avatar"
                   value={formData.avatar_url}
-                  onChange={(e) => handleInputChange('avatar_url', e.target.value)}
-                  placeholder="https://example.com/avatar.jpg"
-                  className={errors.avatar_url ? 'border-red-500' : ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, avatar_url: e.target.value }))}
+                  className={errors.avatar_url ? 'border-destructive' : ''}
                 />
                 <Button
                   type="button"
@@ -393,7 +391,7 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
                 </Button>
               </div>
               {errors.avatar_url && (
-                <p className="text-sm text-red-600">{errors.avatar_url}</p>
+                <p className="text-sm text-destructive">{errors.avatar_url}</p>
               )}
             </div>
 
@@ -403,13 +401,13 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
               <Input
                 id="linkedin_url"
                 type="url"
+                placeholder="Masukkan URL LinkedIn"
                 value={formData.linkedin_url}
-                onChange={(e) => handleInputChange('linkedin_url', e.target.value)}
-                placeholder="https://linkedin.com/in/username"
-                className={errors.linkedin_url ? 'border-red-500' : ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, linkedin_url: e.target.value }))}
+                className={errors.linkedin_url ? 'border-destructive' : ''}
               />
               {errors.linkedin_url && (
-                <p className="text-sm text-red-600">{errors.linkedin_url}</p>
+                <p className="text-sm text-destructive">{errors.linkedin_url}</p>
               )}
             </div>
 
@@ -419,13 +417,13 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
               <Input
                 id="twitter_url"
                 type="url"
+                placeholder="Masukkan URL Twitter"
                 value={formData.twitter_url}
-                onChange={(e) => handleInputChange('twitter_url', e.target.value)}
-                placeholder="https://twitter.com/username"
-                className={errors.twitter_url ? 'border-red-500' : ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, twitter_url: e.target.value }))}
+                className={errors.twitter_url ? 'border-destructive' : ''}
               />
               {errors.twitter_url && (
-                <p className="text-sm text-red-600">{errors.twitter_url}</p>
+                <p className="text-sm text-destructive">{errors.twitter_url}</p>
               )}
             </div>
 
@@ -435,13 +433,13 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
               <Input
                 id="github_url"
                 type="url"
+                placeholder="Masukkan URL GitHub"
                 value={formData.github_url}
-                onChange={(e) => handleInputChange('github_url', e.target.value)}
-                placeholder="https://github.com/username"
-                className={errors.github_url ? 'border-red-500' : ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, github_url: e.target.value }))}
+                className={errors.github_url ? 'border-destructive' : ''}
               />
               {errors.github_url && (
-                <p className="text-sm text-red-600">{errors.github_url}</p>
+                <p className="text-sm text-destructive">{errors.github_url}</p>
               )}
             </div>
           </div>

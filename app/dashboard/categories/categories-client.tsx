@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
 import { useRealtimeCategories } from '@/lib/hooks/use-realtime-simple';
-import { RealtimeStatus } from '@/components/realtime-status';
 import { IconPlus, IconEdit, IconTrash } from '@tabler/icons-react';
 
 interface Category {
@@ -32,7 +31,7 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
   const [isLoading, setIsLoading] = useState(false);
 
   // Real-time sync for categories
-  const { isConnected } = useRealtimeCategories(() => {
+  useRealtimeCategories(() => {
     // Refresh categories when real-time changes are detected
     const refreshCategories = async () => {
       try {
@@ -84,9 +83,8 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Categories</h1>
-          <p className="text-muted-foreground flex items-center gap-2">
+          <p className="text-muted-foreground">
             Manage categories for blog articles
-            <RealtimeStatus isConnected={isConnected} showLabel />
           </p>
         </div>
         <Button onClick={handleAddNew}>
@@ -124,7 +122,7 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
                   </div>
                   {category.color && (
                     <div 
-                      className="w-6 h-6 rounded-full border-2 border-gray-200"
+                      className="w-6 h-6 rounded-full border-2 border-border"
                       style={{ backgroundColor: category.color }}
                     />
                   )}

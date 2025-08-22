@@ -28,6 +28,14 @@
     --input: 182 10% 90%;
     --ring: 182 97% 37%;
     
+    /* Additional semantic colors */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 98%;
+    
     /* Sidebar variables */
     --sidebar: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -62,6 +70,14 @@
     --border: 182 20% 25%;
     --input: 182 20% 25%;
     --ring: 182 97% 40%;
+    
+    /* Additional semantic colors - dark mode */
+    --success: 142 76% 40%;
+    --success-foreground: 0 0% 98%;
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 98%;
+    --info: 199 89% 55%;
+    --info-foreground: 0 0% 98%;
     
     /* Dark sidebar */
     --sidebar: 182 20% 12%;

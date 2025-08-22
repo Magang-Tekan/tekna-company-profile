@@ -144,7 +144,7 @@ export default function NewsletterPage() {
             <IconMail className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+            <div className="text-2xl font-bold text-primary">{stats.active}</div>
             <p className="text-xs text-muted-foreground">
               Currently receiving emails
             </p>

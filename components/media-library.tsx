@@ -134,13 +134,13 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
 
           {/* Upload Tab */}
           <TabsContent value="upload" className="space-y-6">
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-              <IconUpload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                Upload New File
+            <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+              <IconUpload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">
+                No files uploaded yet
               </h3>
-              <p className="text-gray-500 mb-4">
-                Drag and drop image files here, or click to select files
+              <p className="text-muted-foreground mb-4">
+                Start by uploading your first file to the media library
               </p>
               
               <Input
@@ -163,9 +163,9 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
               </Button>
 
               {isUploading && (
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-muted rounded-full h-2">
                   <div 
-                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                    className="bg-primary h-2 rounded-full transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
@@ -194,8 +194,8 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
               </div>
             ) : filteredFiles.length === 0 ? (
               <div className="text-center py-12">
-                <IconUpload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500">
+                <IconUpload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">
                   {searchQuery ? 'Tidak ada file yang cocok dengan pencarian' : 'Belum ada file yang diupload'}
                 </p>
               </div>

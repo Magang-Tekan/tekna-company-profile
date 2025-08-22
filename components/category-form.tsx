@@ -176,10 +176,10 @@ export function CategoryForm({ categoryId, initialData, onSuccess, onCancel }: C
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
               placeholder="Masukkan nama kategori"
-              className={errors.name ? 'border-red-500' : ''}
+              className={errors.name ? 'border-destructive' : ''}
             />
             {errors.name && (
-              <p className="text-sm text-red-600">{errors.name}</p>
+              <p className="text-sm text-destructive">{errors.name}</p>
             )}
           </div>
 
@@ -192,10 +192,10 @@ export function CategoryForm({ categoryId, initialData, onSuccess, onCancel }: C
               value={formData.slug}
               onChange={(e) => handleInputChange('slug', e.target.value)}
               placeholder="url-friendly-slug"
-              className={errors.slug ? 'border-red-500' : ''}
+              className={errors.slug ? 'border-destructive' : ''}
             />
             {errors.slug && (
-              <p className="text-sm text-red-600">{errors.slug}</p>
+              <p className="text-sm text-destructive">{errors.slug}</p>
             )}
             <p className="text-sm text-muted-foreground">
               URL kategori: /blog/category/{formData.slug}
@@ -223,18 +223,18 @@ export function CategoryForm({ categoryId, initialData, onSuccess, onCancel }: C
                 type="color"
                 value={formData.color}
                 onChange={(e) => handleInputChange('color', e.target.value)}
-                className="w-16 h-10 p-1 border rounded cursor-pointer"
+                className={errors.color ? 'border-destructive' : ''}
               />
               <Input
                 type="text"
                 value={formData.color}
                 onChange={(e) => handleInputChange('color', e.target.value)}
                 placeholder="#3B82F6"
-                className={errors.color ? 'border-red-500' : ''}
+                className={errors.color ? 'border-destructive' : ''}
               />
             </div>
             {errors.color && (
-              <p className="text-sm text-red-600">{errors.color}</p>
+              <p className="text-sm text-destructive">{errors.color}</p>
             )}
           </div>
 
@@ -249,10 +249,10 @@ export function CategoryForm({ categoryId, initialData, onSuccess, onCancel }: C
               placeholder="0"
               min="0"
               max="999"
-              className={errors.sort_order ? 'border-red-500' : ''}
+              className={errors.sort_order ? 'border-destructive' : ''}
             />
             {errors.sort_order && (
-              <p className="text-sm text-red-600">{errors.sort_order}</p>
+              <p className="text-sm text-destructive">{errors.sort_order}</p>
             )}
             <p className="text-sm text-muted-foreground">
               Urutan untuk mengatur posisi kategori (0 = paling atas)

@@ -120,9 +120,9 @@ export function useRoleBasedUI() {
 
   const getRoleColor = (role: string): string => {
     switch (role) {
-      case 'admin': return 'text-blue-600';
-      case 'editor': return 'text-green-600';
-      default: return 'text-gray-600';
+      case 'admin': return 'text-primary';
+      case 'editor': return 'text-secondary-foreground';
+      default: return 'text-muted-foreground';
     }
   };
 

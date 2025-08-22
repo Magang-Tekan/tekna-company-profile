@@ -158,11 +158,11 @@ export function MediaUpload({
 
   const getFileIcon = (file: File) => {
     if (file.type.startsWith('image/')) {
-      return <IconPhoto className="h-8 w-8 text-blue-500" />;
+      return <IconPhoto className="h-8 w-8 text-primary" />;
     } else if (file.type === 'application/pdf') {
-              return <IconFileText className="h-8 w-8 text-red-500" />;
+              return <IconFileText className="h-8 w-8 text-destructive" />;
     } else {
-      return <IconFile className="h-8 w-8 text-gray-500" />;
+      return <IconFile className="h-8 w-8 text-muted-foreground" />;
     }
   };
 
@@ -177,7 +177,7 @@ export function MediaUpload({
   return (
     <div className={`space-y-4 ${className}`}>
       <Card className={`border-2 border-dashed transition-colors ${
-        dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
+        dragActive ? 'border-primary bg-primary/10' : 'border-border hover:border-input'
       }`}>
         <CardContent className="p-6">
           <div
@@ -187,22 +187,22 @@ export function MediaUpload({
             onDragOver={handleDrag}
             onDrop={handleDrop}
           >
-            <IconUpload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <IconUpload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">
               Upload File
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-muted-foreground mb-4">
               Drag & drop files here or{' '}
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="text-blue-600 hover:text-blue-500 underline"
+                className="text-primary hover:text-primary/80 underline"
               >
                 select files
               </button>
             </p>
             
-            <div className="text-sm text-gray-500 space-y-1">
+            <div className="text-sm text-muted-foreground space-y-1">
               <p>Supported files: {allowedTypes.join(', ')}</p>
               <p>Maximum size: {Math.round(maxFileSize / 1024 / 1024)}MB</p>
             </div>
@@ -245,7 +245,7 @@ export function MediaUpload({
                   </div>
                   
                   <div className="flex items-center gap-2 mb-2">
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       {formatFileSize(uploadingFile.file.size)}
                     </p>
                     {uploadingFile.status === 'success' && (
@@ -257,16 +257,16 @@ export function MediaUpload({
                   </div>
                   
                   {uploadingFile.status === 'uploading' && (
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-muted rounded-full h-2">
                       <div
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        className="bg-primary h-2 rounded-full transition-all duration-300"
                         style={{ width: `${uploadingFile.progress}%` }}
                       />
                     </div>
                   )}
                   
                   {uploadingFile.status === 'error' && uploadingFile.error && (
-                    <p className="text-xs text-red-600 mt-1">
+                    <p className="text-xs text-destructive mt-1">
                       {uploadingFile.error}
                     </p>
                   )}
