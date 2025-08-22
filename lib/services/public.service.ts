@@ -395,7 +395,7 @@ export class PublicService {
         slug: 'tekna-web-platform',
         project_url: 'https://web.tekna.digital',
         status: 'completed',
-        featured_image_url: '/images/projects/tekna-web.jpg',
+        featured_image_url: '/images/placeholder-blog.svg',
         description: language === 'en' 
           ? 'A comprehensive IoT monitoring platform designed to provide real-time insights and control over industrial equipment and environmental conditions.'
           : 'Platform monitoring IoT yang komprehensif dirancang untuk memberikan wawasan real-time dan kontrol atas peralatan industri dan kondisi lingkungan.',
@@ -423,7 +423,7 @@ export class PublicService {
         slug: 'tekna-mobile-app',
         project_url: 'https://mobile.tekna.digital',
         status: 'completed',
-        featured_image_url: '/images/projects/tekna-mobile.jpg',
+        featured_image_url: '/images/placeholder-blog.svg',
         description: language === 'en'
           ? 'Native mobile application for IoT monitoring that provides field engineers and managers with on-the-go access to critical system data.'
           : 'Aplikasi mobile native untuk monitoring IoT yang memberikan akses on-the-go kepada teknisi lapangan dan manajer terhadap data sistem kritis.',
@@ -451,7 +451,7 @@ export class PublicService {
         slug: 'erp-tekna',
         project_url: 'https://erp.tekna.digital',
         status: 'in-progress',
-        featured_image_url: '/images/projects/erp-tekna.jpg',
+        featured_image_url: '/images/placeholder-blog.svg',
         description: language === 'en'
           ? 'Enterprise Resource Planning system tailored for modern businesses, featuring integrated modules for inventory management, financial tracking, human resources, and project management.'
           : 'Sistem Enterprise Resource Planning yang disesuaikan untuk bisnis modern, menampilkan modul terintegrasi untuk manajemen inventori, pelacakan keuangan, sumber daya manusia, dan manajemen proyek.',
