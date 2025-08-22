@@ -32,7 +32,7 @@ export function AuthorsPageClient({ initialAuthors }: AuthorsPageClientProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   // Real-time sync for authors
-  const { isConnected } = useRealtimeAuthors(() => {
+  useRealtimeAuthors(() => {
     // Refresh authors when real-time changes are detected
     const refreshAuthors = async () => {
       try {

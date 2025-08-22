@@ -14,8 +14,6 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
 import { PostStatus } from '@/lib/types/dashboard';
-import { IconEye, IconEyeOff, IconTag, IconUser, IconFileText, IconSettings, IconSeo, IconX, IconUpload, IconPhoto, IconFileCode, IconMarkdown } from '@tabler/icons-react';
-import Image from 'next/image';
 
 interface PostFormProps {
   postId?: string;
@@ -50,7 +48,7 @@ interface Author {
   position: string;
 }
 
-export function PostForm({ postId, initialData }: PostFormProps) {
+export function PostFormEnhanced({ postId, initialData }: PostFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -83,11 +81,9 @@ export function PostForm({ postId, initialData }: PostFormProps) {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Load categories
         const categoriesData = await ClientDashboardService.getCategories();
         setCategories(categoriesData);
         
-        // Load authors
         const authorsData = await ClientDashboardService.getAuthors();
         setAuthors(authorsData);
       } catch (error) {
@@ -182,7 +178,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -248,10 +243,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
     setIsUploading(true);
     try {
       // Simulate file upload - replace with actual upload logic
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      // For now, we'll create a temporary URL
       const tempUrl = URL.createObjectURL(file);
       
       // In production, upload to your storage service (Supabase Storage, AWS S3, etc.)
@@ -278,7 +269,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
 
   // Content type conversion
   const convertMarkdownToHtml = (markdown: string): string => {
-    // Simple markdown to HTML conversion
     return markdown
       .replace(/^### (.*$)/gim, '<h3>$1</h3>')
       .replace(/^## (.*$)/gim, '<h2>$1</h2>')
@@ -294,7 +284,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
   };
 
   const convertHtmlToMarkdown = (html: string): string => {
-    // Simple HTML to markdown conversion
     return html
       .replace(/<h1>(.*?)<\/h1>/gim, '# $1\n\n')
       .replace(/<h2>(.*?)<\/h2>/gim, '## $1\n\n')
@@ -314,11 +303,9 @@ export function PostForm({ postId, initialData }: PostFormProps) {
     if (newType === contentType) return;
     
     if (newType === 'markdown') {
-      // Convert HTML to Markdown
       const markdown = convertHtmlToMarkdown(formData.content);
       setFormData(prev => ({ ...prev, content: markdown }));
     } else {
-      // Convert Markdown to HTML
       const html = convertMarkdownToHtml(formData.content);
       setFormData(prev => ({ ...prev, content: html }));
     }
@@ -345,7 +332,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
             onClick={() => setShowPreview(!showPreview)}
             className="gap-2"
           >
-            {showPreview ? <IconEyeOff size={16} /> : <IconEye size={16} />}
             {showPreview ? 'Sembunyikan Preview' : 'Preview'}
           </Button>
           
@@ -354,7 +340,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
             onClick={() => router.back()}
             className="gap-2"
           >
-            <IconX size={16} />
             Batal
           </Button>
         </div>
@@ -366,7 +351,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <IconFileText size={20} />
                 Form Artikel
               </CardTitle>
             </CardHeader>
@@ -374,22 +358,10 @@ export function PostForm({ postId, initialData }: PostFormProps) {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                   <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="content" className="flex items-center gap-2">
-                      <IconFileText size={16} />
-                      Konten
-                    </TabsTrigger>
-                    <TabsTrigger value="metadata" className="flex items-center gap-2">
-                      <IconFileText size={16} />
-                      Metadata
-                    </TabsTrigger>
-                    <TabsTrigger value="seo" className="flex items-center gap-2">
-                      <IconSeo size={16} />
-                      SEO
-                    </TabsTrigger>
-                    <TabsTrigger value="settings" className="flex items-center gap-2">
-                      <IconSettings size={16} />
-                      Pengaturan
-                    </TabsTrigger>
+                    <TabsTrigger value="content">Konten</TabsTrigger>
+                    <TabsTrigger value="metadata">Metadata</TabsTrigger>
+                    <TabsTrigger value="seo">SEO</TabsTrigger>
+                    <TabsTrigger value="settings">Pengaturan</TabsTrigger>
                   </TabsList>
 
                   {/* Content Tab */}
@@ -433,9 +405,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                       {errors.slug && (
                         <p className="text-sm text-red-500">{errors.slug}</p>
                       )}
-                      <p className="text-xs text-muted-foreground">
-                        URL artikel akan menjadi: /blog/{formData.slug}
-                      </p>
                     </div>
 
                     {/* Excerpt */}
@@ -462,9 +431,7 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                           variant={contentType === 'html' ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => handleContentTypeChange('html')}
-                          className="gap-2"
                         >
-                          <IconFileCode size={16} />
                           HTML
                         </Button>
                         <Button
@@ -472,9 +439,7 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                           variant={contentType === 'markdown' ? 'default' : 'outline'}
                           size="sm"
                           onClick={() => handleContentTypeChange('markdown')}
-                          className="gap-2"
                         >
-                          <IconMarkdown size={16} />
                           Markdown
                         </Button>
                       </div>
@@ -541,11 +506,9 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                       >
                         {formData.featured_image_url ? (
                           <div className="space-y-4">
-                            <Image
+                            <img
                               src={formData.featured_image_url}
                               alt="Featured"
-                              width={400}
-                              height={192}
                               className="w-full max-w-md h-48 object-cover rounded mx-auto"
                             />
                             <div className="flex gap-2 justify-center">
@@ -555,9 +518,7 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                                 size="sm"
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={isUploading}
-                                className="gap-2"
                               >
-                                <IconUpload size={16} />
                                 Ganti Gambar
                               </Button>
                               <Button
@@ -565,9 +526,8 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                                 variant="outline"
                                 size="sm"
                                 onClick={removeImage}
-                                className="gap-2 text-red-600 hover:text-red-700"
+                                className="text-red-600 hover:text-red-700"
                               >
-                                <IconX size={16} />
                                 Hapus
                               </Button>
                             </div>
@@ -575,7 +535,7 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                         ) : (
                           <div className="space-y-4">
                             <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center mx-auto">
-                              <IconPhoto size={32} className="text-muted-foreground" />
+                              <span className="text-2xl">🖼️</span>
                             </div>
                             <div>
                               <p className="text-sm font-medium">
@@ -590,9 +550,7 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                               variant="outline"
                               onClick={() => fileInputRef.current?.click()}
                               disabled={isUploading}
-                              className="gap-2"
                             >
-                              <IconUpload size={16} />
                               {isUploading ? 'Uploading...' : 'Pilih File'}
                             </Button>
                           </div>
@@ -639,10 +597,7 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                             <SelectItem value="none">Tidak ada penulis</SelectItem>
                             {authors.map((author) => (
                               <SelectItem key={author.id} value={author.id}>
-                                <div className="flex items-center gap-2">
-                                  <IconUser size={16} />
-                                  {author.first_name} {author.last_name} - {author.position}
-                                </div>
+                                {author.first_name} {author.last_name} - {author.position}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -655,20 +610,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                           onChange={(e) => handleInputChange('author_name', e.target.value)}
                           placeholder="Nama penulis"
                         />
-                      )}
-                      
-                      {getSelectedAuthor() && (
-                        <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                          <IconUser size={16} className="text-muted-foreground" />
-                          <div>
-                            <p className="text-sm font-medium">
-                              {getSelectedAuthor()?.first_name} {getSelectedAuthor()?.last_name}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {getSelectedAuthor()?.position}
-                            </p>
-                          </div>
-                        </div>
                       )}
                     </div>
 
@@ -689,10 +630,7 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                             <SelectItem value="none">Tidak ada kategori</SelectItem>
                             {categories.map((category) => (
                               <SelectItem key={category.id} value={category.id}>
-                                <div className="flex items-center gap-2">
-                                  <IconTag size={16} />
-                                  {category.name}
-                                </div>
+                                {category.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -705,18 +643,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                           onChange={(e) => handleInputChange('category_id', e.target.value)}
                           placeholder="UUID kategori (opsional)"
                         />
-                      )}
-                      
-                      {getSelectedCategory() && (
-                        <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                          <IconTag size={16} className="text-muted-foreground" />
-                          <div>
-                            <p className="text-sm font-medium">{getSelectedCategory()?.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Slug: {getSelectedCategory()?.slug}
-                            </p>
-                          </div>
-                        </div>
                       )}
                     </div>
                   </TabsContent>
@@ -765,9 +691,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                         onChange={(e) => handleInputChange('meta_keywords', e.target.value)}
                         placeholder="Kata kunci dipisahkan dengan koma"
                       />
-                      <p className="text-xs text-muted-foreground">
-                        Contoh: web development, teknologi, inovasi
-                      </p>
                     </div>
                   </TabsContent>
 
@@ -786,24 +709,9 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                           <SelectValue placeholder="Pilih status artikel" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="draft">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                              Draft
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="published">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              Published
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="archived">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
-                              Archived
-                            </div>
-                          </SelectItem>
+                          <SelectItem value="draft">Draft</SelectItem>
+                          <SelectItem value="published">Published</SelectItem>
+                          <SelectItem value="archived">Archived</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -823,9 +731,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                       {errors.published_at && (
                         <p className="text-sm text-red-500">{errors.published_at}</p>
                       )}
-                      <p className="text-xs text-muted-foreground">
-                        Kosongkan untuk publikasi otomatis saat status diubah ke Published
-                      </p>
                     </div>
 
                     {/* Is Featured */}
@@ -847,7 +752,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="gap-2"
                   >
                     {isLoading 
                       ? (postId ? 'Menyimpan...' : 'Membuat...') 
@@ -862,90 +766,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Article Preview */}
-          {showPreview && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <IconEye size={20} />
-                  Preview Artikel
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {formData.featured_image_url && (
-                  <Image 
-                    src={formData.featured_image_url} 
-                    alt="Featured" 
-                    width={400}
-                    height={128}
-                    className="w-full h-32 object-cover rounded"
-                  />
-                )}
-                
-                <div>
-                  <h2 className="text-lg font-semibold line-clamp-2">
-                    {formData.title || 'Judul Artikel'}
-                  </h2>
-                  {formData.excerpt && (
-                    <p className="text-sm text-muted-foreground mt-2 line-clamp-3">
-                      {formData.excerpt}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                  {getSelectedAuthor() && (
-                    <span className="flex items-center gap-1">
-                      <IconUser size={14} />
-                      {getSelectedAuthor()?.first_name} {getSelectedAuthor()?.last_name}
-                    </span>
-                  )}
-                  {getSelectedCategory() && (
-                    <span className="flex items-center gap-1">
-                      <IconTag size={14} />
-                      {getSelectedCategory()?.name}
-                    </span>
-                  )}
-                </div>
-
-                <Separator />
-
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium">Konten Preview</h4>
-                  <div className="text-xs space-y-1 max-h-32 overflow-y-auto">
-                    {contentType === 'html' ? (
-                      <div 
-                        className="prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{ __html: formData.content }}
-                      />
-                    ) : (
-                      <pre className="whitespace-pre-wrap text-xs">
-                        {formData.content || 'Konten akan ditampilkan di sini...'}
-                      </pre>
-                    )}
-                  </div>
-                </div>
-
-                <Separator />
-
-                <div className="space-y-2">
-                  <h4 className="text-sm font-medium">SEO Preview</h4>
-                  <div className="text-xs space-y-1">
-                    <p className="font-medium">
-                      {formData.meta_title || formData.title || 'Title'}
-                    </p>
-                    <p className="text-muted-foreground line-clamp-2">
-                      {formData.meta_description || formData.excerpt || 'Description'}
-                    </p>
-                    <p className="text-blue-600">
-                      /blog/{formData.slug || 'slug'}
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
           {/* Quick Stats */}
           <Card>
             <CardHeader>
@@ -982,13 +802,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                   {formData.status}
                 </Badge>
               </div>
-
-              {formData.is_featured && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Featured</span>
-                  <Badge variant="default">✓</Badge>
-                </div>
-              )}
             </CardContent>
           </Card>
 
@@ -1008,13 +821,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
               <div className="space-y-2">
                 <p className="font-medium text-foreground">Gambar</p>
                 <p>Drag & drop gambar atau gunakan URL. Format yang didukung: PNG, JPG, GIF.</p>
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-2">
-                <p className="font-medium text-foreground">SEO</p>
-                <p>Isi meta title dan description untuk optimasi search engine.</p>
               </div>
             </CardContent>
           </Card>

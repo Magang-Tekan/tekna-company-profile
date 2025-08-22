@@ -329,6 +329,92 @@ export class DashboardService {
   }
 
   /**
+   * Get single blog post by ID - Server side
+   */
+  static async getBlogPostById(postId: string) {
+    const supabase = await createClient();
+    
+    try {
+      // Get main post data
+      const { data: post, error: postError } = await supabase
+        .from('posts')
+        .select(`
+          id,
+          title,
+          slug,
+          excerpt,
+          featured_image_url,
+          author_name,
+          category_id,
+          status,
+          published_at,
+          is_featured,
+          is_active,
+          view_count,
+          created_at,
+          updated_at
+        `)
+        .eq('id', postId)
+        .eq('is_active', true)
+        .single();
+
+      if (postError) {
+        console.error('Post query error:', postError);
+        throw postError;
+      }
+
+      if (!post) {
+        return null;
+      }
+
+      // Get content from translations
+      try {
+        const { data: defaultLanguage } = await supabase
+          .from('languages')
+          .select('id')
+          .eq('is_default', true)
+          .eq('is_active', true)
+          .single();
+
+        const defaultLangId = defaultLanguage?.id || 'en';
+
+        const { data: translation } = await supabase
+          .from('post_translations')
+          .select(`
+            content,
+            meta_title,
+            meta_description,
+            meta_keywords
+          `)
+          .eq('post_id', post.id)
+          .eq('language_id', defaultLangId)
+          .single();
+
+        return {
+          ...post,
+          content: translation?.content || '',
+          meta_title: translation?.meta_title || post.title,
+          meta_description: translation?.meta_description || post.excerpt,
+          meta_keywords: translation?.meta_keywords || ''
+        };
+      } catch (error) {
+        console.log(`Error fetching translation for post ${post.id}:`, error);
+        // Return post without translation content
+        return {
+          ...post,
+          content: '',
+          meta_title: post.title,
+          meta_description: post.excerpt,
+          meta_keywords: ''
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching blog post:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Get all blog posts - Server side
    */
   static async getBlogPosts() {
