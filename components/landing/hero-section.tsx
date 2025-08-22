@@ -4,37 +4,73 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { motion } from "motion/react";
 import dynamic from "next/dynamic";
+import { useTheme } from "next-themes";
 
 const World = dynamic(() => import("@/components/ui/globe").then((m) => m.World), {
   ssr: false,
 });
 
 export function HeroSection() {
-  const globeConfig = {
-    pointSize: 4,
-    globeColor: "#062056",
-    showAtmosphere: true,
-    atmosphereColor: "#FFFFFF",
-    atmosphereAltitude: 0.1,
-    emissive: "#062056",
-    emissiveIntensity: 0.1,
-    shininess: 0.9,
-    polygonColor: "rgba(255,255,255,0.7)",
-    ambientLight: "#38bdf8",
-    directionalLeftLight: "#ffffff",
-    directionalTopLight: "#ffffff",
-    pointLight: "#ffffff",
-    arcTime: 1000,
-    arcLength: 0.9,
-    rings: 1,
-    maxRings: 3,
-    initialPosition: { lat: 22.3193, lng: 114.1694 },
-    autoRotate: true,
-    autoRotateSpeed: 0.5,
+  const { theme } = useTheme();
+
+  // Konfigurasi globe yang responsif terhadap tema
+  const getGlobeConfig = () => {
+    if (theme === 'dark') {
+      return {
+        pointSize: 4,
+        globeColor: "#062056",
+        showAtmosphere: true,
+        atmosphereColor: "#FFFFFF",
+        atmosphereAltitude: 0.1,
+        emissive: "#062056",
+        emissiveIntensity: 0.1,
+        shininess: 0.9,
+        polygonColor: "rgba(255,255,255,0.7)",
+        ambientLight: "#38bdf8",
+        directionalLeftLight: "#ffffff",
+        directionalTopLight: "#ffffff",
+        pointLight: "#ffffff",
+        arcTime: 1000,
+        arcLength: 0.9,
+        rings: 1,
+        maxRings: 3,
+        initialPosition: { lat: 22.3193, lng: 114.1694 },
+        autoRotate: true,
+        autoRotateSpeed: 0.5,
+      };
+    } else {
+      // Light theme - warna yang lebih menarik dan kontras
+      return {
+        pointSize: 4,
+        globeColor: "#e2e8f0", // slate-200 - lebih solid dan kontras
+        showAtmosphere: true,
+        atmosphereColor: "#1e293b", // slate-800 - kontras yang lebih kuat
+        atmosphereAltitude: 0.15,
+        emissive: "#94a3b8", // slate-400
+        emissiveIntensity: 0.2,
+        shininess: 0.8,
+        polygonColor: "rgba(30, 41, 59, 0.5)", // slate-800 dengan opacity yang lebih tinggi
+        ambientLight: "#1e293b", // slate-800
+        directionalLeftLight: "#475569", // slate-600
+        directionalTopLight: "#334155", // slate-700
+        pointLight: "#1e293b", // slate-800
+        arcTime: 1000,
+        arcLength: 0.9,
+        rings: 1,
+        maxRings: 3,
+        initialPosition: { lat: 22.3193, lng: 114.1694 },
+        autoRotate: true,
+        autoRotateSpeed: 0.5,
+      };
+    }
   };
+
+  const globeConfig = getGlobeConfig();
   
-  const colors = ["#06b6d4", "#3b82f6", "#6366f1"];
-  
+  const colors = theme === 'dark' 
+    ? ["#06b6d4", "#3b82f6", "#6366f1"] 
+    : ["#1e293b", "#475569", "#64748b"]; // Warna slate yang lebih kontras untuk light theme
+
   const sampleArcs = [
     {
       order: 1,

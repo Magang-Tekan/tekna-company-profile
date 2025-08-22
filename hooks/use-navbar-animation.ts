@@ -16,23 +16,13 @@ export function useNavbarAnimation(config?: {
   const animateToFloating = useCallback(() => {
     if (!navbarRef.current || !logoRef.current || !navRef.current || !themeSwitcherRef.current) return;
 
-    console.log("🚀 START FLOATING ANIMATION");
-
     // Kill any existing animation
     if (animationTween.current) {
       animationTween.current.kill();
     }
 
     const navbar = navbarRef.current;
-    const initialRect = navbar.getBoundingClientRect();
     
-    console.log("📏 Initial state:", {
-      height: initialRect.height,
-      width: initialRect.width,
-      x: initialRect.x
-    });
-
-    // Calculate target values for smooth centering
     const viewportWidth = window.innerWidth;
     const targetWidth = Math.min(1200, viewportWidth * 0.9);
     const targetX = (viewportWidth - targetWidth) / 2;
@@ -74,21 +64,6 @@ export function useNavbarAnimation(config?: {
         duration: 0.6, // Slightly longer for smoother feel
         ease: "power2.out", // Natural easing
         
-        onStart: () => {
-          console.log("🎬 Floating Animation START");
-        },
-        onUpdate: function() {
-          const currentRect = navbar.getBoundingClientRect();
-          console.log("🔄 Animation Progress:", {
-            progress: this.progress(),
-            currentHeight: currentRect.height,
-            currentWidth: currentRect.width,
-            currentX: currentRect.x
-          });
-        },
-        onComplete: () => {
-          console.log("✅ Floating Animation COMPLETE");
-        }
       }
     );
 
@@ -106,8 +81,6 @@ export function useNavbarAnimation(config?: {
   const animateToNormal = useCallback(() => {
     if (!navbarRef.current || !logoRef.current || !navRef.current || !themeSwitcherRef.current) return;
 
-    console.log("🔄 START NORMAL ANIMATION");
-
     // Kill any existing animation
     if (animationTween.current) {
       animationTween.current.kill();
@@ -115,12 +88,6 @@ export function useNavbarAnimation(config?: {
 
     const navbar = navbarRef.current;
     const currentRect = navbar.getBoundingClientRect();
-
-    console.log("📏 Current floating state:", {
-      height: currentRect.height,
-      width: currentRect.width,
-      x: currentRect.x
-    });
 
     // Use fromTo for explicit control
     animationTween.current = gsap.fromTo(navbar,
@@ -158,22 +125,6 @@ export function useNavbarAnimation(config?: {
         // Animation settings
         duration: 0.6,
         ease: "power2.out",
-        
-        onStart: () => {
-          console.log("🎬 Normal Animation START");
-        },
-        onUpdate: function() {
-          const rect = navbar.getBoundingClientRect();
-          console.log("🔄 Normal Animation Progress:", {
-            progress: this.progress(),
-            currentHeight: rect.height,
-            currentWidth: rect.width,
-            currentX: rect.x
-          });
-        },
-        onComplete: () => {
-          console.log("✅ Normal Animation COMPLETE");
-        }
       }
     );
 
@@ -198,20 +149,11 @@ export function useNavbarAnimation(config?: {
           const scrollY = window.scrollY;
           const shouldFloat = scrollY > 10;
 
-          console.log("📜 SCROLL EVENT:", {
-            scrollY,
-            shouldFloat,
-            isFloating: isFloating.current,
-            navbarElement: navbarRef.current ? "exists" : "null"
-          });
-
           if (shouldFloat && !isFloating.current) {
-            console.log("🟢 TRIGGERING FLOATING ANIMATION");
             isFloating.current = true;
             animateToFloating();
             config?.onFloatingStart?.();
           } else if (!shouldFloat && isFloating.current) {
-            console.log("🔴 TRIGGERING NORMAL ANIMATION");
             isFloating.current = false;
             animateToNormal();
             config?.onFloatingEnd?.();
