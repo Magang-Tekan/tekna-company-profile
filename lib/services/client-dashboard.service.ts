@@ -187,6 +187,7 @@ export class ClientDashboardService {
             title: postData.title,
             slug: postData.slug,
             excerpt: postData.excerpt,
+            content_type: 'markdown', // Always use markdown
             featured_image_url: postData.featured_image_url,
             author_name: postData.author_name || null,
             category_id: postData.category_id || null,
@@ -262,6 +263,7 @@ export class ClientDashboardService {
           title: postData.title,
           slug: postData.slug,
           excerpt: postData.excerpt,
+          content_type: 'markdown', // Always use markdown
           featured_image_url: postData.featured_image_url,
           author_name: postData.author_name || null,
           category_id: postData.category_id || null,
@@ -343,6 +345,7 @@ export class ClientDashboardService {
             title,
             slug,
             excerpt,
+            content_type,
             featured_image_url,
             author_name,
             category_id,

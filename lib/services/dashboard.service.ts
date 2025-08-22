@@ -343,6 +343,7 @@ export class DashboardService {
           title,
           slug,
           excerpt,
+          content_type,
           featured_image_url,
           author_name,
           category_id,

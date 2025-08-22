@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { IconCalendar, IconEye } from '@tabler/icons-react';
+import { ContentRenderer } from '@/components/content-renderer';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -199,9 +200,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
         {/* Article Content - Single Column Layout */}
         <div className="max-w-4xl mx-auto">
-          <div 
+          <ContentRenderer 
+            content={post.content || ''}
+            contentType="markdown"
             className="prose prose-xl max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-h1:text-4xl prose-h2:text-3xl prose-h3:text-2xl prose-h4:text-xl prose-p:text-muted-foreground prose-p:leading-relaxed prose-a:text-primary prose-a:font-medium prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-img:rounded-xl prose-img:shadow-lg prose-pre:bg-muted prose-pre:border prose-pre:rounded-xl prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-muted/50 prose-blockquote:rounded-r-lg prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:not-italic prose-li:my-2"
-            dangerouslySetInnerHTML={{ __html: post.content }}
           />
         </div>
 

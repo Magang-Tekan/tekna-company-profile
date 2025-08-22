@@ -22,6 +22,7 @@ export default async function EditPostPage({ params }: EditPostPageProps) {
       slug: post.slug,
       excerpt: post.excerpt || '',
       content: post.content || '',
+      content_type: post.content_type || 'markdown',
       featured_image_url: post.featured_image_url || '',
       author_name: post.author_name || '',
       category_id: post.category_id || '',

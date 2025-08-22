@@ -14,8 +14,10 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
 import { PostStatus } from '@/lib/types/dashboard';
-import { IconEye, IconEyeOff, IconTag, IconUser, IconFileText, IconSettings, IconSeo, IconX, IconUpload, IconPhoto, IconFileCode, IconMarkdown } from '@tabler/icons-react';
+import { IconEye, IconEyeOff, IconTag, IconUser, IconFileText, IconSettings, IconSeo, IconX, IconUpload, IconPhoto } from '@tabler/icons-react';
 import Image from 'next/image';
+import { ContentRenderer } from './content-renderer';
+import { MarkdownEditor } from './markdown-editor';
 
 interface PostFormProps {
   postId?: string;
@@ -58,7 +60,7 @@ export function PostForm({ postId, initialData }: PostFormProps) {
   const [activeTab, setActiveTab] = useState('content');
   const [showPreview, setShowPreview] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [contentType, setContentType] = useState<'html' | 'markdown'>('html');
+  // Markdown-only approach - no content type needed
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -121,6 +123,8 @@ export function PostForm({ postId, initialData }: PostFormProps) {
       setFormData(prev => ({ ...prev, meta_description: formData.excerpt }));
     }
   }, [formData.title, formData.excerpt, formData.meta_title, formData.meta_description]);
+
+
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -277,54 +281,9 @@ export function PostForm({ postId, initialData }: PostFormProps) {
   };
 
   // Content type conversion
-  const convertMarkdownToHtml = (markdown: string): string => {
-    // Simple markdown to HTML conversion
-    return markdown
-      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-      .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-      .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
-      .replace(/\*(.*)\*/gim, '<em>$1</em>')
-      .replace(/!\[(.*?)\]\((.*?)\)/gim, '<img alt="$1" src="$2" />')
-      .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2">$1</a>')
-      .replace(/^- (.*$)/gim, '<li>$1</li>')
-      .replace(/\n\n/gim, '</p><p>')
-      .replace(/^(?!<[h|li|p])/gim, '<p>')
-      .replace(/$/gim, '</p>');
-  };
 
-  const convertHtmlToMarkdown = (html: string): string => {
-    // Simple HTML to markdown conversion
-    return html
-      .replace(/<h1>(.*?)<\/h1>/gim, '# $1\n\n')
-      .replace(/<h2>(.*?)<\/h2>/gim, '## $1\n\n')
-      .replace(/<h3>(.*?)<\/h3>/gim, '### $1\n\n')
-      .replace(/<strong>(.*?)<\/strong>/gim, '**$1**')
-      .replace(/<em>(.*?)<\/em>/gim, '*$1*')
-      .replace(/<img.*?alt="(.*?)".*?src="(.*?)".*?\/>/gim, '![$1]($2)')
-      .replace(/<a.*?href="(.*?)".*?>(.*?)<\/a>/gim, '[$2]($1)')
-      .replace(/<li>(.*?)<\/li>/gim, '- $1\n')
-      .replace(/<p>(.*?)<\/p>/gim, '$1\n\n')
-      .replace(/<br\s*\/?>/gim, '\n')
-      .replace(/<\/?[^>]*>/gim, '')
-      .trim();
-  };
 
-  const handleContentTypeChange = (newType: 'html' | 'markdown') => {
-    if (newType === contentType) return;
-    
-    if (newType === 'markdown') {
-      // Convert HTML to Markdown
-      const markdown = convertHtmlToMarkdown(formData.content);
-      setFormData(prev => ({ ...prev, content: markdown }));
-    } else {
-      // Convert Markdown to HTML
-      const html = convertMarkdownToHtml(formData.content);
-      setFormData(prev => ({ ...prev, content: html }));
-    }
-    
-    setContentType(newType);
-  };
+
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
@@ -453,69 +412,21 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                       {getCharacterCount(formData.excerpt, 160)}
                     </div>
 
-                    {/* Content Type Selector */}
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">Format Konten</Label>
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          variant={contentType === 'html' ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => handleContentTypeChange('html')}
-                          className="gap-2"
-                        >
-                          <IconFileCode size={16} />
-                          HTML
-                        </Button>
-                        <Button
-                          type="button"
-                          variant={contentType === 'markdown' ? 'default' : 'outline'}
-                          size="sm"
-                          onClick={() => handleContentTypeChange('markdown')}
-                          className="gap-2"
-                        >
-                          <IconMarkdown size={16} />
-                          Markdown
-                        </Button>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {contentType === 'html' 
-                          ? 'Gunakan HTML tags untuk formatting (h1, h2, p, ul, li, strong, em, a, img, dll.)'
-                          : 'Gunakan Markdown syntax untuk formatting (# ## ### **bold** *italic* [link](url) ![alt](src) dll.)'
-                        }
-                      </p>
-                    </div>
+
 
                     {/* Content */}
                     <div className="space-y-2">
                       <Label htmlFor="content" className="text-sm font-medium">
                         Konten Artikel *
                       </Label>
-                      <Textarea
-                        id="content"
+                      <MarkdownEditor
                         value={formData.content}
-                        onChange={(e) => handleInputChange('content', e.target.value)}
-                        placeholder={
-                          contentType === 'html' 
-                            ? 'Tulis konten HTML artikel Anda di sini...'
-                            : 'Tulis konten Markdown artikel Anda di sini...'
-                        }
-                        rows={20}
-                        className={`font-mono text-sm ${errors.content ? 'border-red-500' : ''}`}
-                        required
+                        onChange={(value) => handleInputChange('content', value)}
+                        placeholder="# Judul Artikel\n\nParagraf pertama...\n\n## Sub Judul\n\n- Item 1\n- Item 2\n\n**Teks tebal** dan *teks miring*"
                       />
                       {errors.content && (
                         <p className="text-sm text-red-500">{errors.content}</p>
                       )}
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>
-                          {contentType === 'html' 
-                            ? 'HTML tags: h1, h2, p, ul, li, strong, em, a, img, dll.'
-                            : 'Markdown: # ## ### **bold** *italic* [link](url) ![alt](src) dll.'
-                          }
-                        </span>
-                        <span>{formData.content.length} karakter</span>
-                      </div>
                     </div>
                   </TabsContent>
 
@@ -913,16 +824,11 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                 <div className="space-y-2">
                   <h4 className="text-sm font-medium">Konten Preview</h4>
                   <div className="text-xs space-y-1 max-h-32 overflow-y-auto">
-                    {contentType === 'html' ? (
-                      <div 
-                        className="prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{ __html: formData.content }}
-                      />
-                    ) : (
-                      <pre className="whitespace-pre-wrap text-xs">
-                        {formData.content || 'Konten akan ditampilkan di sini...'}
-                      </pre>
-                    )}
+                    <ContentRenderer 
+                      content={formData.content || 'Konten akan ditampilkan di sini...'}
+                      contentType="markdown"
+                      className="text-xs"
+                    />
                   </div>
                 </div>
 
@@ -969,7 +875,7 @@ export function PostForm({ postId, initialData }: PostFormProps) {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Format</span>
                 <Badge variant="outline">
-                  {contentType.toUpperCase()}
+                  MARKDOWN
                 </Badge>
               </div>
               
