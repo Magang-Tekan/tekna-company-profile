@@ -245,7 +245,7 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                       <SelectValue placeholder="Pilih penulis" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Tidak ada penulis</SelectItem>
+                      <SelectItem value="none">Tidak ada penulis</SelectItem>
                       {authors.map((author) => (
                         <SelectItem key={author.id} value={author.id}>
                           {author.first_name} {author.last_name} - {author.position}
@@ -282,7 +282,7 @@ export function PostForm({ postId, initialData }: PostFormProps) {
                       <SelectValue placeholder="Pilih kategori" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Tidak ada kategori</SelectItem>
+                      <SelectItem value="none">Tidak ada kategori</SelectItem>
                       {categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>
                           {category.name}

@@ -19,10 +19,12 @@ export class DashboardService {
         recentProjectsResult,
         recentPostsResult
       ] = await Promise.all([
-        // Team members count
+        // Team members count (from posts authors)
         supabase
-          .from('team_members')
-          .select('*', { count: 'exact', head: true })
+          .from('posts')
+          .select('author_name', { count: 'exact', head: true })
+          .not('author_name', 'is', null)
+          .not('author_name', 'eq', '')
           .eq('is_active', true),
         
         // Active projects count
@@ -77,10 +79,7 @@ export class DashboardService {
             status,
             view_count,
             published_at,
-            team_members(
-              first_name,
-              last_name
-            )
+            author_name
           `)
           .eq('is_active', true)
           .order('created_at', { ascending: false })
@@ -136,9 +135,7 @@ export class DashboardService {
         recentPosts: recentPosts.map(post => ({
           id: post.id,
           title: post.title,
-          author: post.team_members && post.team_members.length > 0 
-            ? `${post.team_members[0].first_name} ${post.team_members[0].last_name}` 
-            : 'Admin',
+          author: post.author_name || 'Admin',
           status: post.status as 'draft' | 'published' | 'archived',
           views: post.view_count || 0,
           publishedAt: post.published_at
@@ -152,29 +149,35 @@ export class DashboardService {
   }
 
   /**
-   * Get team members data
+   * Get team members data (from posts authors)
    */
   static async getTeamMembers() {
     const supabase = await createClient();
     
     try {
+      // Get unique authors from existing posts
       const { data, error } = await supabase
-        .from('team_members')
-        .select(`
-          id,
-          first_name,
-          last_name,
-          email,
-          position,
-          department,
-          avatar_url,
-          is_active
-        `)
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
+        .from('posts')
+        .select('author_name')
+        .not('author_name', 'is', null)
+        .not('author_name', 'eq', '')
+        .eq('is_active', true);
 
       if (error) throw error;
-      return data;
+      
+      // Create unique authors list with generated IDs
+      const uniqueAuthors = [...new Set(data?.map(post => post.author_name) || [])];
+      
+      return uniqueAuthors.map((name, index) => ({
+        id: `author-${index + 1}`,
+        first_name: name.split(' ')[0] || name,
+        last_name: name.split(' ').slice(1).join(' ') || '',
+        email: `${name.toLowerCase().replace(/\s+/g, '.')}@tekna.com`,
+        position: 'Author',
+        department: 'Content',
+        avatar_url: null,
+        is_active: true
+      }));
     } catch (error) {
       console.error('Error fetching team members:', error);
       throw new Error('Gagal mengambil data tim');

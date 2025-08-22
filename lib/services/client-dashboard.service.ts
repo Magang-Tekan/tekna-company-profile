@@ -422,28 +422,34 @@ export class ClientDashboardService {
   }
 
   /**
-   * Get all authors (team members) - Client side
+   * Get all authors from existing posts - Client side
    */
   static async getAuthors() {
     const supabase = createClient();
     
     try {
+      // Get unique authors from existing posts
       const { data, error } = await supabase
-        .from('team_members')
-        .select(`
-          id,
-          first_name,
-          last_name,
-          position,
-          department,
-          avatar_url,
-          is_active
-        `)
-        .eq('is_active', true)
-        .order('sort_order', { ascending: true });
+        .from('posts')
+        .select('author_name')
+        .not('author_name', 'is', null)
+        .not('author_name', 'eq', '')
+        .eq('is_active', true);
 
       if (error) throw error;
-      return data || [];
+      
+      // Create unique authors list with generated IDs
+      const uniqueAuthors = [...new Set(data?.map(post => post.author_name) || [])];
+      
+      return uniqueAuthors.map((name, index) => ({
+        id: `author-${index + 1}`,
+        first_name: name.split(' ')[0] || name,
+        last_name: name.split(' ').slice(1).join(' ') || '',
+        position: 'Author',
+        department: 'Content',
+        avatar_url: null,
+        is_active: true
+      }));
     } catch (error) {
       console.error('Error fetching authors:', error);
       return [];
@@ -454,34 +460,9 @@ export class ClientDashboardService {
    * Get single author by ID - Client side
    */
   static async getAuthorById(authorId: string) {
-    const supabase = createClient();
-    
     try {
-      const { data, error } = await supabase
-        .from('team_members')
-        .select(`
-          id,
-          first_name,
-          last_name,
-          email,
-          phone,
-          position,
-          department,
-          avatar_url,
-          linkedin_url,
-          twitter_url,
-          github_url,
-          is_active,
-          sort_order,
-          created_at,
-          updated_at
-        `)
-        .eq('id', authorId)
-        .eq('is_active', true)
-        .single();
-
-      if (error) throw error;
-      return data;
+      const authors = await this.getAuthors();
+      return authors.find(author => author.id === authorId) || null;
     } catch (error) {
       console.error('Error fetching author:', error);
       throw new Error('Gagal mengambil data author');
@@ -490,11 +471,12 @@ export class ClientDashboardService {
 
   /**
    * Create new author - Client side
+   * For company profile, authors are just names, not stored separately
    */
   static async createAuthor(authorData: {
     first_name: string;
     last_name: string;
-    email: string;
+    email?: string;
     phone?: string;
     position: string;
     department: string;
@@ -505,25 +487,18 @@ export class ClientDashboardService {
     is_active?: boolean;
     sort_order?: number;
   }) {
-    const supabase = createClient();
+    // For company profile, we don't store authors separately
+    // They are stored as author_name in posts
     
-    try {
-      const { data, error } = await supabase
-        .from('team_members')
-        .insert({
-          ...authorData,
-          is_active: authorData.is_active ?? true,
-          sort_order: authorData.sort_order || 0
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error creating author:', error);
-      throw new Error('Gagal membuat author baru');
-    }
+    return {
+      id: `author-${Date.now()}`,
+      first_name: authorData.first_name,
+      last_name: authorData.last_name,
+      position: authorData.position,
+      department: authorData.department,
+      avatar_url: authorData.avatar_url,
+      is_active: true
+    };
   }
 
   /**
@@ -546,45 +521,31 @@ export class ClientDashboardService {
       sort_order?: number;
     }
   ) {
-    const supabase = createClient();
+    // For company profile, we don't store authors separately
+    // They are stored as author_name in posts
     
-    try {
-      const { data, error } = await supabase
-        .from('team_members')
-        .update(authorData)
-        .eq('id', authorId)
-        .eq('is_active', true)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error updating author:', error);
-      throw new Error('Gagal mengupdate author');
-    }
+    return {
+      id: authorId,
+      first_name: authorData.first_name || '',
+      last_name: authorData.last_name || '',
+      position: authorData.position || 'Author',
+      department: authorData.department || 'Content',
+      avatar_url: authorData.avatar_url,
+      is_active: authorData.is_active ?? true
+    };
   }
 
   /**
    * Delete author (soft delete) - Client side
+   * For company profile, authors are just names, not stored separately
    */
   static async deleteAuthor(authorId: string) {
-    const supabase = createClient();
-    
-    try {
-      const { data, error } = await supabase
-        .from('team_members')
-        .update({ is_active: false })
-        .eq('id', authorId)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Error deleting author:', error);
-      throw new Error('Gagal menghapus author');
-    }
+    // For company profile, we don't store authors separately
+    // They are stored as author_name in posts
+    return {
+      id: authorId,
+      is_active: false
+    };
   }
 
   /**

@@ -34,7 +34,7 @@ export function useRealtimeAuthors(onDataChange?: () => void) {
     
     const channel = supabase
       .channel('authors-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'team_members' }, () => {
+              .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
         if (onDataChange) {
           onDataChange();
         }
