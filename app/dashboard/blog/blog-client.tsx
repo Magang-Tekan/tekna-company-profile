@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -296,10 +297,11 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
             {/* Featured Image */}
             {post.featured_image_url && (
               <div className="relative h-48 overflow-hidden rounded-t-lg">
-                <img
+                <Image
                   src={post.featured_image_url}
                   alt={post.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-200"
                 />
                 {post.is_featured && (
                   <Badge className="absolute top-2 right-2 bg-purple-600">

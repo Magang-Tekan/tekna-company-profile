@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,7 +39,7 @@ export function MarkdownEditor({ value, onChange, placeholder = "Tulis konten ar
     }, 0);
   };
 
-  const toolbarActions = [
+  const toolbarActions = useMemo(() => [
     {
       icon: IconHeading,
       label: 'Heading',
@@ -82,7 +82,7 @@ export function MarkdownEditor({ value, onChange, placeholder = "Tulis konten ar
       action: () => insertMarkdown('> ', '', 'kutipan'),
       shortcut: 'Ctrl+Q'
     }
-  ];
+  ], [insertMarkdown]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -100,7 +100,7 @@ export function MarkdownEditor({ value, onChange, placeholder = "Tulis konten ar
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [value]);
+  }, [value, toolbarActions]);
 
   return (
     <div className={`space-y-4 ${className}`}>

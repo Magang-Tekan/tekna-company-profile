@@ -70,9 +70,10 @@ export function ContentRenderer({ content, contentType, className = '' }: Conten
           remarkPlugins={[remarkGfm]}
           components={{
             // Custom styling untuk code blocks
-            code({ inline, className, children, ...props }) {
+            code: ({ className, children, ...props }) => {
               const match = /language-(\w+)/.exec(className || '');
-              return !inline && match ? (
+              const isInline = !className || !match;
+              return !isInline ? (
                 <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
                   <code className={className} {...props}>
                     {children}

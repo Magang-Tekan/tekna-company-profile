@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -123,7 +123,6 @@ export function PostForm({ postId, initialData }: PostFormProps) {
       setFormData(prev => ({ ...prev, meta_description: formData.excerpt }));
     }
   }, [formData.title, formData.excerpt, formData.meta_title, formData.meta_description]);
-
 
 
   const validateForm = () => {
@@ -249,28 +248,20 @@ export function PostForm({ postId, initialData }: PostFormProps) {
       return;
     }
 
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Ukuran file maksimal 5MB');
+      return;
+    }
+
     setIsUploading(true);
     try {
-      // Simulate file upload - replace with actual upload logic
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      // For now, we'll create a temporary URL
-      const tempUrl = URL.createObjectURL(file);
-      
-      // In production, upload to your storage service (Supabase Storage, AWS S3, etc.)
-      // const { data, error } = await supabase.storage
-      //   .from('blog-images')
-      //   .upload(`${Date.now()}-${file.name}`, file);
-      
-      setFormData(prev => ({ ...prev, featured_image_url: tempUrl }));
-      
-      // Clean up temporary URL after a delay
-      setTimeout(() => URL.revokeObjectURL(tempUrl), 1000);
-      
+      // For now, we'll use a placeholder URL
+      // In production, you'd upload to your storage service
+      const placeholderUrl = URL.createObjectURL(file);
+      setFormData(prev => ({ ...prev, featured_image_url: placeholderUrl }));
     } catch (error) {
       console.error('Error uploading file:', error);
-      alert('Gagal mengupload file');
+      alert('Gagal upload file');
     } finally {
       setIsUploading(false);
     }
@@ -280,20 +271,15 @@ export function PostForm({ postId, initialData }: PostFormProps) {
     setFormData(prev => ({ ...prev, featured_image_url: '' }));
   };
 
-  // Content type conversion
-
-
-
-
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto space-y-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             {postId ? 'Edit Artikel' : 'Tambah Artikel Baru'}
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mt-1">
             {postId ? 'Edit artikel yang sudah ada' : 'Buat artikel baru untuk blog'}
           </p>
         </div>
@@ -318,464 +304,11 @@ export function PostForm({ postId, initialData }: PostFormProps) {
           </Button>
         </div>
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Form */}
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <IconFileText size={20} />
-                Form Artikel
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="content" className="flex items-center gap-2">
-                      <IconFileText size={16} />
-                      Konten
-                    </TabsTrigger>
-                    <TabsTrigger value="metadata" className="flex items-center gap-2">
-                      <IconFileText size={16} />
-                      Metadata
-                    </TabsTrigger>
-                    <TabsTrigger value="seo" className="flex items-center gap-2">
-                      <IconSeo size={16} />
-                      SEO
-                    </TabsTrigger>
-                    <TabsTrigger value="settings" className="flex items-center gap-2">
-                      <IconSettings size={16} />
-                      Pengaturan
-                    </TabsTrigger>
-                  </TabsList>
-
-                  {/* Content Tab */}
-                  <TabsContent value="content" className="space-y-6 mt-6">
-                    {/* Title */}
-                    <div className="space-y-2">
-                      <Label htmlFor="title" className="text-sm font-medium">
-                        Judul Artikel *
-                      </Label>
-                      <Input
-                        id="title"
-                        type="text"
-                        value={formData.title}
-                        onChange={(e) => handleInputChange('title', e.target.value)}
-                        placeholder="Masukkan judul artikel yang menarik"
-                        className={errors.title ? 'border-red-500' : ''}
-                        required
-                      />
-                      {errors.title && (
-                        <p className="text-sm text-red-500">{errors.title}</p>
-                      )}
-                    </div>
-
-                    {/* Slug */}
-                    <div className="space-y-2">
-                      <Label htmlFor="slug" className="text-sm font-medium">
-                        Slug *
-                      </Label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">/blog/</span>
-                        <Input
-                          id="slug"
-                          type="text"
-                          value={formData.slug}
-                          onChange={(e) => handleInputChange('slug', e.target.value)}
-                          placeholder="url-friendly-slug"
-                          className={errors.slug ? 'border-red-500' : ''}
-                          required
-                        />
-                      </div>
-                      {errors.slug && (
-                        <p className="text-sm text-red-500">{errors.slug}</p>
-                      )}
-                      <p className="text-xs text-muted-foreground">
-                        URL artikel akan menjadi: /blog/{formData.slug}
-                      </p>
-                    </div>
-
-                    {/* Excerpt */}
-                    <div className="space-y-2">
-                      <Label htmlFor="excerpt" className="text-sm font-medium">
-                        Ringkasan
-                      </Label>
-                      <Textarea
-                        id="excerpt"
-                        value={formData.excerpt}
-                        onChange={(e) => handleInputChange('excerpt', e.target.value)}
-                        placeholder="Ringkasan singkat artikel untuk preview dan SEO"
-                        rows={3}
-                      />
-                      {getCharacterCount(formData.excerpt, 160)}
-                    </div>
-
-
-
-                    {/* Content */}
-                    <div className="space-y-2">
-                      <Label htmlFor="content" className="text-sm font-medium">
-                        Konten Artikel *
-                      </Label>
-                      <MarkdownEditor
-                        value={formData.content}
-                        onChange={(value) => handleInputChange('content', value)}
-                        placeholder="# Judul Artikel\n\nParagraf pertama...\n\n## Sub Judul\n\n- Item 1\n- Item 2\n\n**Teks tebal** dan *teks miring*"
-                      />
-                      {errors.content && (
-                        <p className="text-sm text-red-500">{errors.content}</p>
-                      )}
-                    </div>
-                  </TabsContent>
-
-                  {/* Metadata Tab */}
-                  <TabsContent value="metadata" className="space-y-6 mt-6">
-                    {/* Featured Image Upload */}
-                    <div className="space-y-2">
-                      <Label className="text-sm font-medium">
-                        Gambar Utama
-                      </Label>
-                      
-                      {/* Image Upload Area */}
-                      <div
-                        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-                          dragActive 
-                            ? 'border-primary bg-primary/5' 
-                            : 'border-muted-foreground/25 hover:border-muted-foreground/50'
-                        }`}
-                        onDragEnter={handleDrag}
-                        onDragLeave={handleDrag}
-                        onDragOver={handleDrag}
-                        onDrop={handleDrop}
-                      >
-                        {formData.featured_image_url ? (
-                          <div className="space-y-4">
-                            <Image
-                              src={formData.featured_image_url}
-                              alt="Featured"
-                              width={400}
-                              height={192}
-                              className="w-full max-w-md h-48 object-cover rounded mx-auto"
-                            />
-                            <div className="flex gap-2 justify-center">
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={() => fileInputRef.current?.click()}
-                                disabled={isUploading}
-                                className="gap-2"
-                              >
-                                <IconUpload size={16} />
-                                Ganti Gambar
-                              </Button>
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                onClick={removeImage}
-                                className="gap-2 text-red-600 hover:text-red-700"
-                              >
-                                <IconX size={16} />
-                                Hapus
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="space-y-4">
-                            <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center mx-auto">
-                              <IconPhoto size={32} className="text-muted-foreground" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium">
-                                Drag & drop gambar atau klik untuk upload
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                PNG, JPG, GIF hingga 5MB
-                              </p>
-                            </div>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={() => fileInputRef.current?.click()}
-                              disabled={isUploading}
-                              className="gap-2"
-                            >
-                              <IconUpload size={16} />
-                              {isUploading ? 'Uploading...' : 'Pilih File'}
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                      
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileSelect}
-                        className="hidden"
-                      />
-                      
-                      {/* URL Input Fallback */}
-                      <div className="mt-4">
-                        <Label htmlFor="featured_image_url" className="text-sm font-medium">
-                          Atau masukkan URL gambar
-                        </Label>
-                        <Input
-                          id="featured_image_url"
-                          type="url"
-                          value={formData.featured_image_url}
-                          onChange={(e) => handleInputChange('featured_image_url', e.target.value)}
-                          placeholder="https://example.com/image.jpg"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Author Selection */}
-                    <div className="space-y-2">
-                      <Label htmlFor="author_name" className="text-sm font-medium">
-                        Penulis
-                      </Label>
-                      {authors.length > 0 ? (
-                        <Select
-                          value={formData.author_name}
-                          onValueChange={(value) => handleInputChange('author_name', value)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Pilih penulis" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">Tidak ada penulis</SelectItem>
-                            {authors.map((author) => (
-                              <SelectItem key={author.id} value={author.id}>
-                                <div className="flex items-center gap-2">
-                                  <IconUser size={16} />
-                                  {author.first_name} {author.last_name} - {author.position}
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Input
-                          id="author_name"
-                          type="text"
-                          value={formData.author_name}
-                          onChange={(e) => handleInputChange('author_name', e.target.value)}
-                          placeholder="Nama penulis"
-                        />
-                      )}
-                      
-                      {getSelectedAuthor() && (
-                        <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                          <IconUser size={16} className="text-muted-foreground" />
-                          <div>
-                            <p className="text-sm font-medium">
-                              {getSelectedAuthor()?.first_name} {getSelectedAuthor()?.last_name}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {getSelectedAuthor()?.position}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Category Selection */}
-                    <div className="space-y-2">
-                      <Label htmlFor="category_id" className="text-sm font-medium">
-                        Kategori
-                      </Label>
-                      {categories.length > 0 ? (
-                        <Select
-                          value={formData.category_id}
-                          onValueChange={(value) => handleInputChange('category_id', value)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Pilih kategori" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">Tidak ada kategori</SelectItem>
-                            {categories.map((category) => (
-                              <SelectItem key={category.id} value={category.id}>
-                                <div className="flex items-center gap-2">
-                                  <IconTag size={16} />
-                                  {category.name}
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Input
-                          id="category_id"
-                          type="text"
-                          value={formData.category_id}
-                          onChange={(e) => handleInputChange('category_id', e.target.value)}
-                          placeholder="UUID kategori (opsional)"
-                        />
-                      )}
-                      
-                      {getSelectedCategory() && (
-                        <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
-                          <IconTag size={16} className="text-muted-foreground" />
-                          <div>
-                            <p className="text-sm font-medium">{getSelectedCategory()?.name}</p>
-                            <p className="text-xs text-muted-foreground">
-                              Slug: {getSelectedCategory()?.slug}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </TabsContent>
-
-                  {/* SEO Tab */}
-                  <TabsContent value="seo" className="space-y-6 mt-6">
-                    {/* Meta Title */}
-                    <div className="space-y-2">
-                      <Label htmlFor="meta_title" className="text-sm font-medium">
-                        Meta Title
-                      </Label>
-                      <Input
-                        id="meta_title"
-                        type="text"
-                        value={formData.meta_title}
-                        onChange={(e) => handleInputChange('meta_title', e.target.value)}
-                        placeholder="Title untuk SEO (default: judul artikel)"
-                      />
-                      {getCharacterCount(formData.meta_title, 60)}
-                    </div>
-
-                    {/* Meta Description */}
-                    <div className="space-y-2">
-                      <Label htmlFor="meta_description" className="text-sm font-medium">
-                        Meta Description
-                      </Label>
-                      <Textarea
-                        id="meta_description"
-                        value={formData.meta_description}
-                        onChange={(e) => handleInputChange('meta_description', e.target.value)}
-                        placeholder="Deskripsi untuk SEO (default: excerpt artikel)"
-                        rows={3}
-                      />
-                      {getCharacterCount(formData.meta_description, 160)}
-                    </div>
-
-                    {/* Meta Keywords */}
-                    <div className="space-y-2">
-                      <Label htmlFor="meta_keywords" className="text-sm font-medium">
-                        Meta Keywords
-                      </Label>
-                      <Input
-                        id="meta_keywords"
-                        type="text"
-                        value={formData.meta_keywords}
-                        onChange={(e) => handleInputChange('meta_keywords', e.target.value)}
-                        placeholder="Kata kunci dipisahkan dengan koma"
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Contoh: web development, teknologi, inovasi
-                      </p>
-                    </div>
-                  </TabsContent>
-
-                  {/* Settings Tab */}
-                  <TabsContent value="settings" className="space-y-6 mt-6">
-                    {/* Status */}
-                    <div className="space-y-2">
-                      <Label htmlFor="status" className="text-sm font-medium">
-                        Status *
-                      </Label>
-                      <Select
-                        value={formData.status}
-                        onValueChange={(value: PostStatus) => handleInputChange('status', value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Pilih status artikel" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="draft">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                              Draft
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="published">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                              Published
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="archived">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
-                              Archived
-                            </div>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    {/* Published At */}
-                    <div className="space-y-2">
-                      <Label htmlFor="published_at" className="text-sm font-medium">
-                        Tanggal Publikasi
-                      </Label>
-                      <Input
-                        id="published_at"
-                        type="datetime-local"
-                        value={formData.published_at ? new Date(formData.published_at).toISOString().slice(0, 16) : ''}
-                        onChange={(e) => handleInputChange('published_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
-                        className={errors.published_at ? 'border-red-500' : ''}
-                      />
-                      {errors.published_at && (
-                        <p className="text-sm text-red-500">{errors.published_at}</p>
-                      )}
-                      <p className="text-xs text-muted-foreground">
-                        Kosongkan untuk publikasi otomatis saat status diubah ke Published
-                      </p>
-                    </div>
-
-                    {/* Is Featured */}
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="is_featured"
-                        checked={formData.is_featured}
-                        onCheckedChange={(checked) => handleInputChange('is_featured', !!checked)}
-                      />
-                      <Label htmlFor="is_featured" className="text-sm font-medium">
-                        Artikel Unggulan
-                      </Label>
-                    </div>
-                  </TabsContent>
-                </Tabs>
-
-                {/* Submit Buttons */}
-                <div className="flex gap-4 pt-6 border-t">
-                  <Button
-                    type="submit"
-                    disabled={isLoading}
-                    className="gap-2"
-                  >
-                    {isLoading 
-                      ? (postId ? 'Menyimpan...' : 'Membuat...') 
-                      : (postId ? 'Simpan Perubahan' : 'Buat Artikel')
-                    }
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Sidebar */}
-        <div className="space-y-6">
+{/* Preview, Stats & Help Section */}
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Article Preview */}
           {showPreview && (
-            <Card>
+            <Card className="lg:col-span-2">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <IconEye size={20} />
@@ -905,8 +438,8 @@ export function PostForm({ postId, initialData }: PostFormProps) {
             </CardHeader>
             <CardContent className="space-y-3 text-sm text-muted-foreground">
               <div className="space-y-2">
-                <p className="font-medium text-foreground">Format Konten</p>
-                <p>Pilih antara HTML atau Markdown. HTML memberikan kontrol penuh, Markdown lebih mudah untuk penulis.</p>
+                <p className="font-medium text-foreground">Markdown Editor</p>
+                <p>Gunakan toolbar atau keyboard shortcuts untuk formatting. Ctrl+B untuk bold, Ctrl+I untuk italic.</p>
               </div>
               
               <Separator />
@@ -925,6 +458,445 @@ export function PostForm({ postId, initialData }: PostFormProps) {
             </CardContent>
           </Card>
         </div>
+        
+      {/* Main Content */}
+      <div className="space-y-8">
+        {/* Form Section */}
+        <Card>
+      <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <IconFileText size={20} />
+              Form Artikel
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="content" className="flex items-center gap-2">
+                    <IconFileText size={16} />
+                    Konten
+                  </TabsTrigger>
+                  <TabsTrigger value="metadata" className="flex items-center gap-2">
+                    <IconFileText size={16} />
+                    Metadata
+                  </TabsTrigger>
+                  <TabsTrigger value="seo" className="flex items-center gap-2">
+                    <IconSeo size={16} />
+                    SEO
+                  </TabsTrigger>
+                  <TabsTrigger value="settings" className="flex items-center gap-2">
+                    <IconSettings size={16} />
+                    Pengaturan
+                  </TabsTrigger>
+            </TabsList>
+
+            {/* Content Tab */}
+                <TabsContent value="content" className="space-y-6 mt-6">
+              {/* Title */}
+              <div className="space-y-2">
+                    <Label htmlFor="title" className="text-sm font-medium">
+                      Judul Artikel *
+                    </Label>
+                <Input
+                  id="title"
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => handleInputChange('title', e.target.value)}
+                      placeholder="Masukkan judul artikel yang menarik"
+                      className={errors.title ? 'border-red-500' : ''}
+                  required
+                />
+                    {errors.title && (
+                      <p className="text-sm text-red-500">{errors.title}</p>
+                    )}
+              </div>
+
+              {/* Slug */}
+              <div className="space-y-2">
+                    <Label htmlFor="slug" className="text-sm font-medium">
+                      Slug *
+                    </Label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">/blog/</span>
+                <Input
+                  id="slug"
+                  type="text"
+                  value={formData.slug}
+                  onChange={(e) => handleInputChange('slug', e.target.value)}
+                  placeholder="url-friendly-slug"
+                        className={errors.slug ? 'border-red-500' : ''}
+                  required
+                />
+                    </div>
+                    {errors.slug && (
+                      <p className="text-sm text-red-500">{errors.slug}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                      URL artikel akan menjadi: /blog/{formData.slug}
+                </p>
+              </div>
+
+              {/* Excerpt */}
+              <div className="space-y-2">
+                    <Label htmlFor="excerpt" className="text-sm font-medium">
+                      Ringkasan
+                    </Label>
+                <Textarea
+                  id="excerpt"
+                  value={formData.excerpt}
+                  onChange={(e) => handleInputChange('excerpt', e.target.value)}
+                      placeholder="Ringkasan singkat artikel untuk preview dan SEO"
+                  rows={3}
+                />
+                    {getCharacterCount(formData.excerpt, 160)}
+              </div>
+
+              {/* Content */}
+              <div className="space-y-2">
+                    <Label htmlFor="content" className="text-sm font-medium">
+                      Konten Artikel *
+                    </Label>
+                    <MarkdownEditor
+                  value={formData.content}
+                      onChange={(value) => handleInputChange('content', value)}
+                      placeholder="# Judul Artikel\n\nParagraf pertama...\n\n## Sub Judul\n\n- Item 1\n- Item 2\n\n**Teks tebal** dan *teks miring*"
+                    />
+                    {errors.content && (
+                      <p className="text-sm text-red-500">{errors.content}</p>
+                    )}
+              </div>
+            </TabsContent>
+
+            {/* Metadata Tab */}
+                <TabsContent value="metadata" className="space-y-6 mt-6">
+                  {/* Featured Image Upload */}
+              <div className="space-y-2">
+                    <Label className="text-sm font-medium">
+                      Gambar Utama
+                    </Label>
+                    
+                    {/* Image Upload Area */}
+                    <div
+                      className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                        dragActive 
+                          ? 'border-primary bg-primary/5' 
+                          : 'border-muted-foreground/25 hover:border-muted-foreground/50'
+                      }`}
+                      onDragEnter={handleDrag}
+                      onDragLeave={handleDrag}
+                      onDragOver={handleDrag}
+                      onDrop={handleDrop}
+                    >
+                      {formData.featured_image_url ? (
+                        <div className="space-y-4">
+                          <Image
+                            src={formData.featured_image_url}
+                            alt="Featured"
+                            width={400}
+                            height={192}
+                            className="w-full max-w-md h-48 object-cover rounded mx-auto"
+                          />
+                          <div className="flex gap-2 justify-center">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => fileInputRef.current?.click()}
+                              disabled={isUploading}
+                              className="gap-2"
+                            >
+                              <IconUpload size={16} />
+                              Ganti Gambar
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={removeImage}
+                              className="gap-2 text-red-600 hover:text-red-700"
+                            >
+                              <IconX size={16} />
+                              Hapus
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center mx-auto">
+                            <IconPhoto size={32} className="text-muted-foreground" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">
+                              Drag & drop gambar atau klik untuk upload
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              PNG, JPG, GIF hingga 5MB
+                            </p>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploading}
+                            className="gap-2"
+                          >
+                            <IconUpload size={16} />
+                            {isUploading ? 'Uploading...' : 'Pilih File'}
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                    
+                    {/* URL Input Fallback */}
+                    <div className="mt-4">
+                      <Label htmlFor="featured_image_url" className="text-sm font-medium">
+                        Atau masukkan URL gambar
+                      </Label>
+                <Input
+                  id="featured_image_url"
+                  type="url"
+                  value={formData.featured_image_url}
+                  onChange={(e) => handleInputChange('featured_image_url', e.target.value)}
+                  placeholder="https://example.com/image.jpg"
+                />
+                    </div>
+              </div>
+
+              {/* Author Selection */}
+              <div className="space-y-2">
+                    <Label htmlFor="author_name" className="text-sm font-medium">
+                      Penulis
+                    </Label>
+                {authors.length > 0 ? (
+                  <Select
+                    value={formData.author_name}
+                    onValueChange={(value) => handleInputChange('author_name', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih penulis" />
+                    </SelectTrigger>
+                    <SelectContent>
+                          <SelectItem value="none">Tidak ada penulis</SelectItem>
+                      {authors.map((author) => (
+                        <SelectItem key={author.id} value={author.id}>
+                              <div className="flex items-center gap-2">
+                                <IconUser size={16} />
+                          {author.first_name} {author.last_name} - {author.position}
+                              </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    id="author_name"
+                    type="text"
+                    value={formData.author_name}
+                    onChange={(e) => handleInputChange('author_name', e.target.value)}
+                    placeholder="Nama penulis"
+                  />
+                )}
+                    
+                    {getSelectedAuthor() && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <IconUser size={12} />
+                        <span>{getSelectedAuthor()?.first_name} {getSelectedAuthor()?.last_name}</span>
+                        <span>•</span>
+                        <span>{getSelectedAuthor()?.position}</span>
+                      </div>
+                    )}
+              </div>
+
+              {/* Category Selection */}
+              <div className="space-y-2">
+                    <Label htmlFor="category_id" className="text-sm font-medium">
+                      Kategori
+                    </Label>
+                {categories.length > 0 ? (
+                  <Select
+                    value={formData.category_id}
+                    onValueChange={(value) => handleInputChange('category_id', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Pilih kategori" />
+                    </SelectTrigger>
+                    <SelectContent>
+                          <SelectItem value="none">Tidak ada kategori</SelectItem>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                              <div className="flex items-center gap-2">
+                                <IconTag size={16} />
+                          {category.name}
+                              </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Input
+                    id="category_id"
+                    type="text"
+                    value={formData.category_id}
+                    onChange={(e) => handleInputChange('category_id', e.target.value)}
+                    placeholder="UUID kategori (opsional)"
+                  />
+                )}
+                    
+                    {getSelectedCategory() && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <IconTag size={12} />
+                        <span>{getSelectedCategory()?.name}</span>
+                      </div>
+                    )}
+              </div>
+            </TabsContent>
+
+            {/* SEO Tab */}
+                <TabsContent value="seo" className="space-y-6 mt-6">
+              {/* Meta Title */}
+              <div className="space-y-2">
+                    <Label htmlFor="meta_title" className="text-sm font-medium">
+                      Meta Title
+                    </Label>
+                <Input
+                  id="meta_title"
+                  type="text"
+                  value={formData.meta_title}
+                  onChange={(e) => handleInputChange('meta_title', e.target.value)}
+                  placeholder="Title untuk SEO (default: judul artikel)"
+                />
+                    {getCharacterCount(formData.meta_title, 60)}
+              </div>
+
+              {/* Meta Description */}
+              <div className="space-y-2">
+                    <Label htmlFor="meta_description" className="text-sm font-medium">
+                      Meta Description
+                    </Label>
+                <Textarea
+                  id="meta_description"
+                  value={formData.meta_description}
+                  onChange={(e) => handleInputChange('meta_description', e.target.value)}
+                  placeholder="Deskripsi untuk SEO (default: excerpt artikel)"
+                  rows={3}
+                />
+                    {getCharacterCount(formData.meta_description, 160)}
+              </div>
+
+              {/* Meta Keywords */}
+              <div className="space-y-2">
+                    <Label htmlFor="meta_keywords" className="text-sm font-medium">
+                      Meta Keywords
+                    </Label>
+                <Input
+                  id="meta_keywords"
+                  type="text"
+                  value={formData.meta_keywords}
+                  onChange={(e) => handleInputChange('meta_keywords', e.target.value)}
+                  placeholder="Kata kunci dipisahkan dengan koma"
+                />
+                    <p className="text-xs text-muted-foreground">
+                  Contoh: web development, teknologi, inovasi
+                </p>
+              </div>
+            </TabsContent>
+
+            {/* Settings Tab */}
+                <TabsContent value="settings" className="space-y-6 mt-6">
+              {/* Status */}
+              <div className="space-y-2">
+                    <Label htmlFor="status" className="text-sm font-medium">
+                      Status *
+                    </Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value: PostStatus) => handleInputChange('status', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih status artikel" />
+                  </SelectTrigger>
+                  <SelectContent>
+                        <SelectItem value="draft">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                            Draft
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="published">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            Published
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="archived">
+                          <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                            Archived
+                          </div>
+                        </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Published At */}
+              <div className="space-y-2">
+                    <Label htmlFor="published_at" className="text-sm font-medium">
+                      Tanggal Publikasi
+                    </Label>
+                <Input
+                  id="published_at"
+                  type="datetime-local"
+                  value={formData.published_at ? new Date(formData.published_at).toISOString().slice(0, 16) : ''}
+                  onChange={(e) => handleInputChange('published_at', e.target.value ? new Date(e.target.value).toISOString() : '')}
+                      className={errors.published_at ? 'border-red-500' : ''}
+                />
+                    {errors.published_at && (
+                      <p className="text-sm text-red-500">{errors.published_at}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground">
+                  Kosongkan untuk publikasi otomatis saat status diubah ke Published
+                </p>
+              </div>
+
+              {/* Is Featured */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="is_featured"
+                  checked={formData.is_featured}
+                  onCheckedChange={(checked) => handleInputChange('is_featured', !!checked)}
+                />
+                    <Label htmlFor="is_featured" className="text-sm font-medium">
+                      Artikel Unggulan
+                    </Label>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          {/* Submit Buttons */}
+          <div className="flex gap-4 pt-6 border-t">
+            <Button
+                  type="submit"
+              disabled={isLoading}
+                  className="gap-2"
+            >
+              {isLoading 
+                ? (postId ? 'Menyimpan...' : 'Membuat...') 
+                : (postId ? 'Simpan Perubahan' : 'Buat Artikel')
+              }
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
       </div>
     </div>
   );
