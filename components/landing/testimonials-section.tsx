@@ -65,7 +65,7 @@ export async function TestimonialsSection() {
     <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/40">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Apa Kata Klien Kami</h2>
+          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-foreground">Apa Kata Klien Kami</h2>
           <p className="mt-4 text-muted-foreground">
             Kami bangga dapat bekerja sama dengan perusahaan-perusahaan hebat.
           </p>
@@ -85,7 +85,7 @@ export async function TestimonialsSection() {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-semibold">{testimonial.client_name || 'Unknown'}</p>
+                    <p className="font-semibold text-foreground">{testimonial.client_name || 'Unknown'}</p>
                     <p className="text-sm text-muted-foreground">
                       {testimonial.client_position || 'Position'}, {testimonial.client_company || 'Company'}
                     </p>

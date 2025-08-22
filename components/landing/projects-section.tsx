@@ -25,91 +25,90 @@ export async function ProjectsSection() {
   const projects = await PublicService.getFeaturedProjects('id'); // Indonesian by default
 
   return (
-    <section className="relative">
+    <section className="relative py-16 md:py-24 lg:py-32">
       {/* Header */}
-      <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 mb-16">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Proyek Unggulan Kami
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             Eksplorasi koleksi proyek-proyek inovatif yang telah kami kembangkan untuk berbagai klien di berbagai industri.
           </p>
         </div>
       </div>
 
-      {/* Projects List - Each project gets full viewport */}
-      {projects.map((project, index) => (
-        <ProjectRow key={project.id} project={project} isReversed={index % 2 === 1} />
-      ))}
+      {/* Projects List */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="space-y-24">
+          {projects.map((project, index) => (
+            <ProjectRow key={project.id} project={project} isReversed={index % 2 === 1} />
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
 
 function ProjectRow({ project, isReversed }: { readonly project: ProjectData; readonly isReversed: boolean }) {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto w-full">
-        <div className={`grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32 xl:gap-40 items-center`}>
-          {/* Image Section */}
-          <div className={`${isReversed ? 'lg:order-2' : 'lg:order-1'}`}>
-            <div className="relative aspect-video overflow-hidden rounded-2xl shadow-2xl group">
-              {project.featured_image_url ? (
-                <Image
-                  src={project.featured_image_url}
-                  alt={project.name}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                  <span className="text-white text-xl font-semibold">{project.name}</span>
-                </div>
-              )}
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300" />
-              
-              {/* Status Badge */}
-              <div className="absolute top-4 right-4">
-                <Badge 
-                  variant={project.status === 'completed' ? 'default' : 'secondary'}
-                  className="bg-white/90 text-gray-900 hover:bg-white"
-                >
-                  {project.status === 'completed' ? 'Selesai' : 'Berlangsung'}
-                </Badge>
+    <div className="max-w-7xl mx-auto w-full">
+      <div className={`grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32 xl:gap-40 items-center`}>
+        {/* Image Section */}
+        <div className={`${isReversed ? 'lg:order-2' : 'lg:order-1'}`}>
+          <div className="relative aspect-video overflow-hidden rounded-2xl shadow-2xl">
+            {project.featured_image_url ? (
+              <Image
+                src={project.featured_image_url}
+                alt={project.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center">
+                <span className="text-primary-foreground text-xl font-semibold">{project.name}</span>
               </div>
+            )}
+            
+            {/* Status Badge */}
+            <div className="absolute top-4 right-4">
+              <Badge 
+                variant={project.status === 'completed' ? 'default' : 'secondary'}
+                className="bg-background/90 text-foreground"
+              >
+                {project.status === 'completed' ? 'Selesai' : 'Berlangsung'}
+              </Badge>
             </div>
           </div>
+        </div>
 
-          {/* Content Section */}
-          <div className={`space-y-6 ${isReversed ? 'lg:order-1' : 'lg:order-2'}`}>
-            {/* Project Header */}
-            <div>
-              <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                {project.name}
-              </h3>
-            </div>
+        {/* Content Section */}
+        <div className={`space-y-6 ${isReversed ? 'lg:order-1' : 'lg:order-2'}`}>
+          {/* Project Header */}
+          <div>
+            <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+              {project.name}
+            </h3>
+          </div>
 
-            {/* Description */}
-            <div className="prose prose-gray dark:prose-invert max-w-none">
-              <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-base">
-                {project.short_description || project.description}
-              </p>
-            </div>
+          {/* Description */}
+          <div className="prose prose-foreground max-w-none">
+            <p className="text-muted-foreground leading-relaxed text-base">
+              {project.short_description || project.description}
+            </p>
+          </div>
 
-
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              {project.project_url && (
-                <Button size="lg" className="flex items-center gap-2" asChild>
-                  <a href={project.project_url} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="w-4 h-4" />
-                    Lihat Proyek
-                  </a>
-                </Button>
-              )}
-            </div>
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            {project.project_url && (
+              <Button size="lg" className="flex items-center gap-2" asChild>
+                <a href={project.project_url} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-4 h-4" />
+                  Lihat Proyek
+                </a>
+              </Button>
+            )}
           </div>
         </div>
       </div>
