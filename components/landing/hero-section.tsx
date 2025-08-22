@@ -13,38 +13,71 @@ const World = dynamic(() => import("@/components/ui/globe").then((m) => m.World)
 
 export function HeroSection() {
   const { theme } = useTheme();
-  const [scrollStage, setScrollStage] = useState(1); // Start with content 1 visible
+  const [contentOpacity, setContentOpacity] = useState({
+    content1: 1,
+    content2: 0,
+    content3: 0
+  });
 
-  // Scroll animation handler with throttling
+  // Scroll animation handler with smooth sticky transitions
   useEffect(() => {
     let ticking = false;
     
     const updateScrollY = () => {
       const currentScrollY = window.scrollY;
-      
       const viewportHeight = window.innerHeight;
-      const scrollThreshold1 = 0;                     // Content 1 shows immediately
-      const scrollThreshold2 = viewportHeight * 1.5;  // First content fade out (longer)
-      const scrollThreshold3 = viewportHeight * 2.0;  // Second content fade in
-      const scrollThreshold4 = viewportHeight * 3.5;  // Second content fade out (longer)
-      const scrollThreshold5 = viewportHeight * 4.0;  // Third content fade in
-      const scrollThreshold6 = viewportHeight * 5.5;  // Third content fade out (longer)
       
-      if (currentScrollY >= scrollThreshold1 && currentScrollY < scrollThreshold2) {
-        setScrollStage(1); // First content visible
-      } else if (currentScrollY >= scrollThreshold2 && currentScrollY < scrollThreshold3) {
-        setScrollStage(2); // First content fading out
-      } else if (currentScrollY >= scrollThreshold3 && currentScrollY < scrollThreshold4) {
-        setScrollStage(3); // Second content visible
-      } else if (currentScrollY >= scrollThreshold4 && currentScrollY < scrollThreshold5) {
-        setScrollStage(4); // Second content fading out
-      } else if (currentScrollY >= scrollThreshold5 && currentScrollY < scrollThreshold6) {
-        setScrollStage(5); // Third content visible
-      } else if (currentScrollY >= scrollThreshold6) {
-        setScrollStage(6); // All content faded out
-      } else {
-        setScrollStage(0); // Initial state
+      // Content visibility ranges with sticky periods
+      const content1Start = 0;
+      const content1StickyEnd = viewportHeight * 2.0;    // Content 1 menempel sampai 2vh
+      const content1FadeEnd = viewportHeight * 2.5;      // Content 1 selesai fade out
+      
+      const content2Start = viewportHeight * 2.0;        // Content 2 mulai muncul
+      const content2StickyEnd = viewportHeight * 4.5;    // Content 2 menempel sampai 4.5vh  
+      const content2FadeEnd = viewportHeight * 5.0;      // Content 2 selesai fade out
+      
+      const content3Start = viewportHeight * 4.5;        // Content 3 mulai muncul
+      const content3StickyEnd = viewportHeight * 7.0;    // Content 3 menempel sampai 7vh
+      const content3FadeEnd = viewportHeight * 7.5;      // Content 3 selesai fade out
+      
+      // Calculate opacity and visibility for each content
+      let content1Opacity = 0;
+      let content2Opacity = 0;
+      let content3Opacity = 0;
+      
+      // Content 1 logic
+      if (currentScrollY >= content1Start && currentScrollY <= content1StickyEnd) {
+        content1Opacity = 1; // Fully visible and sticky
+      } else if (currentScrollY > content1StickyEnd && currentScrollY <= content1FadeEnd) {
+        // Fade out transition
+        const fadeProgress = (currentScrollY - content1StickyEnd) / (content1FadeEnd - content1StickyEnd);
+        content1Opacity = 1 - fadeProgress;
       }
+      
+      // Content 2 logic
+      if (currentScrollY >= content2Start && currentScrollY <= content2StickyEnd) {
+        content2Opacity = 1; // Fully visible and sticky
+      } else if (currentScrollY > content2StickyEnd && currentScrollY <= content2FadeEnd) {
+        // Fade out transition
+        const fadeProgress = (currentScrollY - content2StickyEnd) / (content2FadeEnd - content2StickyEnd);
+        content2Opacity = 1 - fadeProgress;
+      }
+      
+      // Content 3 logic
+      if (currentScrollY >= content3Start && currentScrollY <= content3StickyEnd) {
+        content3Opacity = 1; // Fully visible and sticky
+      } else if (currentScrollY > content3StickyEnd && currentScrollY <= content3FadeEnd) {
+        // Fade out transition
+        const fadeProgress = (currentScrollY - content3StickyEnd) / (content3FadeEnd - content3StickyEnd);
+        content3Opacity = 1 - fadeProgress;
+      }
+      
+      // Store opacity values in state
+      setContentOpacity({
+        content1: content1Opacity,
+        content2: content2Opacity,
+        content3: content3Opacity
+      });
       
       ticking = false;
     };
@@ -490,10 +523,10 @@ export function HeroSection() {
 
   return (
     <>
-      {/* Scrollable hero section with sticky content - Extended height */}
+      {/* Scrollable hero section with sticky content - Extended height for longer content visibility */}
       <section 
         style={{
-          height: '600vh', // Much longer scroll height for smoother experience
+          height: '800vh', // Increased height to accommodate longer sticky periods
           position: 'relative',
           background: 'linear-gradient(to bottom, hsl(var(--background)), hsl(var(--background)) 50%, hsl(var(--background)))'
         }}
@@ -527,12 +560,13 @@ export function HeroSection() {
             </div>
           </div>
           
-          {/* Content 1 - Initial Hero Text with MagneticText */}
+          {/* Content 1 - Initial Hero Text with smooth sticky transition */}
           <motion.div
             className="absolute z-10 text-center max-w-4xl px-4"
             style={{
-              opacity: scrollStage === 1 ? 1 : 0,
-              transition: 'opacity 0.8s ease'
+              opacity: contentOpacity.content1,
+              transform: `translateY(${contentOpacity.content1 === 1 ? 0 : 20}px)`,
+              transition: 'all 0.3s ease-out' // Faster response to scroll
             }}
           >
             <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl leading-tight text-foreground mb-6">
@@ -553,12 +587,13 @@ export function HeroSection() {
             </div>
           </motion.div>
 
-          {/* Content 2 - Our Services with MagneticText */}
+          {/* Content 2 - Our Services with smooth sticky transition */}
           <motion.div
             className="absolute z-10 text-center max-w-4xl px-4"
             style={{
-              opacity: scrollStage === 3 ? 1 : 0,
-              transition: 'opacity 0.8s ease'
+              opacity: contentOpacity.content2,
+              transform: `translateY(${contentOpacity.content2 === 1 ? 0 : 20}px)`,
+              transition: 'all 0.3s ease-out' // Faster response to scroll
             }}
           >
             <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl leading-tight text-foreground mb-6">
@@ -570,21 +605,16 @@ export function HeroSection() {
               From concept to deployment, we deliver cutting-edge technology solutions that transform your business.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="text-lg px-8 py-6">
-                <Link href="/services">Our Services</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6">
-                <Link href="/about">Learn More</Link>
-              </Button>
             </div>
           </motion.div>
 
-          {/* Content 3 - Global Reach with MagneticText */}
+          {/* Content 3 - Global Reach with smooth sticky transition */}
           <motion.div
             className="absolute z-10 text-center max-w-4xl px-4"
             style={{
-              opacity: scrollStage === 5 ? 1 : 0,
-              transition: 'opacity 0.8s ease'
+              opacity: contentOpacity.content3,
+              transform: `translateY(${contentOpacity.content3 === 1 ? 0 : 20}px)`,
+              transition: 'all 0.3s ease-out' // Faster response to scroll
             }}
           >
             <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl leading-tight text-foreground mb-6">
@@ -596,12 +626,6 @@ export function HeroSection() {
               Our global network ensures seamless collaboration and support wherever you are.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="text-lg px-8 py-6">
-                <Link href="/contact">Get Started</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6">
-                <Link href="/blog">Explore Blog</Link>
-              </Button>
             </div>
           </motion.div>
         </div>
