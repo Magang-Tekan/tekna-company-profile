@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   DropdownMenu, 
@@ -37,6 +37,11 @@ export function ShareButton({
   size = 'sm'
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
+  const [isBrowser, setIsBrowser] = useState(false);
+
+  useEffect(() => {
+    setIsBrowser(true);
+  }, []);
 
   const shareData = {
     title,
@@ -51,7 +56,7 @@ export function ShareButton({
   };
 
   const handleNativeShare = async () => {
-    if (navigator.share) {
+    if (isBrowser && navigator.share) {
       try {
         await navigator.share(shareData);
       } catch (error) {
@@ -61,6 +66,8 @@ export function ShareButton({
   };
 
   const handleCopyLink = async () => {
+    if (!isBrowser) return;
+    
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
@@ -76,6 +83,8 @@ export function ShareButton({
   };
 
   const handleSocialShare = (platform: 'twitter' | 'facebook' | 'linkedin') => {
+    if (!isBrowser) return;
+    
     const shareUrl = shareUrls[platform];
     window.open(shareUrl, '_blank', 'width=600,height=400');
   };
@@ -96,7 +105,7 @@ export function ShareButton({
       
       <DropdownMenuContent align="end" className="w-56">
         {/* Native Share (if supported) */}
-        {navigator.share && (
+        {isBrowser && 'share' in navigator && (
           <DropdownMenuItem onClick={handleNativeShare}>
             <Share2 className="mr-2 h-4 w-4" />
             Share via...
@@ -143,8 +152,15 @@ export function CompactShareButton({
   url
 }: Pick<ShareButtonProps, 'url'>) {
   const [copied, setCopied] = useState(false);
+  const [isBrowser, setIsBrowser] = useState(false);
+
+  useEffect(() => {
+    setIsBrowser(true);
+  }, []);
 
   const handleCopyLink = async () => {
+    if (!isBrowser) return;
+    
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
