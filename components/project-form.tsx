@@ -105,10 +105,25 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
     setShowImageUpload(false);
   };
 
-  // Handle media upload error
+  // Handle media upload error with better UX
   const handleMediaUploadError = (error: string) => {
     console.error('Media upload error:', error);
-    alert(`Upload gagal: ${error}`);
+    
+    // Show user-friendly error messages
+    let userFriendlyMessage = error;
+    if (error.includes('row-level security policy')) {
+      userFriendlyMessage = 'Anda tidak memiliki izin untuk mengupload file. Pastikan Anda sudah login dengan akun yang tepat.';
+    } else if (error.includes('too large')) {
+      userFriendlyMessage = 'File terlalu besar. Maksimal ukuran file 10MB untuk gambar proyek.';
+    } else if (error.includes('not supported')) {
+      userFriendlyMessage = 'Format file tidak didukung. Gunakan format JPG, PNG, GIF, atau WebP.';
+    } else if (error.includes('network') || error.includes('fetch')) {
+      userFriendlyMessage = 'Koneksi internet bermasalah. Periksa koneksi Anda dan coba lagi.';
+    }
+    
+    // Use toast notification instead of alert for better UX
+    // For now using alert, but can be replaced with toast library
+    alert(`Upload gagal: ${userFriendlyMessage}`);
   };
 
   // Remove featured image
@@ -222,7 +237,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
 
                   {/* Featured Image Upload */}
                   <div className="space-y-4">
-                    <Label>Gambar Unggulan Proyek</Label>
+                    <Label htmlFor="featured-image-section">Gambar Unggulan Proyek</Label>
                     
                     {formData.featured_image_url ? (
                       <div className="space-y-2">
@@ -242,7 +257,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
                                 }}
                               />
                               <div className="fallback-icon absolute inset-0 hidden items-center justify-center">
-                                <IconPhoto className="h-8 w-8 text-muted-foreground" />
+                                <IconPhoto className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
                               </div>
                             </div>
                             <div className="flex-1 min-w-0">
@@ -258,6 +273,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
                               variant="outline"
                               size="sm"
                               onClick={removeFeaturedImage}
+                              aria-label="Hapus gambar unggulan"
                             >
                               <IconX className="h-4 w-4 mr-2" />
                               Hapus
@@ -271,6 +287,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
                             variant="outline"
                             size="sm"
                             onClick={() => setShowImageUpload(true)}
+                            aria-label="Ganti gambar unggulan"
                           >
                             <IconPhoto className="h-4 w-4 mr-2" />
                             Ganti Gambar
@@ -279,16 +296,32 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-                          <IconPhoto className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                        <div 
+                          className="border-2 border-dashed border-border rounded-lg p-8 text-center cursor-pointer hover:bg-muted/50 hover:border-input transition-colors"
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => setShowImageUpload(true)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              setShowImageUpload(true);
+                            }
+                          }}
+                          aria-label="Area upload gambar - klik untuk memilih gambar"
+                        >
+                          <IconPhoto className="h-12 w-12 text-muted-foreground mx-auto mb-4" aria-hidden="true" />
                           <h3 className="text-lg font-medium mb-2">Belum ada gambar</h3>
                           <p className="text-muted-foreground mb-4">
-                            Upload gambar untuk proyek ini
+                            Klik untuk upload gambar proyek ini
                           </p>
                           <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setShowImageUpload(true)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowImageUpload(true);
+                            }}
+                            aria-label="Upload gambar proyek"
                           >
                             <IconPhoto className="h-4 w-4 mr-2" />
                             Upload Gambar
@@ -299,14 +332,15 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
 
                     {/* Media Upload Component */}
                     {showImageUpload && (
-                      <div className="border rounded-lg p-4 bg-muted/50">
+                      <div className="border rounded-lg p-4 bg-muted/50" role="dialog" aria-labelledby="upload-dialog-title">
                         <div className="flex items-center justify-between mb-4">
-                          <h4 className="font-medium">Upload Gambar Proyek</h4>
+                          <h4 id="upload-dialog-title" className="font-medium">Upload Gambar Proyek</h4>
                           <Button
                             type="button"
                             variant="ghost"
                             size="sm"
                             onClick={() => setShowImageUpload(false)}
+                            aria-label="Tutup dialog upload"
                           >
                             <IconX className="h-4 w-4" />
                           </Button>
@@ -317,6 +351,8 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
                           maxFileSize={10 * 1024 * 1024} // 10MB
                           onUploadSuccess={handleMediaUploadSuccess}
                           onUploadError={handleMediaUploadError}
+                          placeholder="Drag & drop gambar proyek di sini atau klik untuk memilih"
+                          accept="image/*"
                         />
                       </div>
                     )}
@@ -331,9 +367,10 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
                       value={formData.featured_image_url}
                       onChange={(e) => setFormData(prev => ({ ...prev, featured_image_url: e.target.value }))}
                       placeholder="https://example.com/image.jpg"
+                      aria-describedby="url-help-text"
                     />
-                    <p className="text-xs text-muted-foreground">
-                      Opsional: Anda bisa memasukkan URL gambar eksternal sebagai alternatif
+                    <p id="url-help-text" className="text-xs text-muted-foreground">
+                      Opsional: Anda bisa memasukkan URL gambar eksternal sebagai alternatif dari upload
                     </p>
                   </div>
 

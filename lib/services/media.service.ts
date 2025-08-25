@@ -84,6 +84,9 @@ export class MediaService {
         height = dimensions.height;
       }
 
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
       // Create media file record in database
       const mediaFile: Omit<MediaFile, 'id' | 'created_at' | 'updated_at'> = {
         filename,
@@ -96,7 +99,7 @@ export class MediaService {
         height,
         alt_text: metadata?.alt_text || '',
         caption: metadata?.caption || '',
-        uploaded_by: metadata?.uploaded_by || undefined,
+        uploaded_by: user?.id,
         is_active: true
       };
 
@@ -109,7 +112,7 @@ export class MediaService {
       if (dbError) {
         console.error('Error saving media file to database:', dbError);
         // Try to delete uploaded file if database insert fails
-        await supabase.storage.from('media').remove([filePath]);
+        await supabase.storage.from(bucketName).remove([filePath]);
         
         return {
           success: false,

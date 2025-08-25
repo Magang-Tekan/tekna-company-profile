@@ -15,6 +15,9 @@ interface MediaUploadProps {
   allowedTypes?: string[];
   multiple?: boolean;
   className?: string;
+  accept?: string; // Custom accept attribute for input
+  placeholder?: string; // Custom placeholder text
+  disabled?: boolean; // Disable upload
 }
 
 interface UploadingFile {
@@ -31,10 +34,14 @@ export function MediaUpload({
   maxFileSize = 50 * 1024 * 1024, // 50MB default
   allowedTypes = ['image/*', 'application/pdf', 'text/*'],
   multiple = false,
-  className = ''
+  className = '',
+  accept,
+  placeholder,
+  disabled = false
 }: MediaUploadProps) {
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const [dragActive, setDragActive] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isFileTypeAllowed = useCallback((file: File): boolean => {
@@ -51,16 +58,18 @@ export function MediaUpload({
   }, [maxFileSize]);
 
   const handleFiles = useCallback(async (files: FileList) => {
+    if (disabled) return;
+    
     const validFiles: File[] = [];
     
     Array.from(files).forEach(file => {
       if (!isFileTypeAllowed(file)) {
-        onUploadError?.(`File type ${file.type} is not supported`);
+        onUploadError?.(`Tipe file ${file.type} tidak didukung`);
         return;
       }
       
       if (!isFileSizeAllowed(file)) {
-        onUploadError?.(`File ${file.name} is too large (max ${Math.round(maxFileSize / 1024 / 1024)}MB)`);
+        onUploadError?.(`File ${file.name} terlalu besar (maks ${Math.round(maxFileSize / 1024 / 1024)}MB)`);
         return;
       }
       
@@ -69,6 +78,7 @@ export function MediaUpload({
 
     if (validFiles.length === 0) return;
 
+    setIsUploading(true);
     const newUploadingFiles: UploadingFile[] = validFiles.map(file => ({
       file,
       progress: 0,
@@ -89,7 +99,9 @@ export function MediaUpload({
           ));
         }, 100);
 
-        const result = await MediaService.uploadFile(file, folder);
+        const result = await MediaService.uploadFile(file, folder, {
+          uploaded_by: undefined // Will be set by Supabase auth automatically
+        });
         
         if (progressInterval) {
           clearInterval(progressInterval);
@@ -110,24 +122,32 @@ export function MediaUpload({
             idx === fileIndex ? { ...f, status: 'error', error: result.error } : f
           ));
           
-          onUploadError?.(result.error || 'Upload failed');
+          onUploadError?.(result.error || 'Upload gagal');
         }
       } catch (error) {
         if (progressInterval) {
           clearInterval(progressInterval);
         }
         setUploadingFiles(prev => prev.map((f, idx) => 
-          idx === fileIndex ? { ...f, status: 'error', error: 'Upload failed' } : f
+          idx === fileIndex ? { ...f, status: 'error', error: 'Upload gagal' } : f
         ));
         
-        onUploadError?.(error instanceof Error ? error.message : 'Upload failed');
+        onUploadError?.(error instanceof Error ? error.message : 'Upload gagal');
       }
     }
-  }, [folder, onUploadSuccess, onUploadError, uploadingFiles.length, isFileTypeAllowed, isFileSizeAllowed, maxFileSize]);
+    
+    setIsUploading(false);
+  }, [folder, onUploadSuccess, onUploadError, uploadingFiles.length, isFileTypeAllowed, isFileSizeAllowed, maxFileSize, disabled]);
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       handleFiles(e.target.files);
+    }
+  };
+
+  const handleUploadAreaClick = () => {
+    if (!disabled && fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
@@ -178,33 +198,41 @@ export function MediaUpload({
     <div className={`space-y-4 ${className}`}>
       <Card className={`border-2 border-dashed transition-colors ${
         dragActive ? 'border-primary bg-primary/10' : 'border-border hover:border-input'
-      }`}>
+      } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-muted/50'}`}>
         <CardContent className="p-6">
           <div
-            className="text-center"
+            className={`text-center ${disabled ? 'pointer-events-none' : ''}`}
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
+            onClick={handleUploadAreaClick}
+            role="button"
+            tabIndex={disabled ? -1 : 0}
+            aria-label={`Upload area - ${placeholder || 'Drag and drop files here or click to select'}`}
+            aria-disabled={disabled}
+            onKeyDown={(e) => {
+              if (!disabled && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault();
+                fileInputRef.current?.click();
+              }
+            }}
           >
-            <IconUpload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-foreground mb-2">
-              Upload File
+            <IconUpload 
+              className={`h-12 w-12 mx-auto mb-4 ${disabled ? 'text-muted-foreground/50' : 'text-muted-foreground'}`}
+              aria-hidden="true"
+            />
+            <h3 className={`text-lg font-medium mb-2 ${disabled ? 'text-muted-foreground/50' : 'text-foreground'}`}>
+              {isUploading ? 'Mengupload...' : 'Upload File'}
             </h3>
-            <p className="text-muted-foreground mb-4">
-              Drag & drop files here or{' '}
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="text-primary hover:text-primary/80 underline"
-              >
-                select files
-              </button>
+            <p className={`mb-4 ${disabled ? 'text-muted-foreground/50' : 'text-muted-foreground'}`}>
+              {placeholder || 'Klik di sini atau drag & drop file untuk upload'}
             </p>
             
-            <div className="text-sm text-muted-foreground space-y-1">
-              <p>Supported files: {allowedTypes.join(', ')}</p>
-              <p>Maximum size: {Math.round(maxFileSize / 1024 / 1024)}MB</p>
+            <div className={`text-sm space-y-1 ${disabled ? 'text-muted-foreground/50' : 'text-muted-foreground'}`}>
+              <p>Format yang didukung: {allowedTypes.join(', ')}</p>
+              <p>Ukuran maksimal: {Math.round(maxFileSize / 1024 / 1024)}MB</p>
+              {multiple && <p>Anda dapat memilih beberapa file sekaligus</p>}
             </div>
           </div>
         </CardContent>
@@ -214,9 +242,11 @@ export function MediaUpload({
         ref={fileInputRef}
         type="file"
         multiple={multiple}
-        accept={allowedTypes.join(',')}
+        accept={accept || allowedTypes.join(',')}
         onChange={handleFileInputChange}
         className="hidden"
+        disabled={disabled}
+        aria-label="File input untuk upload"
       />
 
       {uploadingFiles.length > 0 && (
@@ -226,12 +256,18 @@ export function MediaUpload({
           </CardHeader>
           <CardContent className="space-y-3">
             {uploadingFiles.map((uploadingFile, index) => (
-              <div key={index} className="flex items-center gap-3 p-3 border rounded-lg">
+              <div 
+                key={index} 
+                className="flex items-center gap-3 p-3 border rounded-lg"
+                role="status"
+                aria-live="polite"
+                aria-label={`Upload status for ${uploadingFile.file.name}: ${uploadingFile.status}`}
+              >
                 {getFileIcon(uploadingFile.file)}
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-sm font-medium truncate">
+                    <p className="text-sm font-medium truncate" title={uploadingFile.file.name}>
                       {uploadingFile.file.name}
                     </p>
                     <Button
@@ -239,6 +275,7 @@ export function MediaUpload({
                       size="sm"
                       onClick={() => removeUploadingFile(index)}
                       className="h-6 w-6 p-0"
+                      aria-label={`Hapus upload ${uploadingFile.file.name}`}
                     >
                       <IconX className="h-4 w-4" />
                     </Button>
@@ -249,24 +286,29 @@ export function MediaUpload({
                       {formatFileSize(uploadingFile.file.size)}
                     </p>
                     {uploadingFile.status === 'success' && (
-                      <Badge variant="default" className="text-xs">Selesai</Badge>
+                      <Badge variant="default" className="text-xs" aria-label="Upload berhasil">
+                        Selesai
+                      </Badge>
                     )}
                     {uploadingFile.status === 'error' && (
-                      <Badge variant="destructive" className="text-xs">Error</Badge>
+                      <Badge variant="destructive" className="text-xs" aria-label="Upload gagal">
+                        Error
+                      </Badge>
                     )}
                   </div>
                   
                   {uploadingFile.status === 'uploading' && (
-                    <div className="w-full bg-muted rounded-full h-2">
+                    <div className="w-full bg-muted rounded-full h-2" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={uploadingFile.progress}>
                       <div
                         className="bg-primary h-2 rounded-full transition-all duration-300"
                         style={{ width: `${uploadingFile.progress}%` }}
                       />
+                      <span className="sr-only">Upload progress: {uploadingFile.progress}%</span>
                     </div>
                   )}
                   
                   {uploadingFile.status === 'error' && uploadingFile.error && (
-                    <p className="text-xs text-destructive mt-1">
+                    <p className="text-xs text-destructive mt-1" role="alert">
                       {uploadingFile.error}
                     </p>
                   )}
