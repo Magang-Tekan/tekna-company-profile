@@ -218,7 +218,7 @@ export default function CareerManagementPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <Link href="/dashboard/career/applications">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardHeader className="pb-3">
@@ -267,21 +267,51 @@ export default function CareerManagementPage() {
           </Card>
         </Link>
 
-        <Link href="/dashboard/career/analytics">
+        <Link href="/dashboard/career/types">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center">
-                <TrendingUp className="mr-2 h-4 w-4" />
-                Analytics
+                <Briefcase className="mr-2 h-4 w-4" />
+                Types
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground">
-                View career insights
+                Manage job types
               </p>
             </CardContent>
           </Card>
         </Link>
+
+        <Link href="/dashboard/career/levels">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center">
+                <TrendingUp className="mr-2 h-4 w-4" />
+                Levels
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Manage career levels
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Card className="hover:shadow-md transition-shadow cursor-pointer opacity-50">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center">
+              <TrendingUp className="mr-2 h-4 w-4" />
+              Analytics
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Coming soon
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filters */}

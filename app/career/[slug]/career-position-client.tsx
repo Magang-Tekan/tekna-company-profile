@@ -10,11 +10,9 @@ import {
   MapPin, 
   Clock, 
   Star,
-  Users,
   Building,
   Send,
   Share2,
-  Eye,
   UserPlus,
   ArrowLeft
 } from "lucide-react"
@@ -343,16 +341,6 @@ export default function CareerPositionClient({ slug }: CareerPositionClientProps
                   <div>
                     <div className="text-sm font-medium text-gray-500">Posted</div>
                     <div className="mt-1">{new Date(position.created_at).toLocaleDateString()}</div>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground pt-2 border-t">
-                    <div className="flex items-center gap-1">
-                      <Eye className="w-4 h-4" />
-                      {position.views_count} views
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      {position.applications_count} applications
-                    </div>
                   </div>
                 </CardContent>
               </Card>

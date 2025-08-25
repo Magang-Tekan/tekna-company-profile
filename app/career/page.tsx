@@ -10,16 +10,11 @@ import {
   Search, 
   MapPin, 
   Clock, 
-  Users, 
   Briefcase, 
-  DollarSign, 
   Star,
   Grid3x3,
   List,
-  ChevronRight,
-  Building
 } from "lucide-react"
-import type { LucideIcon } from "lucide-react"
 import Link from "next/link"
 import { CareerService, CareerPosition, CareerCategory, CareerLocation, CareerType, CareerLevel, CareerSearchParams } from "@/lib/services/career"
 import { cn } from "@/lib/utils"
@@ -140,21 +135,6 @@ export default function CareerPage() {
     return min ? `From ${format(min)}` : `Up to ${format(max!)}`
   }
 
-  const getCategoryIcon = (iconName?: string) => {
-    const iconMap: Record<string, LucideIcon> = {
-      'Code': Briefcase,
-      'Palette': Star,
-      'Target': Users,
-      'Megaphone': Building,
-      'TrendingUp': DollarSign,
-      'Settings': Building,
-      'Calculator': Building,
-      'Users': Users
-    }
-    const IconComponent = iconMap[iconName || 'Briefcase'] || Briefcase
-    return <IconComponent className="h-4 w-4" />
-  }
-
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -209,125 +189,6 @@ export default function CareerPage() {
                 <span>{featuredPositions.length} Featured Jobs</span>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Positions */}
-      {featuredPositions.length > 0 && (
-        <section className="py-20">
-          <div className="container mx-auto px-4 md:px-6">
-            <div className="text-center mb-16 space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-                  Featured Opportunities
-                </h2>
-                <p className="mt-6 max-w-3xl mx-auto text-lg sm:text-xl text-muted-foreground leading-relaxed">
-                  Handpicked positions that offer exceptional growth opportunities
-                </p>
-              </div>
-            </div>
-            
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3" aria-label="Featured career positions">
-              {featuredPositions.map((position) => (
-                <Card key={position.id} className="group hover:shadow-xl transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-2">
-                        <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 gap-1">
-                          <Star className="h-3 w-3" />
-                          <span>Featured</span>
-                        </Badge>
-                        <CardTitle className="text-lg group-hover:text-primary transition-colors">
-                          {position.title}
-                        </CardTitle>
-                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            {position.category && (
-                              <Badge 
-                                variant="secondary" 
-                                className="text-xs text-primary-foreground border-0"
-                                style={{ backgroundColor: position.category.color || 'hsl(var(--primary))' }}
-                              >
-                                {position.category.name}
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            {position.location?.name}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                      {position.summary}
-                    </p>
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Salary</span>
-                        <span className="font-medium">
-                          {formatSalary(position.salary_min, position.salary_max, position.salary_currency)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">Type</span>
-                        <Badge variant="outline">{position.type?.name}</Badge>
-                      </div>
-                    </div>
-                    <Link href={`/career/${position.slug}`}>
-                      <Button className="w-full group-hover:bg-primary">
-                        View Details
-                        <ChevronRight className="ml-2 h-4 w-4" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Job Categories */}
-      <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center mb-16 space-y-6">
-            <div className="space-y-4">
-              <h2 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-                Explore by Department
-              </h2>
-              <p className="mt-6 max-w-3xl mx-auto text-lg sm:text-xl text-muted-foreground leading-relaxed">
-                Find opportunities in your area of expertise
-              </p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6" aria-label="Job categories">
-            {categories.map((category) => (
-              <Card 
-                key={category.id} 
-                className="group cursor-pointer hover:shadow-lg transition-all duration-300 text-center"
-                onClick={() => handleFilterChange('category', category.slug)}
-              >
-                <CardContent className="p-6">
-                  <div 
-                    className="w-12 h-12 rounded-full mx-auto mb-4 flex items-center justify-center text-primary-foreground"
-                    style={{ backgroundColor: category.color || 'hsl(var(--primary))' }}
-                  >
-                    {getCategoryIcon(category.icon)}
-                  </div>
-                  <h3 className="font-semibold mb-2 group-hover:text-blue-600 transition-colors">
-                    {category.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
-                    {category.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
           </div>
         </div>
       </section>
