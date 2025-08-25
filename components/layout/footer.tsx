@@ -91,11 +91,11 @@ export function Footer() {
       setIsLoading(true);
       try {
         const [sections, social, contact, company, newsletter] = await Promise.all([
-          footerService.getFooterSections(),
-          footerService.getSocialMedia(),
-          footerService.getContactInfo(),
+          footerService.getPublicFooterSections(),
+          footerService.getPublicSocialMedia(),
+          footerService.getPublicContactInfo(),
           footerService.getCompanyInfo(),
-          footerService.getNewsletterSettings(),
+          footerService.getPublicNewsletterSettings(),
         ]);
 
         setFooterSections(sections);
