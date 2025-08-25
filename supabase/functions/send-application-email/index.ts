@@ -1,3 +1,4 @@
+// @deno-types="https://deno.land/std@0.168.0/http/server.ts"
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
@@ -100,7 +101,7 @@ serve(async (req) => {
             </div>
             <div class="footer">
               <p>This is an automated message. Please do not reply to this email.</p>
-              <p>© 2025 Your Company Name. All rights reserved.</p>
+              <p>© 2025 Tekna Company. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -175,7 +176,7 @@ serve(async (req) => {
             </div>
             <div class="footer">
               <p>This is an automated message. Please do not reply to this email.</p>
-              <p>© 2025 Your Company Name. All rights reserved.</p>
+              <p>© 2025 Tekna Company. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -195,7 +196,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'noreply@yourcompany.com', // Replace with your verified domain
+        from: 'noreply@tekna.onresend.com', // Use Resend subdomain for testing
         to: [applicant_email],
         subject: subject,
         html: htmlContent,
