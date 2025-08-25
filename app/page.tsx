@@ -1,5 +1,6 @@
 import { HeroSection } from "@/components/landing/hero-section";
 import { ProjectsSection } from "@/components/landing/projects-section";
+import { PartnersSection } from "@/components/landing/partners-section";
 import { TestimonialsSection } from "@/components/landing/testimonials-section";
 import { AppHeader } from "@/components/layout/public-header";
 import { GlobeBackground } from "@/components/ui/globe-background";
@@ -19,6 +20,7 @@ export default function LandingPage() {
       <main className="flex-1 relative z-20">
         <HeroSection />
         <ProjectsSection />
+        <PartnersSection />
         <TestimonialsSection />
       </main>
       
