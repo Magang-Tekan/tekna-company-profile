@@ -4,15 +4,43 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { Menu, X, Rocket, Code, Smartphone, Globe } from "lucide-react";
+import { Menu, X, Rocket, Code, Globe, Users, Star } from "lucide-react";
 import { useState } from "react";
 import { useNavbarAnimation } from "@/hooks/use-navbar-animation";
+import { usePathname } from "next/navigation";
 
 export function AppHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const isLandingPage = pathname === "/";
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  // Smooth scroll to section function (only works on landing page)
+  const scrollToSection = (sectionId: string) => {
+    if (!isLandingPage) return;
+    
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+    // Close mobile menu if open
+    setIsMobileMenuOpen(false);
+  };
+
+  // Navigate to landing page and scroll to section
+  const navigateToSection = (sectionId: string) => {
+    if (isLandingPage) {
+      scrollToSection(sectionId);
+    } else {
+      // Navigate to landing page with hash
+      window.location.href = `/#${sectionId}`;
+    }
   };
 
   // Use navbar animation hook
@@ -66,30 +94,41 @@ export function AppHeader() {
           ref={navRef}
           className="hidden lg:flex items-center gap-8 text-sm font-medium"
         >
-          <Link 
-            href="/#features" 
-            className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group"
+          <button 
+            onClick={() => navigateToSection('home')}
+            className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group cursor-pointer"
           >
             <Code className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
-            Fitur
-          </Link>
-          <Link 
-            href="/#projects" 
-            className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group"
+            Beranda
+          </button>
+          <button 
+            onClick={() => navigateToSection('projects')}
+            className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group cursor-pointer"
           >
             <Rocket className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
             Proyek
-          </Link>
-          <Link 
-            href="/#testimonials" 
-            className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group"
+          </button>
+          <button 
+            onClick={() => navigateToSection('partners')}
+            className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group cursor-pointer"
           >
-            <Smartphone className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+            <Users className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+            Partner
+          </button>
+          <button 
+            onClick={() => navigateToSection('testimonials')}
+            className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group cursor-pointer"
+          >
+            <Star className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
             Testimonial
-          </Link>
+          </button>
           <Link 
             href="/blog" 
-            className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group"
+            className={`flex items-center gap-2 transition-all duration-300 hover:scale-105 group ${
+              pathname === '/blog' 
+                ? 'text-foreground font-semibold' 
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
           >
             <Globe className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
             Blog
@@ -124,33 +163,41 @@ export function AppHeader() {
         <div className="lg:hidden border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
           <div className="container mx-auto px-4 py-6 space-y-4">
             <nav className="flex flex-col space-y-4">
-              <Link 
-                href="/#features" 
-                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50"
-                onClick={() => setIsMobileMenuOpen(false)}
+              <button 
+                onClick={() => navigateToSection('home')}
+                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 cursor-pointer text-left w-full"
               >
                 <Code className="w-4 h-4" />
-                Fitur
-              </Link>
-              <Link 
-                href="/#projects" 
-                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50"
-                onClick={() => setIsMobileMenuOpen(false)}
+                Beranda
+              </button>
+              <button 
+                onClick={() => navigateToSection('projects')}
+                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 cursor-pointer text-left w-full"
               >
                 <Rocket className="w-4 h-4" />
                 Proyek
-              </Link>
-              <Link 
-                href="/#testimonials" 
-                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50"
-                onClick={() => setIsMobileMenuOpen(false)}
+              </button>
+              <button 
+                onClick={() => navigateToSection('partners')}
+                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 cursor-pointer text-left w-full"
               >
-                <Smartphone className="w-4 h-4" />
+                <Users className="w-4 h-4" />
+                Partner
+              </button>
+              <button 
+                onClick={() => navigateToSection('testimonials')}
+                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 cursor-pointer text-left w-full"
+              >
+                <Star className="w-4 h-4" />
                 Testimonial
-              </Link>
+              </button>
               <Link 
                 href="/blog" 
-                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50"
+                className={`flex items-center gap-3 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 ${
+                  pathname === '/blog' 
+                    ? 'text-foreground font-semibold bg-muted/30' 
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <Globe className="w-4 h-4" />

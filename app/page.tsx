@@ -21,10 +21,18 @@ export default function LandingPage() {
     {/* Make main opt-out for pointer events so background globe can receive drag events.
       Interactive sections must opt-in with pointer-events-auto on their root. */}
     <main className="flex-1 relative z-20 pointer-events-none">
-        <HeroSection />
-        <ProjectsSection />
-        <PartnersSection />
-        <TestimonialsSection />
+        <div id="home">
+          <HeroSection />
+        </div>
+        <div id="projects">
+          <ProjectsSection />
+        </div>
+        <div id="partners">
+          <PartnersSection />
+        </div>
+        <div id="testimonials">
+          <TestimonialsSection />
+        </div>
       </main>
       
       <Footer />
