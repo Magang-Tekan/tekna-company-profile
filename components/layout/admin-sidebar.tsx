@@ -15,7 +15,8 @@ import {
   IconLetterA,
   IconChevronLeft,
   IconChevronRight,
-  IconLogout
+  IconLogout,
+  IconBriefcase
 } from "@tabler/icons-react";
 import { AdminAuthService, AdminUser } from "@/lib/services/admin-auth.service";
 
@@ -72,6 +73,44 @@ const navigationItems: NavItem[] = [
         href: "/dashboard/projects/new",
         icon: IconFolder,
         requiredRole: "editor"
+      }
+    ]
+  },
+  {
+    title: "Career Management",
+    href: "/dashboard/career",
+    icon: IconBriefcase,
+    requiredRole: "admin",
+    children: [
+      {
+        title: "All Positions",
+        href: "/dashboard/career",
+        icon: IconBriefcase,
+        requiredRole: "admin"
+      },
+      {
+        title: "New Position",
+        href: "/dashboard/career/new",
+        icon: IconBriefcase,
+        requiredRole: "admin"
+      },
+      {
+        title: "Applications",
+        href: "/dashboard/career/applications",
+        icon: IconUsers,
+        requiredRole: "admin"
+      },
+      {
+        title: "Categories",
+        href: "/dashboard/career/categories",
+        icon: IconFolder,
+        requiredRole: "admin"
+      },
+      {
+        title: "Locations",
+        href: "/dashboard/career/locations",
+        icon: IconFolder,
+        requiredRole: "admin"
       }
     ]
   },

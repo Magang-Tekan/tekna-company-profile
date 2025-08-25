@@ -19,7 +19,8 @@ import {
   Plus,
   Mail,
   Shield,
-  Footprints
+  Footprints,
+  Briefcase
 } from "lucide-react"
 
 interface NavigationItem {
@@ -46,6 +47,12 @@ const navigationItems: NavigationItem[] = [
     title: "Blog",
     href: "/dashboard/blog",
     icon: FileText,
+    roles: ['admin', 'editor']
+  },
+  {
+    title: "Career",
+    href: "/dashboard/career",
+    icon: Briefcase,
     roles: ['admin', 'editor']
   },
   {

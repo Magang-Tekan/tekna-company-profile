@@ -480,4 +480,174 @@ export class CareerService {
       return false;
     }
   }
+
+  // Admin methods
+  async getAllPositions(): Promise<CareerPosition[]> {
+    try {
+      const { data, error } = await this.supabase
+        .from('career_positions')
+        .select(`
+          *,
+          category:career_categories(*),
+          location:career_locations(*),
+          type:career_types(*),
+          level:career_levels(*)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching all positions:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Error in getAllPositions:', error);
+      return [];
+    }
+  }
+
+  async getAllCategories(): Promise<CareerCategory[]> {
+    try {
+      const { data, error } = await this.supabase
+        .from('career_categories')
+        .select('*')
+        .order('sort_order');
+
+      if (error) {
+        console.error('Error fetching all categories:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Error in getAllCategories:', error);
+      return [];
+    }
+  }
+
+  async getAllLocations(): Promise<CareerLocation[]> {
+    try {
+      const { data, error } = await this.supabase
+        .from('career_locations')
+        .select('*')
+        .order('sort_order');
+
+      if (error) {
+        console.error('Error fetching all locations:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Error in getAllLocations:', error);
+      return [];
+    }
+  }
+
+  async getAllTypes(): Promise<CareerType[]> {
+    try {
+      const { data, error } = await this.supabase
+        .from('career_types')
+        .select('*')
+        .order('sort_order');
+
+      if (error) {
+        console.error('Error fetching all types:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Error in getAllTypes:', error);
+      return [];
+    }
+  }
+
+  async getAllLevels(): Promise<CareerLevel[]> {
+    try {
+      const { data, error } = await this.supabase
+        .from('career_levels')
+        .select('*')
+        .order('sort_order');
+
+      if (error) {
+        console.error('Error fetching all levels:', error);
+        return [];
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Error in getAllLevels:', error);
+      return [];
+    }
+  }
+
+  async updatePosition(id: string, updates: Partial<CareerPosition>): Promise<boolean> {
+    try {
+      const { error } = await this.supabase
+        .from('career_positions')
+        .update(updates)
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error updating position:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error in updatePosition:', error);
+      return false;
+    }
+  }
+
+  async deletePosition(id: string): Promise<boolean> {
+    try {
+      const { error } = await this.supabase
+        .from('career_positions')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error deleting position:', error);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error in deletePosition:', error);
+      return false;
+    }
+  }
+
+  async createPosition(data: Partial<CareerPosition>): Promise<CareerPosition | null> {
+    try {
+      const { data: position, error } = await this.supabase
+        .from('career_positions')
+        .insert([{
+          ...data,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }])
+        .select(`
+          *,
+          category:career_categories(*),
+          location:career_locations(*),
+          type:career_types(*),
+          level:career_levels(*)
+        `)
+        .single();
+
+      if (error) {
+        console.error('Error creating position:', error);
+        return null;
+      }
+
+      return position;
+    } catch (error) {
+      console.error('Error in createPosition:', error);
+      return null;
+    }
+  }
 }
