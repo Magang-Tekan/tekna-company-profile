@@ -1,19 +1,16 @@
 'use client';
 
 import Image from 'next/image';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
-import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useRef } from 'react';
+import { motion, useInView, Variants } from 'framer-motion';
 
 interface ProjectData {
   id: string;
   name: string;
   slug: string;
   project_url?: string;
-  status: string;
   featured_image_url?: string;
   description: string;
   short_description: string;
@@ -27,155 +24,73 @@ interface ProjectData {
 
 export function ProjectsSectionClient({ projects }: { projects: ProjectData[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const projectsRef = useRef<HTMLDivElement[]>([]);
+  const isVisible = useInView(containerRef, { once: true, margin: "-100px" });
 
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    if (!containerRef.current) return;
-
-    const container = containerRef.current;
-    const projectElements = projectsRef.current;
-
-    // Set initial state - semua projects dimulai dari depan (scale besar, z-index tinggi)
-    gsap.set(projectElements, {
-      scale: 2,
-      zIndex: (index) => projects.length - index, // Project pertama paling depan
-      rotationX: -15,
-      y: 0,
+  // Animation variants
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
       opacity: 1,
-      transformOrigin: "center center",
-      transformStyle: "preserve-3d"
-    });
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3
+      }
+    }
+  };
 
-    // Animasi scroll-triggered untuk setiap project
-    projectElements.forEach((project, index) => {
-      if (!project) return;
-
-      ScrollTrigger.create({
-        trigger: container,
-        start: `top+=${index * 100} center`,
-        end: `bottom-=${(projects.length - index - 1) * 100} center`,
-        scrub: 1,
-        onUpdate: (self) => {
-          const progress = self.progress;
-          
-          // Calculate stacking effect
-          const scale = 2 - (progress * 1.3); // Mengecil dari 2 ke 0.7
-          const z = progress * -200; // Mundur ke belakang
-          const rotX = -15 + (progress * 15); // Rotasi dari -15 ke 0
-          const y = progress * 50; // Sedikit turun
-          const opacity = 1 - (progress * 0.3); // Fade sedikit
-          
-          gsap.set(project, {
-            scale: Math.max(scale, 0.7), // Minimal scale 0.7
-            z: z,
-            rotationX: rotX,
-            y: y,
-            opacity: Math.max(opacity, 0.7), // Minimal opacity 0.7
-            zIndex: projects.length - index - Math.floor(progress * 10),
-          });
-        }
-      });
-
-      // Animasi masuk untuk project (saat pertama kali terlihat)
-      ScrollTrigger.create({
-        trigger: project,
-        start: "top 80%",
-        end: "top 20%",
-        toggleActions: "play none none reverse",
-        onEnter: () => {
-          gsap.fromTo(project.querySelector('.project-content'), {
-            x: index % 2 === 0 ? -100 : 100,
-            opacity: 0
-          }, {
-            x: 0,
-            opacity: 1,
-            duration: 0.8,
-            ease: "power2.out"
-          });
-        }
-      });
-    });
-
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
-  }, [projects]);
-
-  const addProjectRef = (el: HTMLDivElement | null, index: number) => {
-    if (el) {
-      projectsRef.current[index] = el;
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 50, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.8, ease: "easeOut" }
     }
   };
 
   return (
-    <section id="projects-section" className="relative py-16 md:py-24 lg:py-32 overflow-hidden">
-      {/* Background decoration untuk enhance depth */}
-      <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent"
-        initial={{ opacity: 0, scale: 3 }}
-        animate={isVisible ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 3 }}
-        transition={{ duration: 2, ease: "easeOut" }}
-      />
+    <section 
+      ref={containerRef}
+      className="relative overflow-hidden"
+      style={{ 
+        zIndex: 20, // Lower than sticky hero section
+        marginTop: '-200vh', // Strong overlap with hero section
+        paddingTop: '250vh', // Space for the overlapping effect
+        background: 'transparent' // Buat background transparan agar globe terlihat
+      }}
+    >
+      {/* Enhanced background with depth effect - lebih transparan */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/40 to-background/80" />
+      
+      {/* Smooth transition gradient to solid background */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background via-background/95 to-transparent" />
       
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate={isVisible ? "visible" : "hidden"}
-        className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
-        style={{ 
-          perspective: "1000px", // 3D perspective untuk container
-          transformStyle: "preserve-3d" 
-        }}
+        className="relative z-10"
       >
-        {/* Enhanced Header */}
-        <motion.div 
-          variants={headerVariants}
-          className="mb-16"
-        >
-          <div className="max-w-7xl mx-auto text-center">
-            <motion.h2 
-              className="text-3xl md:text-4xl font-bold text-foreground mb-4"
-              initial={{ opacity: 0, y: 20, scale: 0.9 }}
-              animate={isVisible ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 20, scale: 0.9 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-            >
-              Proyek Unggulan Kami
-            </motion.h2>
-            <motion.p 
-              className="text-lg text-muted-foreground max-w-3xl mx-auto"
-              initial={{ opacity: 0, y: 20 }}
-              animate={isVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.6, delay: 1 }}
-            >
-              Eksplorasi koleksi proyek-proyek inovatif yang telah kami kembangkan untuk berbagai klien di berbagai industri.
-            </motion.p>
-          </div>
-        </motion.div>
-
-        {/* Projects List dengan enhanced spacing */}
-        <div className="space-y-24">
+        {/* Projects List - 1 viewport per project */}
+        <div className="space-y-0">
           {projects.map((project, index) => (
             <motion.div
               key={project.id}
               variants={itemVariants}
               custom={index}
-              // Additional individual animation
-              initial={{ opacity: 0, scale: 0.7, y: 60, rotateY: -15, filter: "blur(8px)" }}
+              initial={{ opacity: 0, scale: 0.8, y: 80, filter: "blur(10px)" }}
               whileInView={{ 
                 opacity: 1, 
                 scale: 1, 
                 y: 0, 
-                rotateY: 0, 
                 filter: "blur(0px)",
                 transition: {
-                  duration: 0.8,
-                  delay: index * 0.1, // Stagger delay berdasarkan index
-                  ease: [0.25, 0.46, 0.45, 0.94]
+                  duration: 0.6,
+                  ease: "easeOut"
                 }
               }}
-              viewport={{ once: true, margin: "-50px" }}
+              viewport={{ once: true, margin: "-100px" }}
+              className="min-h-screen flex items-center justify-center py-20"
             >
               <ProjectRow project={project} isReversed={index % 2 === 1} />
             </motion.div>
@@ -188,7 +103,7 @@ export function ProjectsSectionClient({ projects }: { projects: ProjectData[] })
 
 function ProjectRow({ project, isReversed }: { readonly project: ProjectData; readonly isReversed: boolean }) {
   // Enhanced image animation dengan parallax-like effect
-  const imageVariants = {
+  const imageVariants: Variants = {
     hidden: {
       opacity: 0,
       scale: 1.2,
@@ -203,14 +118,14 @@ function ProjectRow({ project, isReversed }: { readonly project: ProjectData; re
       rotateX: 0,
       filter: "blur(0px)",
       transition: {
-        duration: 1,
-        ease: [0.25, 0.46, 0.45, 0.94],
+        duration: 0.6,
+        ease: "easeOut",
       },
     },
   };
 
   // Enhanced content animation
-  const contentVariants = {
+  const contentVariants: Variants = {
     hidden: {
       opacity: 0,
       x: isReversed ? 60 : -60,
@@ -225,14 +140,13 @@ function ProjectRow({ project, isReversed }: { readonly project: ProjectData; re
       scale: 1,
       filter: "blur(0px)",
       transition: {
-        duration: 0.8,
-        delay: 0.2,
-        ease: [0.25, 0.46, 0.45, 0.94],
+        duration: 0.5,
+        ease: "easeOut",
       },
     },
   };
 
-  const textVariants = {
+  const textVariants: Variants = {
     hidden: {
       opacity: 0,
       y: 25,
@@ -243,14 +157,14 @@ function ProjectRow({ project, isReversed }: { readonly project: ProjectData; re
       y: 0,
       scale: 1,
       transition: {
-        duration: 0.6,
+        duration: 0.4,
         ease: "easeOut",
       },
     },
   };
 
   return (
-    <div className="max-w-7xl mx-auto w-full">
+    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
       <div className={`grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32 xl:gap-40 items-center`}>
         {/* Enhanced Image Section */}
         <motion.div 
@@ -270,7 +184,7 @@ function ProjectRow({ project, isReversed }: { readonly project: ProjectData; re
               <motion.div
                 initial={{ scale: 1.1 }}
                 whileInView={{ scale: 1 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
                 className="w-full h-full"
               >
                 <Image
@@ -287,7 +201,7 @@ function ProjectRow({ project, isReversed }: { readonly project: ProjectData; re
                   className="text-primary-foreground text-xl font-semibold"
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3, duration: 0.5 }}
+                  transition={{ duration: 0.4 }}
                 >
                   {project.name}
                 </motion.span>
@@ -299,16 +213,10 @@ function ProjectRow({ project, isReversed }: { readonly project: ProjectData; re
               className="absolute top-4 right-4"
               initial={{ opacity: 0, scale: 0.6, rotateZ: -10 }}
               whileInView={{ opacity: 1, scale: 1, rotateZ: 0 }}
-              transition={{ delay: 0.6, duration: 0.4, type: "spring", stiffness: 200 }}
+              transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
               viewport={{ once: true }}
               whileHover={{ scale: 1.1, rotateZ: 5 }}
             >
-              <Badge 
-                variant={project.status === 'completed' ? 'default' : 'secondary'}
-                className="bg-background/90 text-foreground shadow-lg backdrop-blur-sm"
-              >
-                {project.status === 'completed' ? 'Selesai' : 'Berlangsung'}
-              </Badge>
             </motion.div>
           </div>
         </motion.div>

@@ -62,9 +62,12 @@ export async function TestimonialsSection() {
   }
 
   return (
-    <section className="w-full py-16 md:py-24 lg:py-32 bg-muted/40">
+    <section className="w-full py-24 md:py-32 lg:py-40 bg-background relative z-30">
+      {/* Smooth transition gradient from top */}
+      <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-background via-background/95 to-transparent" />
+      
       <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center max-w-2xl mx-auto mb-12">
+        <div className="text-center max-w-2xl mx-auto mb-16">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-foreground">Apa Kata Klien Kami</h2>
           <p className="mt-4 text-muted-foreground">
             Kami bangga dapat bekerja sama dengan perusahaan-perusahaan hebat.
@@ -72,7 +75,7 @@ export async function TestimonialsSection() {
         </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((testimonial) => (
-            <Card key={testimonial.id}>
+            <Card key={testimonial.id} className="bg-card">
               <CardContent className="p-6">
                 <p className="mb-6 text-muted-foreground">&ldquo;{testimonial.testimonial_text || ''}&rdquo;</p>
                 <div className="flex items-center gap-4">
