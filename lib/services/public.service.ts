@@ -366,7 +366,7 @@ export class PublicService {
         client_position: 'CEO',
         client_company: 'TechCorp Solutions',
         client_avatar_url: '/images/testimonials/sarah-johnson.jpg',
-        testimonial_text: 'Tekna Solutions transformed our business operations with their innovative IoT platform. The real-time monitoring capabilities have given us unprecedented visibility into our processes.',
+        testimonial_text: 'PT Sapujagat Nirmana Tekna transformed our business operations with their innovative IoT platform. The real-time monitoring capabilities have given us unprecedented visibility into our processes.',
       },
       {
         id: '2',
@@ -374,7 +374,7 @@ export class PublicService {
         client_position: 'CTO',
         client_company: 'InnovateTech',
         client_avatar_url: '/images/testimonials/michael-chen.jpg',
-        testimonial_text: 'The mobile app developed by Tekna is exceptional. The offline capabilities and AR features have revolutionized how our field engineers work.',
+  testimonial_text: 'The mobile app developed by Tekna is exceptional. The offline capabilities and AR features have revolutionized how our field engineers work.',
       },
       {
         id: '3',
@@ -382,7 +382,7 @@ export class PublicService {
         client_position: 'Operations Director',
         client_company: 'Global Manufacturing',
         client_avatar_url: '/images/testimonials/lisa-rodriguez.jpg',
-        testimonial_text: 'Working with Tekna has been a game-changer for our manufacturing operations. Their ERP system has streamlined our entire workflow.',
+  testimonial_text: 'Working with Tekna has been a game-changer for our manufacturing operations. Their ERP system has streamlined our entire workflow.',
       },
     ];
   }

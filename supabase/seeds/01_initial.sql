@@ -16,32 +16,32 @@ INSERT INTO languages (code, name, is_default, is_active) VALUES
 -- =====================================================
 
 INSERT INTO companies (name, slug, logo_url, favicon_url, email, phone, address, website, founded_year, employee_count, industry) VALUES
-('Tekna Solutions', 'tekna-solutions', '/images/logo.png', '/images/favicon.ico', 'info@teknasolutions.com', '+62-21-1234-5678', 'Jakarta, Indonesia', 'https://teknasolutions.com', 2020, 25, 'Technology Solutions');
+('PT Sapujagat Nirmana Tekna', 'tekna', '/images/logo.png', '/images/favicon.ico', 'info@tekna.com', '+62-21-1234-5678', 'Jakarta, Indonesia', 'https://tekna.com', 2020, 25, 'Technology Solutions');
 
 -- Company translations
 INSERT INTO company_translations (company_id, language_id, description, mission, vision, values, short_description, meta_title, meta_description, meta_keywords) VALUES
 (
-    (SELECT id FROM companies WHERE slug = 'tekna-solutions'),
+    (SELECT id FROM companies WHERE slug = 'tekna'),
     (SELECT id FROM languages WHERE code = 'en'),
-    'Tekna Solutions is a leading technology company specializing in innovative digital solutions for businesses. We help companies transform their digital presence and streamline their operations through cutting-edge technology.',
+    'PT Sapujagat Nirmana Tekna (Tekna) is a leading technology company specializing in innovative digital solutions for businesses. We help companies transform their digital presence and streamline their operations through cutting-edge technology. Motto: serving the universe',
     'To empower businesses with innovative technology solutions that drive growth and efficiency.',
     'To be the most trusted technology partner for businesses in Southeast Asia.',
     'Innovation, Excellence, Integrity, Collaboration, Customer Success',
     'Leading technology solutions provider helping businesses transform and grow through innovative digital solutions.',
-    'Tekna Solutions - Leading Technology Solutions Provider',
-    'Tekna Solutions provides innovative technology solutions for businesses. We specialize in web development, mobile apps, and digital transformation services.',
+    'Tekna - Leading Technology Solutions Provider',
+    'Tekna provides innovative technology solutions for businesses. We specialize in web development, mobile apps, and digital transformation services.',
     'technology solutions, web development, mobile apps, digital transformation, software development'
 ),
 (
-    (SELECT id FROM companies WHERE slug = 'tekna-solutions'),
+    (SELECT id FROM companies WHERE slug = 'tekna'),
     (SELECT id FROM languages WHERE code = 'id'),
-    'Tekna Solutions adalah perusahaan teknologi terkemuka yang mengkhususkan diri dalam solusi digital inovatif untuk bisnis. Kami membantu perusahaan mengubah kehadiran digital mereka dan menyederhanakan operasi mereka melalui teknologi terkini.',
+    'PT Sapujagat Nirmana Tekna (Tekna) adalah perusahaan teknologi terkemuka yang mengkhususkan diri dalam solusi digital inovatif untuk bisnis. Kami membantu perusahaan mengubah kehadiran digital mereka dan menyederhanakan operasi mereka melalui teknologi terkini. Motto: serving the universe',
     'Memberdayakan bisnis dengan solusi teknologi inovatif yang mendorong pertumbuhan dan efisiensi.',
     'Menjadi mitra teknologi paling terpercaya untuk bisnis di Asia Tenggara.',
     'Inovasi, Keunggulan, Integritas, Kolaborasi, Kesuksesan Pelanggan',
     'Penyedia solusi teknologi terkemuka yang membantu bisnis bertransformasi dan berkembang melalui solusi digital inovatif.',
-    'Tekna Solutions - Penyedia Solusi Teknologi Terkemuka',
-    'Tekna Solutions menyediakan solusi teknologi inovatif untuk bisnis. Kami mengkhususkan diri dalam pengembangan web, aplikasi mobile, dan layanan transformasi digital.',
+    'Tekna - Penyedia Solusi Teknologi Terkemuka',
+    'Tekna menyediakan solusi teknologi inovatif untuk bisnis. Kami mengkhususkan diri dalam pengembangan web, aplikasi mobile, dan layanan transformasi digital.',
     'solusi teknologi, pengembangan web, aplikasi mobile, transformasi digital, pengembangan perangkat lunak'
 );
 
@@ -125,7 +125,7 @@ INSERT INTO post_translations (post_id, language_id, title, content, excerpt, me
     'The Future of Web Development in 2024',
     '<h2>Introduction</h2><p>The web development landscape is constantly evolving, with new technologies and frameworks emerging every year. As we approach 2024, several key trends are shaping the future of web development.</p><h2>Key Trends</h2><ul><li>Progressive Web Apps (PWAs)</li><li>WebAssembly for Performance</li><li>AI-Powered Development Tools</li><li>Serverless Architecture</li><li>Micro-Frontends</li></ul><h2>Conclusion</h2><p>The future of web development is exciting and full of possibilities. Developers who stay updated with these trends will be well-positioned for success.</p>',
     'Explore the latest trends and technologies that will shape web development in 2024 and beyond.',
-    'The Future of Web Development in 2024 - Tekna Solutions',
+    'The Future of Web Development in 2024 - Tekna',
     'Discover the latest web development trends for 2024 including PWAs, WebAssembly, AI tools, and more.',
     'web development, 2024 trends, progressive web apps, webassembly, AI development tools'
 ),
@@ -136,7 +136,7 @@ INSERT INTO post_translations (post_id, language_id, title, content, excerpt, me
     'Masa Depan Pengembangan Web di 2024',
     '<h2>Pendahuluan</h2><p>Lanskap pengembangan web terus berkembang, dengan teknologi dan framework baru yang muncul setiap tahun. Saat kita mendekati 2024, beberapa tren utama membentuk masa depan pengembangan web.</p><h2>Tren Utama</h2><ul><li>Progressive Web Apps (PWAs)</li><li>WebAssembly untuk Kinerja</li><li>Alat Pengembangan Berbasis AI</li><li>Arsitektur Serverless</li><li>Micro-Frontends</li></ul><h2>Kesimpulan</h2><p>Masa depan pengembangan web menarik dan penuh kemungkinan. Developer yang tetap terupdate dengan tren ini akan diposisikan dengan baik untuk sukses.</p>',
     'Jelajahi tren dan teknologi terbaru yang akan membentuk pengembangan web di 2024 dan seterusnya.',
-    'Masa Depan Pengembangan Web di 2024 - Tekna Solutions',
+    'Masa Depan Pengembangan Web di 2024 - Tekna',
     'Temukan tren pengembangan web terbaru untuk 2024 termasuk PWAs, WebAssembly, alat AI, dan lainnya.',
     'pengembangan web, tren 2024, progressive web apps, webassembly, alat pengembangan AI'
 );

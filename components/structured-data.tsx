@@ -30,11 +30,12 @@ export function BlogPostStructuredData({ post, siteUrl }: BlogPostStructuredData
       "image": post.featured_image_url ? `${siteUrl}${post.featured_image_url}` : undefined,
       "author": {
         "@type": "Person",
-        "name": post.author_name || "Tekna Solutions"
+        "name": post.author_name || "PT Sapujagat Nirmana Tekna"
       },
       "publisher": {
         "@type": "Organization",
-        "name": "Tekna Solutions",
+        "name": "PT Sapujagat Nirmana Tekna",
+        "alternateName": "Tekna",
         "logo": {
           "@type": "ImageObject",
           "url": `${siteUrl}/logo.webp`
@@ -81,10 +82,12 @@ export function OrganizationStructuredData({ siteUrl }: OrganizationStructuredDa
     const structuredData = {
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": "Tekna Solutions",
+      "name": "PT Sapujagat Nirmana Tekna",
+      "alternateName": "Tekna",
       "url": siteUrl,
       "logo": `${siteUrl}/logo.webp`,
       "description": "Leading technology solutions provider in Indonesia. We specialize in web development, mobile apps, AI solutions, and digital transformation services.",
+      "slogan": "serving the universe",
       "address": {
         "@type": "PostalAddress",
         "addressCountry": "ID",
@@ -94,12 +97,12 @@ export function OrganizationStructuredData({ siteUrl }: OrganizationStructuredDa
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "customer service",
-        "email": "info@teknasolutions.com"
+        "email": "info@tekna.com"
       },
       "sameAs": [
-        "https://www.linkedin.com/company/tekna-solutions",
-        "https://twitter.com/teknasolutions",
-        "https://www.facebook.com/teknasolutions"
+        "https://www.linkedin.com/company/tekna",
+        "https://twitter.com/tekna",
+        "https://www.facebook.com/tekna"
       ]
     };
 

@@ -57,13 +57,13 @@ export async function generateMetadata({ params }: CategoryPageProps) {
   
   if (!category) {
     return {
-      title: 'Category Not Found | Tekna Solutions',
+      title: 'Category Not Found | Tekna',
       description: 'The requested category could not be found.',
     };
   }
 
   return {
-    title: `${category.name} Articles | Tekna Solutions Blog`,
+    title: `${category.name} Articles | Tekna Blog`,
     description: category.description || `Explore articles in the ${category.name} category.`,
     openGraph: {
       title: `${category.name} Articles`,

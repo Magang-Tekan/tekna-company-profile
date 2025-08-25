@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { PublicService } from '@/lib/services/public.service';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tekna-solutions.com';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tekna.com';
   
   // Static pages
   const staticPages = [

@@ -12,14 +12,14 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: {
-    default: "Tekna Solutions - Digital Innovation & Technology Solutions",
-    template: "%s | Tekna Solutions"
+    default: "Tekna - Digital Innovation & Technology Solutions",
+    template: "%s | Tekna"
   },
   description: "Leading technology solutions provider in Indonesia. We specialize in web development, mobile apps, AI solutions, and digital transformation services.",
   keywords: ["technology", "web development", "mobile apps", "AI", "digital solutions", "Indonesia", "software development", "consulting"],
-  authors: [{ name: "Tekna Solutions" }],
-  creator: "Tekna Solutions",
-  publisher: "Tekna Solutions",
+  authors: [{ name: "PT Sapujagat Nirmana Tekna" }],
+  creator: "PT Sapujagat Nirmana Tekna",
+  publisher: "PT Sapujagat Nirmana Tekna",
   formatDetection: {
     email: false,
     address: false,
@@ -34,24 +34,24 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: defaultUrl,
-    title: "Tekna Solutions - Digital Innovation & Technology Solutions",
+  title: "Tekna - Digital Innovation & Technology Solutions",
     description: "Leading technology solutions provider in Indonesia. We specialize in web development, mobile apps, AI solutions, and digital transformation services.",
-    siteName: "Tekna Solutions",
+  siteName: "Tekna",
     images: [
       {
         url: "/images/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Tekna Solutions - Digital Innovation & Technology Solutions",
+        alt: "Tekna - Digital Innovation & Technology Solutions",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tekna Solutions - Digital Innovation & Technology Solutions",
+    title: "Tekna - Digital Innovation & Technology Solutions",
     description: "Leading technology solutions provider in Indonesia. We specialize in web development, mobile apps, AI solutions, and digital transformation services.",
     images: ["/images/og-image.jpg"],
-    creator: "@teknasolutions",
+    creator: "@tekna",
   },
   robots: {
     index: true,

@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://tekna-solutions.com/sitemap.xml
+Sitemap: https://tekna.com/sitemap.xml
 
 # Disallow admin and dashboard areas
 Disallow: /dashboard/

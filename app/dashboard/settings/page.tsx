@@ -39,10 +39,10 @@ export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [settings, setSettings] = useState<CompanySettings>({
-    name: "Tekna Solutions",
-    description: "Leading technology solutions provider",
-    website_url: "https://teknasolutions.com",
-    contact_email: "contact@teknasolutions.com",
+  name: "PT Sapujagat Nirmana Tekna",
+  description: "Leading technology solutions provider",
+  website_url: "https://tekna.com",
+  contact_email: "contact@tekna.com",
     phone: "+62 21 1234 5678",
     address: "Jakarta, Indonesia",
     social_media: {
@@ -52,7 +52,7 @@ export default function SettingsPage() {
       instagram: ""
     },
     seo: {
-      meta_title: "Tekna Solutions - Technology Solutions Provider",
+  meta_title: "Tekna - Technology Solutions Provider",
       meta_description: "Leading technology solutions provider in Indonesia",
       meta_keywords: "technology, solutions, software, consulting"
     },

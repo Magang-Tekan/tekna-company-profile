@@ -41,13 +41,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   
   if (!post) {
     return {
-      title: 'Article Not Found | Tekna Solutions',
+      title: 'Article Not Found | Tekna',
       description: 'The requested article could not be found.',
     };
   }
 
   return {
-    title: post.meta_title || `${post.title} | Tekna Solutions Blog`,
+  title: post.meta_title || `${post.title} | Tekna Blog`,
     description: post.meta_description || post.excerpt || post.title,
     keywords: post.meta_keywords || '',
     openGraph: {
@@ -120,7 +120,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             slug: post.category.slug
           } : undefined
         }} 
-        siteUrl={process.env.NEXT_PUBLIC_SITE_URL || 'https://tekna-solutions.com'} 
+  siteUrl={process.env.NEXT_PUBLIC_SITE_URL || 'https://tekna.com'} 
       />
       <article className="container mx-auto px-4 py-12 md:px-6 lg:py-16">
         
