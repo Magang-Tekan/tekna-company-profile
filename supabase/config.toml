@@ -57,7 +57,7 @@ enabled = true
 sql_paths = [
   "./seeds/01_initial.sql", 
   "./seeds/02_blog.sql",
-  "./seeds/03_storage.sql",
+  "./seeds/04_footer_data.sql",  
 ]
 
 [realtime]

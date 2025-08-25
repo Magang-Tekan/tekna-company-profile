@@ -40,14 +40,15 @@
     --info-foreground: 0 0% 98%;
     
     /* Sidebar variables */
-    --sidebar: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 182 97% 37%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 182 25% 20%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 182 25% 20%;
-    --sidebar-ring: 182 97% 37%;
+  --sidebar: 240 5.9% 10%;
+  --sidebar-foreground: 240 4.8% 95.9%;
+  /* Use primary as the sidebar's accent / interactive color so hover and icons follow primary */
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--primary);
+  --sidebar-accent-foreground: var(--primary-foreground);
+  --sidebar-border: 182 25% 20%;
+  --sidebar-ring: var(--primary);
   }
 
   .dark {
@@ -83,18 +84,39 @@
     --info-foreground: 0 0% 98%;
     
     /* Dark sidebar */
-    --sidebar: 182 20% 12%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 182 97% 40%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 182 25% 20%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 182 25% 20%;
-    --sidebar-ring: 182 97% 40%;
+  --sidebar: 182 20% 12%;
+  --sidebar-foreground: 0 0% 98%;
+  /* Keep primary mapping consistent in dark mode */
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--primary);
+  --sidebar-accent-foreground: var(--primary-foreground);
+  --sidebar-border: 182 25% 20%;
+  --sidebar-ring: var(--primary);
   }
 
   * {
     @apply border-border outline-ring/50;
+  }
+
+  /* Ensure sidebar/footer links and icons use primary as hover/interactive color
+     without changing layout. This targets the `.bg-sidebar` container used in the
+     footer/component layout so hover and svg fills/strokes follow the primary token. */
+  .bg-sidebar svg,
+  .bg-sidebar svg * {
+    color: hsl(var(--sidebar-foreground));
+    fill: hsl(var(--sidebar-foreground));
+    stroke: hsl(var(--sidebar-foreground));
+  }
+
+  .bg-sidebar a:hover,
+  .bg-sidebar button:hover,
+  .bg-sidebar .hover\:text-sidebar-accent:hover,
+  .bg-sidebar a:hover svg,
+  .bg-sidebar button:hover svg {
+    color: hsl(var(--sidebar-accent));
+    fill: hsl(var(--sidebar-accent));
+    stroke: hsl(var(--sidebar-accent));
   }
   
   body {
