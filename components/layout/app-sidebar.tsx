@@ -4,7 +4,6 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { ClientOnly } from "@/components/ui/client-only"
 import Image from "next/image"
@@ -16,7 +15,6 @@ import {
   Settings, 
   HelpCircle, 
   Search,
-  Plus,
   Mail,
   Shield,
   Footprints,
@@ -103,7 +101,7 @@ function NavigationItems() {
   const filteredItems = navigationItems
 
   return (
-    <nav className="flex-1 px-4 space-y-2">
+    <nav className="flex-1 px-4 pt-4 space-y-2">
       {filteredItems.map((item) => {
         const Icon = item.icon
         const isActive = pathname === item.href
@@ -113,14 +111,21 @@ function NavigationItems() {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
+              "hover:bg-sidebar-accent hover:text-white",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               isActive 
-                ? "bg-primary text-primary-foreground" 
-                : "hover:bg-accent hover:text-accent-foreground"
+                ? "bg-sidebar-accent text-white font-semibold shadow-sm" 
+                : "text-white hover:text-white"
             )}
           >
-            <Icon className="w-4 h-4" />
-            {item.title}
+            <Icon 
+              className={cn(
+                "w-4 h-4 transition-colors duration-200",
+                isActive ? "text-white" : "text-white group-hover:text-white"
+              )}
+            />
+            <span className="text-white">{item.title}</span>
           </Link>
         )
       })}
@@ -135,7 +140,7 @@ function BottomNavigationItems() {
   const filteredItems = bottomNavigationItems
 
   return (
-    <nav className="px-4 space-y-2">
+    <nav className="px-4 pt-4 space-y-2">
       {filteredItems.map((item) => {
         const Icon = item.icon
         const isActive = pathname === item.href
@@ -145,14 +150,21 @@ function BottomNavigationItems() {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200",
+              "hover:bg-sidebar-accent hover:text-white",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               isActive 
-                ? "bg-primary text-primary-foreground" 
-                : "hover:bg-accent hover:text-accent-foreground"
+                ? "bg-sidebar-accent text-white font-semibold shadow-sm" 
+                : "text-white hover:text-white"
             )}
           >
-            <Icon className="w-4 h-4" />
-            {item.title}
+            <Icon 
+              className={cn(
+                "w-4 h-4 transition-colors duration-200",
+                isActive ? "text-white" : "text-white group-hover:text-white"
+              )}
+            />
+            <span className="text-white">{item.title}</span>
           </Link>
         )
       })}
@@ -177,14 +189,6 @@ export function AppSidebarNew() {
             priority
           />
         </Link>
-      </div>
-
-      {/* Quick Create Button */}
-      <div className="p-4">
-        <Button className="w-full justify-start gap-2 bg-primary hover:bg-primary/90">
-          <Plus className="w-4 h-4" />
-          Quick Create
-        </Button>
       </div>
 
       {/* Main Navigation */}
