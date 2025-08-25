@@ -2,6 +2,7 @@ import { HeroSection } from "@/components/landing/hero-section";
 import { ProjectsSection } from "@/components/landing/projects-section";
 import { PartnersSection } from "@/components/landing/partners-section";
 import { TestimonialsSection } from "@/components/landing/testimonials-section";
+import { Footer } from "@/components/layout/footer";
 import { AppHeader } from "@/components/layout/public-header";
 import { GlobeBackground } from "@/components/ui/globe-background";
 
@@ -26,11 +27,7 @@ export default function LandingPage() {
         <TestimonialsSection />
       </main>
       
-      <footer className="bg-background/90 backdrop-blur-sm border-t relative z-30">
-        <div className="container mx-auto px-4 md:px-6 py-6 text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Tekna. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
