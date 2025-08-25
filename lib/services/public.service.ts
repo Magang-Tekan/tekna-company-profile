@@ -387,95 +387,123 @@ export class PublicService {
    * Get featured projects with translations.
    */
   static async getFeaturedProjects(language: string = 'en') {
-    // Return hardcoded projects since there might be RLS issues
-    const projects = [
-      {
-        id: '1',
-        name: 'Tekna Web Platform',
-        slug: 'tekna-web-platform',
-        project_url: 'https://web.tekna.digital',
-        status: 'completed',
-        featured_image_url: '/images/placeholder-blog.svg',
-        description: language === 'en' 
-          ? 'A comprehensive IoT monitoring platform designed to provide real-time insights and control over industrial equipment and environmental conditions.'
-          : 'Platform monitoring IoT yang komprehensif dirancang untuk memberikan wawasan real-time dan kontrol atas peralatan industri dan kondisi lingkungan.',
-        short_description: language === 'en'
-          ? 'Advanced IoT monitoring platform with real-time dashboards, intelligent alerting, and comprehensive reporting for industrial environments'
-          : 'Platform monitoring IoT canggih dengan dashboard real-time, sistem peringatan cerdas, dan pelaporan komprehensif untuk lingkungan industri',
-        images: [
-          {
-            image_url: '/images/projects/tekna-web-dashboard.jpg',
-            alt_text: 'Tekna Web Platform Dashboard',
-            caption: 'Main dashboard showing real-time IoT data visualization',
-            sort_order: 1
-          },
-          {
-            image_url: '/images/projects/tekna-web-analytics.jpg',
-            alt_text: 'Tekna Web Platform Analytics',
-            caption: 'Advanced analytics and reporting interface',
-            sort_order: 2
-          }
-        ]
-      },
-      {
-        id: '2',
-        name: 'Tekna Mobile App',
-        slug: 'tekna-mobile-app',
-        project_url: 'https://mobile.tekna.digital',
-        status: 'completed',
-        featured_image_url: '/images/placeholder-blog.svg',
-        description: language === 'en'
-          ? 'Native mobile application for IoT monitoring that provides field engineers and managers with on-the-go access to critical system data.'
-          : 'Aplikasi mobile native untuk monitoring IoT yang memberikan akses on-the-go kepada teknisi lapangan dan manajer terhadap data sistem kritis.',
-        short_description: language === 'en'
-          ? 'Professional mobile app for IoT monitoring with advanced offline capabilities, AR features, and seamless field operations'
-          : 'Aplikasi mobile profesional untuk monitoring IoT dengan kemampuan offline canggih, fitur AR, dan operasi lapangan yang seamless',
-        images: [
-          {
-            image_url: '/images/projects/tekna-mobile-home.jpg',
-            alt_text: 'Tekna Mobile App Home',
-            caption: 'Mobile app home screen with quick access to monitoring tools',
-            sort_order: 1
-          },
-          {
-            image_url: '/images/projects/tekna-mobile-ar.jpg',
-            alt_text: 'Tekna Mobile App AR Feature',
-            caption: 'Augmented reality feature for equipment identification',
-            sort_order: 2
-          }
-        ]
-      },
-      {
-        id: '3',
-        name: 'ERP Tekna',
-        slug: 'erp-tekna',
-        project_url: 'https://erp.tekna.digital',
-        status: 'in-progress',
-        featured_image_url: '/images/placeholder-blog.svg',
-        description: language === 'en'
-          ? 'Enterprise Resource Planning system tailored for modern businesses, featuring integrated modules for inventory management, financial tracking, human resources, and project management.'
-          : 'Sistem Enterprise Resource Planning yang disesuaikan untuk bisnis modern, menampilkan modul terintegrasi untuk manajemen inventori, pelacakan keuangan, sumber daya manusia, dan manajemen proyek.',
-        short_description: language === 'en'
-          ? 'Comprehensive ERP system with advanced analytics, workflow automation, and multi-tenant architecture for modern businesses'
-          : 'Sistem ERP komprehensif dengan analitik canggih, otomatisasi workflow, dan arsitektur multi-tenant untuk bisnis modern',
-        images: [
-          {
-            image_url: '/images/projects/erp-dashboard.jpg',
-            alt_text: 'ERP Tekna Dashboard',
-            caption: 'Main ERP dashboard with business intelligence widgets',
-            sort_order: 1
-          },
-          {
-            image_url: '/images/projects/erp-modules.jpg',
-            alt_text: 'ERP Tekna Modules',
-            caption: 'Overview of integrated ERP modules and workflows',
-            sort_order: 2
-          }
-        ]
-      }
-    ];
+    const supabase = await createClient();
+    try {
+      console.log('Fetching featured projects for language:', language);
+      
+      // First get the language ID
+      const { data: languageData, error: languageError } = await supabase
+        .from('languages')
+        .select('id')
+        .eq('code', language)
+        .eq('is_active', true)
+        .single();
 
-    return projects;
+      if (languageError || !languageData) {
+        console.error('Language not found:', language, languageError);
+        return [];
+      }
+
+      console.log('Found language ID:', languageData.id);
+
+      // Get featured projects with translations and images
+      const { data: projects, error: projectsError } = await supabase
+        .from('projects')
+        .select(`
+          id,
+          name,
+          slug,
+          project_url,
+          description,
+          featured_image_url,
+          is_featured,
+          is_active,
+          sort_order,
+          created_at
+        `)
+        .eq('is_active', true)
+        .eq('is_featured', true)
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: false });
+
+      if (projectsError) {
+        console.error('Error fetching featured projects:', projectsError);
+        return [];
+      }
+
+      console.log('Found projects:', projects?.length || 0);
+
+      if (!projects || projects.length === 0) return [];
+
+      // Get translations for all projects
+      const projectIds = projects.map(p => p.id);
+      const { data: translations, error: translationsError } = await supabase
+        .from('project_translations')
+        .select(`
+          project_id,
+          description,
+          short_description,
+          meta_title,
+          meta_description,
+          meta_keywords
+        `)
+        .in('project_id', projectIds)
+        .eq('language_id', languageData.id);
+
+      if (translationsError) {
+        console.error('Error fetching project translations:', translationsError);
+      }
+
+      console.log('Found translations:', translations?.length || 0);
+
+      // Get images for all projects
+      const { data: images, error: imagesError } = await supabase
+        .from('project_images')
+        .select(`
+          project_id,
+          image_url,
+          alt_text,
+          caption,
+          sort_order
+        `)
+        .in('project_id', projectIds)
+        .order('sort_order', { ascending: true });
+
+      if (imagesError) {
+        console.error('Error fetching project images:', imagesError);
+      }
+
+      console.log('Found images:', images?.length || 0);
+
+      // Transform the data to match the expected interface
+      const result = projects.map(project => {
+        const translation = translations?.find(t => t.project_id === project.id);
+        const projectImages = images?.filter(img => img.project_id === project.id) || [];
+
+        return {
+          id: project.id,
+          name: project.name,
+          slug: project.slug,
+          project_url: project.project_url,
+          featured_image_url: project.featured_image_url,
+          description: project.description || translation?.description || '',
+          short_description: translation?.short_description || '',
+          images: projectImages.map(img => ({
+            image_url: img.image_url,
+            alt_text: img.alt_text,
+            caption: img.caption,
+            sort_order: img.sort_order
+          }))
+        };
+      });
+
+      console.log('Returning transformed projects:', result.length);
+      return result;
+
+    } catch (error) {
+      console.error('Error fetching featured projects:', error);
+      return [];
+    }
   }
 
 

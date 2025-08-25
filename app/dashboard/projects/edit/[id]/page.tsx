@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { notFound } from "next/navigation";
 import { ProjectForm } from "@/components/project-form";
 import { ClientDashboardService } from "@/lib/services/client-dashboard.service";
-import type { ProjectStatus } from "@/lib/types/dashboard";
 
 interface EditProjectPageProps {
   params: Promise<{
@@ -18,7 +17,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
     name: string;
     slug: string;
     project_url: string | null;
-    status: string;
+    description: string | null;
     featured_image_url: string | null;
     is_featured: boolean;
     is_active: boolean;
@@ -66,7 +65,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
         name: project.name,
         slug: project.slug,
         project_url: project.project_url || '',
-        status: project.status as ProjectStatus,
+        description: project.description || '',
         featured_image_url: project.featured_image_url || '',
         is_featured: project.is_featured || false,
       }}

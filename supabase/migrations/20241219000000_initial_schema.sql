@@ -142,7 +142,7 @@ CREATE TABLE projects (
     name VARCHAR(255) NOT NULL,
     slug VARCHAR(255) UNIQUE NOT NULL,
     project_url VARCHAR(255),
-    status VARCHAR(20) DEFAULT 'completed' CHECK (status IN ('planning', 'in-progress', 'completed', 'on-hold')),
+    description TEXT,
     featured_image_url TEXT,
     is_featured BOOLEAN DEFAULT FALSE,
     is_active BOOLEAN DEFAULT TRUE,
@@ -219,7 +219,6 @@ CREATE INDEX idx_posts_category_id ON posts(category_id);
 
 
 CREATE INDEX idx_projects_slug ON projects(slug);
-CREATE INDEX idx_projects_status ON projects(status);
 
 
 

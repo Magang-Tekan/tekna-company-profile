@@ -13,7 +13,7 @@ import { ClientDashboardService } from "@/lib/services/client-dashboard.service"
 interface Project {
   id: string;
   name: string;
-  status: string;
+  description?: string;
   is_featured: boolean;
   is_active: boolean;
   featured_image_url?: string;
@@ -51,21 +51,6 @@ export default function ProjectsPageClient({ initialProjects }: Readonly<Project
 
   const handleAddNew = () => {
     router.push('/dashboard/projects/new');
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <Badge variant="default">Selesai</Badge>;
-      case 'in-progress':
-        return <Badge variant="secondary">Berjalan</Badge>;
-      case 'planning':
-        return <Badge variant="outline">Perencanaan</Badge>;
-      case 'on-hold':
-        return <Badge variant="destructive">Ditunda</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
   };
 
   return (
@@ -141,12 +126,16 @@ export default function ProjectsPageClient({ initialProjects }: Readonly<Project
                               Unggulan
                             </Badge>
                           )}
-                          {getStatusBadge(project.status)}
                         </div>
                       </div>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
+                        {project.description && (
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {project.description}
+                          </p>
+                        )}
                         <div className="flex gap-2 pt-2">
                           <Button 
                             variant="outline" 

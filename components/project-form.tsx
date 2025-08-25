@@ -7,19 +7,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { IconLoader2, IconArrowLeft, IconX, IconPhoto } from "@tabler/icons-react";
 import { ClientDashboardService } from "@/lib/services/client-dashboard.service";
 import { MediaUpload } from "@/components/media-upload";
-import type { ProjectStatus } from "@/lib/types/dashboard";
 import type { MediaFile } from "@/lib/services/media.service";
 
 interface ProjectFormData {
   name: string;
   slug: string;
   project_url: string;
-  status: ProjectStatus;
+  description: string;
   featured_image_url: string;
   is_featured: boolean;
 }
@@ -38,7 +37,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
     name: initialData?.name || '',
     slug: initialData?.slug || '',
     project_url: initialData?.project_url || '',
-    status: initialData?.status || 'planning',
+    description: initialData?.description || '',
     featured_image_url: initialData?.featured_image_url || '',
     is_featured: initialData?.is_featured || false,
   });
@@ -73,7 +72,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
           name: formData.name,
           slug: formData.slug,
           project_url: formData.project_url || undefined,
-          status: formData.status,
+          description: formData.description || undefined,
           featured_image_url: formData.featured_image_url || undefined,
           is_featured: formData.is_featured,
         });
@@ -83,7 +82,7 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
           name: formData.name,
           slug: formData.slug,
           project_url: formData.project_url || undefined,
-          status: formData.status,
+          description: formData.description || undefined,
           featured_image_url: formData.featured_image_url || undefined,
           is_featured: formData.is_featured,
         };
@@ -206,26 +205,17 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
 
 
 
-                    {/* Status */}
-                    <div className="space-y-2">
-                      <Label htmlFor="status">Status Proyek *</Label>
-                      <Select 
-                        value={formData.status} 
-                                                onValueChange={(value) => setFormData(prev => ({ ...prev, status: value as ProjectStatus }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Pilih status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="planning">Perencanaan</SelectItem>
-                          <SelectItem value="in-progress">Sedang Berjalan</SelectItem>
-                          <SelectItem value="completed">Selesai</SelectItem>
-                          <SelectItem value="on-hold">Ditunda</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    {/* Deskripsi Proyek */}
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="description">Deskripsi Proyek</Label>
+                      <Textarea
+                        id="description"
+                        value={formData.description}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Deskripsi lengkap tentang proyek ini..."
+                        rows={4}
+                      />
                     </div>
-
-
 
                     {/* URL Proyek */}
                     <div className="space-y-2">

@@ -364,7 +364,6 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- Function to get paginated projects with search
 CREATE OR REPLACE FUNCTION get_paginated_projects(
     search_query TEXT DEFAULT '',
-    status_filter TEXT DEFAULT 'all',
     page_number INTEGER DEFAULT 1,
     page_size INTEGER DEFAULT 10,
     language_code TEXT DEFAULT 'en'
@@ -374,7 +373,6 @@ RETURNS TABLE (
     name TEXT,
     slug TEXT,
     project_url TEXT,
-    status TEXT,
     featured_image_url TEXT,
     description TEXT,
     short_description TEXT,
@@ -388,7 +386,6 @@ BEGIN
             p.name,
             p.slug,
             p.project_url,
-            p.status,
             p.featured_image_url,
             pt.description,
             pt.short_description,
@@ -400,7 +397,6 @@ BEGIN
         AND (search_query = '' OR 
              to_tsvector('english', p.name) @@ plainto_tsquery('english', search_query) OR
              to_tsvector('english', pt.description || ' ' || COALESCE(pt.short_description, '')) @@ plainto_tsquery('english', search_query))
-        AND (status_filter = 'all' OR p.status = status_filter)
         AND (language_code = 'all' OR l.code = language_code)
     )
     SELECT 
@@ -408,7 +404,6 @@ BEGIN
         fp.name,
         fp.slug,
         fp.project_url,
-        fp.status,
         fp.featured_image_url,
         fp.description,
         fp.short_description,
@@ -445,6 +440,5 @@ CREATE INDEX idx_newsletter_subscriptions_subscribed_at ON newsletter_subscripti
 
 -- Performance indexes for search
 CREATE INDEX idx_posts_status_published_at ON posts(status, published_at) WHERE status = 'published';
-CREATE INDEX idx_projects_status_created_at ON projects(status, created_at);
 CREATE INDEX idx_post_translations_language_id ON post_translations(language_id);
 CREATE INDEX idx_project_translations_language_id ON project_translations(language_id);

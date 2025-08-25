@@ -156,12 +156,12 @@ INSERT INTO post_tags (post_id, tag_id) VALUES
 -- PROJECTS (Updated with Tekna specific projects)
 -- =====================================================
 
-INSERT INTO projects (name, slug, project_url, status, featured_image_url, is_featured, is_active, sort_order) VALUES
+INSERT INTO projects (name, slug, project_url, description, featured_image_url, is_featured, is_active, sort_order) VALUES
 (
     'Tekna Web Platform',
     'tekna-web-platform',
     'https://web.tekna.digital',
-    'completed',
+    'A comprehensive IoT monitoring platform designed to provide real-time insights and control over industrial equipment and environmental conditions.',
     '/images/projects/tekna-web.jpg',
     TRUE,
     TRUE,
@@ -171,7 +171,7 @@ INSERT INTO projects (name, slug, project_url, status, featured_image_url, is_fe
     'Tekna Mobile App',
     'tekna-mobile-app',
     'https://mobile.tekna.digital',
-    'completed',
+    'Native mobile application for IoT monitoring that provides field engineers and managers with on-the-go access to critical system data.',
     '/images/projects/tekna-mobile.jpg',
     TRUE,
     TRUE,
@@ -181,7 +181,7 @@ INSERT INTO projects (name, slug, project_url, status, featured_image_url, is_fe
     'ERP Tekna',
     'erp-tekna',
     'https://erp.tekna.digital',
-    'in-progress',
+    'Enterprise Resource Planning system tailored for modern businesses, featuring integrated modules for inventory management, financial tracking, human resources, and project management.',
     '/images/projects/erp-tekna.jpg',
     TRUE,
     TRUE,
@@ -191,7 +191,7 @@ INSERT INTO projects (name, slug, project_url, status, featured_image_url, is_fe
     'Midea E-Warranty Mobile',
     'midea-e-warranty-mobile',
     'https://warranty.midea.id',
-    'completed',
+    'Digital warranty management application for Midea home appliances, enabling customers to register products, claim warranties, and track service requests.',
     '/images/projects/midea-warranty.jpg',
     TRUE,
     TRUE,

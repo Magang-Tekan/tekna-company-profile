@@ -196,7 +196,7 @@ export class DashboardService {
         .select(`
           id,
           name,
-          status,
+          description,
           is_featured,
           is_active,
           featured_image_url
@@ -226,7 +226,7 @@ export class DashboardService {
           name,
           slug,
           project_url,
-          status,
+          description,
           featured_image_url,
           is_featured,
           is_active
@@ -250,7 +250,7 @@ export class DashboardService {
     name: string;
     slug: string;
     project_url?: string;
-    status: ProjectStatus;
+    description?: string;
     featured_image_url?: string;
     is_featured?: boolean;
   }) {
@@ -283,7 +283,7 @@ export class DashboardService {
       name?: string;
       slug?: string;
       project_url?: string;
-      status?: ProjectStatus;
+      description?: string;
       featured_image_url?: string;
       is_featured?: boolean;
     }

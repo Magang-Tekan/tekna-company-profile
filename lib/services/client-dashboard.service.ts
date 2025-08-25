@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import type { ProjectStatus, PostStatus } from "@/lib/types/dashboard";
+import type { PostStatus } from "@/lib/types/dashboard";
 
 export class ClientDashboardService {
   /**
@@ -31,7 +31,7 @@ export class ClientDashboardService {
     name: string;
     slug: string;
     project_url?: string;
-    status: ProjectStatus;
+    description?: string;
     featured_image_url?: string;
     is_featured?: boolean;
   }) {
@@ -64,7 +64,7 @@ export class ClientDashboardService {
       name?: string;
       slug?: string;
       project_url?: string;
-      status?: ProjectStatus;
+      description?: string;
       featured_image_url?: string;
       is_featured?: boolean;
     }
@@ -110,7 +110,7 @@ export class ClientDashboardService {
           name,
           slug,
           project_url,
-          status,
+          description,
           featured_image_url,
           is_featured,
           is_active,
