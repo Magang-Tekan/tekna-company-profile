@@ -2,15 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { IconLoader2, IconArrowLeft } from "@tabler/icons-react";
+import { IconLoader2, IconArrowLeft, IconX, IconPhoto } from "@tabler/icons-react";
 import { ClientDashboardService } from "@/lib/services/client-dashboard.service";
+import { MediaUpload } from "@/components/media-upload";
 import type { ProjectStatus } from "@/lib/types/dashboard";
+import type { MediaFile } from "@/lib/services/media.service";
 
 interface ProjectFormData {
   name: string;
@@ -30,6 +33,7 @@ interface ProjectFormProps {
 export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFormProps>) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [showImageUpload, setShowImageUpload] = useState(false);
   const [formData, setFormData] = useState<ProjectFormData>({
     name: initialData?.name || '',
     slug: initialData?.slug || '',
@@ -90,6 +94,29 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Handle media upload success
+  const handleMediaUploadSuccess = (file: MediaFile) => {
+    setFormData(prev => ({
+      ...prev,
+      featured_image_url: file.file_url
+    }));
+    setShowImageUpload(false);
+  };
+
+  // Handle media upload error
+  const handleMediaUploadError = (error: string) => {
+    console.error('Media upload error:', error);
+    alert(`Upload gagal: ${error}`);
+  };
+
+  // Remove featured image
+  const removeFeaturedImage = () => {
+    setFormData(prev => ({
+      ...prev,
+      featured_image_url: ''
+    }));
   };
 
   return (
@@ -193,9 +220,111 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
 
                   </div>
 
-                  {/* Featured Image URL */}
+                  {/* Featured Image Upload */}
+                  <div className="space-y-4">
+                    <Label>Gambar Unggulan Proyek</Label>
+                    
+                    {formData.featured_image_url ? (
+                      <div className="space-y-2">
+                        <div className="relative group border-2 border-dashed border-border rounded-lg p-4">
+                          <div className="flex items-center gap-4">
+                            <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-muted">
+                              <Image
+                                src={formData.featured_image_url}
+                                alt="Preview gambar proyek"
+                                fill
+                                className="object-cover"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  target.style.display = 'none';
+                                  const fallback = target.parentElement?.querySelector('.fallback-icon') as HTMLElement;
+                                  if (fallback) fallback.style.display = 'flex';
+                                }}
+                              />
+                              <div className="fallback-icon absolute inset-0 hidden items-center justify-center">
+                                <IconPhoto className="h-8 w-8 text-muted-foreground" />
+                              </div>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">
+                                Gambar telah dipilih
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                Klik hapus untuk mengganti gambar
+                              </p>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={removeFeaturedImage}
+                            >
+                              <IconX className="h-4 w-4 mr-2" />
+                              Hapus
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowImageUpload(true)}
+                          >
+                            <IconPhoto className="h-4 w-4 mr-2" />
+                            Ganti Gambar
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                          <IconPhoto className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                          <h3 className="text-lg font-medium mb-2">Belum ada gambar</h3>
+                          <p className="text-muted-foreground mb-4">
+                            Upload gambar untuk proyek ini
+                          </p>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setShowImageUpload(true)}
+                          >
+                            <IconPhoto className="h-4 w-4 mr-2" />
+                            Upload Gambar
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Media Upload Component */}
+                    {showImageUpload && (
+                      <div className="border rounded-lg p-4 bg-muted/50">
+                        <div className="flex items-center justify-between mb-4">
+                          <h4 className="font-medium">Upload Gambar Proyek</h4>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowImageUpload(false)}
+                          >
+                            <IconX className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <MediaUpload
+                          folder="project-media"
+                          allowedTypes={['image/*']}
+                          maxFileSize={10 * 1024 * 1024} // 10MB
+                          onUploadSuccess={handleMediaUploadSuccess}
+                          onUploadError={handleMediaUploadError}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Manual URL Input (Alternative) */}
                   <div className="space-y-2">
-                    <Label htmlFor="featured_image_url">URL Gambar Utama</Label>
+                    <Label htmlFor="featured_image_url">Atau masukkan URL Gambar manual</Label>
                     <Input
                       id="featured_image_url"
                       type="url"
@@ -203,6 +332,9 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
                       onChange={(e) => setFormData(prev => ({ ...prev, featured_image_url: e.target.value }))}
                       placeholder="https://example.com/image.jpg"
                     />
+                    <p className="text-xs text-muted-foreground">
+                      Opsional: Anda bisa memasukkan URL gambar eksternal sebagai alternatif
+                    </p>
                   </div>
 
                   {/* Is Featured */}
