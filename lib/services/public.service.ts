@@ -66,7 +66,7 @@ export class PublicService {
           view_count,
           category_id,
           is_featured,
-          categories(
+          categories!category_id(
             id,
             name,
             slug,

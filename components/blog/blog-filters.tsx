@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -54,36 +54,8 @@ export function BlogFilters({
   });
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const [lastFiltersState, setLastFiltersState] = useState(filters);
 
-  // Only trigger filter change when filters actually change
-  useEffect(() => {
-    const hasChanged = 
-      filters.search !== lastFiltersState.search ||
-      filters.category !== lastFiltersState.category ||
-      filters.featured !== lastFiltersState.featured ||
-      filters.sortBy !== lastFiltersState.sortBy;
-
-    if (hasChanged) {
-      setLastFiltersState(filters);
-      
-      // Debounce search, immediate for others
-      if (filters.search !== lastFiltersState.search) {
-        const timer = setTimeout(() => {
-          onFilterChange({
-            ...filters,
-            category: filters.category === 'all' ? '' : filters.category
-          });
-        }, 500);
-        return () => clearTimeout(timer);
-      } else {
-        onFilterChange({
-          ...filters,
-          category: filters.category === 'all' ? '' : filters.category
-        });
-      }
-    }
-  }, [filters, lastFiltersState, onFilterChange]);
+  // Remove auto-trigger useEffect - search will only work with explicit actions
 
   const handleSearchChange = (value: string) => {
     setFilters(prev => ({ ...prev, search: value }));
@@ -91,14 +63,37 @@ export function BlogFilters({
 
   const handleCategoryChange = (value: string) => {
     setFilters(prev => ({ ...prev, category: value }));
+    // Auto-trigger for category changes
+    onFilterChange({
+      ...filters,
+      category: value === 'all' ? '' : value
+    });
   };
 
   const handleSortChange = (value: SortOption) => {
     setFilters(prev => ({ ...prev, sortBy: value }));
+    // Auto-trigger for sort changes
+    onFilterChange({
+      ...filters,
+      sortBy: value
+    });
   };
 
   const handleFeaturedToggle = () => {
-    setFilters(prev => ({ ...prev, featured: !prev.featured }));
+    const newFeatured = !filters.featured;
+    setFilters(prev => ({ ...prev, featured: newFeatured }));
+    // Auto-trigger for featured changes
+    onFilterChange({
+      ...filters,
+      featured: newFeatured
+    });
+  };
+
+  const handleSearch = () => {
+    onFilterChange({
+      ...filters,
+      category: filters.category === 'all' ? '' : filters.category
+    });
   };
 
   const clearFilters = () => {
@@ -134,7 +129,7 @@ export function BlogFilters({
               onChange={(e) => handleSearchChange(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  onFilterChange(filters);
+                  handleSearch();
                 }
               }}
               className="pl-10 pr-24 h-11 text-base focus:ring-2 focus:ring-primary"
@@ -144,7 +139,7 @@ export function BlogFilters({
             
             {/* Search Button */}
             <Button
-              onClick={() => onFilterChange(filters)}
+              onClick={handleSearch}
               disabled={isLoading || !filters.search.trim()}
               className="absolute right-2 top-1/2 transform -translate-y-1/2 h-7 px-3 text-sm"
               size="sm"
@@ -154,6 +149,22 @@ export function BlogFilters({
             
             {filters.search && (
               <>
+                <button
+                  onClick={() => {
+                    handleSearchChange('');
+                    // Auto-clear search results
+                    onFilterChange({
+                      ...filters,
+                      search: '',
+                      category: filters.category === 'all' ? '' : filters.category
+                    });
+                  }}
+                  className="absolute right-20 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm"
+                  disabled={isLoading}
+                  aria-label="Clear search"
+                >
+                  <IconX className="h-4 w-4" />
+                </button>
                 <div id="search-description" className="sr-only">
                   Search results are being filtered by: {filters.search}
                 </div>

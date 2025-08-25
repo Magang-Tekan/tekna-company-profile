@@ -95,7 +95,9 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
           <BlogGrid
             initialPosts={posts.map(post => ({
               ...post,
-              categories: post.categories?.[0] || null,
+              categories: post.categories && typeof post.categories === 'object' && !Array.isArray(post.categories)
+                ? post.categories
+                : null,
             }))}
             initialCategories={categories}
             initialPagination={pagination}

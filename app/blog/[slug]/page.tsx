@@ -112,7 +112,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             {/* Category Badge */}
             {post.category && (
               <div className="mb-6">
-                <Badge variant="secondary" className="text-sm px-4 py-1.5 rounded-full">
+                <Badge 
+                  variant="secondary" 
+                  className="text-sm px-4 py-1.5 rounded-full text-white border-0 shadow-lg font-medium"
+                  style={{ backgroundColor: post.category.color }}
+                >
                   {post.category.name}
                 </Badge>
               </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BlogFilters } from '@/components/blog/blog-filters';
@@ -97,10 +97,17 @@ export function BlogGrid({
       });
       
       // Transform the data to match our BlogPost interface
-      const transformedPosts = result.data.map(post => ({
-        ...post,
-        categories: post.categories?.[0] || null,
-      }));
+      const transformedPosts = result.data.map(post => {
+        // Fix: categories is already an object, not an array
+        const categoryData = post.categories && typeof post.categories === 'object' && !Array.isArray(post.categories)
+          ? post.categories as { id: string; name: string; slug: string; color: string }
+          : null;
+        
+        return {
+          ...post,
+          categories: categoryData,
+        };
+      });
       
       setPosts(transformedPosts);
       setPagination(result.pagination);
@@ -121,7 +128,7 @@ export function BlogGrid({
   }, [fetchPosts, filters]);
 
   // Initial fetch
-  useCallback(() => {
+  useEffect(() => {
     if (initialPosts.length === 0) {
       fetchPosts(filters, 1);
     }
