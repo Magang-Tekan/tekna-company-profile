@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ interface Project {
   status: string;
   is_featured: boolean;
   is_active: boolean;
+  featured_image_url?: string;
 }
 
 interface ProjectsPageProps {
@@ -108,15 +110,40 @@ export default function ProjectsPageClient({ initialProjects }: Readonly<Project
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {projects.map((project) => (
                   <Card key={project.id} className="hover:shadow-lg transition-shadow">
+                    {/* Project Image */}
+                    {project.featured_image_url && (
+                      <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
+                        <Image
+                          src={project.featured_image_url}
+                          alt={project.name}
+                          fill
+                          className="object-cover"
+                          onError={(e) => {
+                            // Hide image on error
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                    
                     <CardHeader>
                       <div className="flex items-start justify-between">
                         <div className="flex items-center space-x-2">
-                          <IconFolder className="h-5 w-5 text-muted-foreground" />
+                          {!project.featured_image_url && (
+                            <IconFolder className="h-5 w-5 text-muted-foreground" />
+                          )}
                           <CardTitle className="text-lg">{project.name}</CardTitle>
                         </div>
-                        {getStatusBadge(project.status)}
+                        <div className="flex gap-2">
+                          {project.is_featured && (
+                            <Badge variant="secondary" className="text-xs">
+                              Unggulan
+                            </Badge>
+                          )}
+                          {getStatusBadge(project.status)}
+                        </div>
                       </div>
-
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">

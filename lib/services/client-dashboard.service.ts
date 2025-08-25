@@ -72,6 +72,9 @@ export class ClientDashboardService {
     const supabase = createClient();
     
     try {
+      console.log('Updating project with ID:', projectId);
+      console.log('Update data:', projectData);
+      
       const { data, error } = await supabase
         .from('projects')
         .update(projectData)
@@ -80,7 +83,12 @@ export class ClientDashboardService {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Update error:', error);
+        throw error;
+      }
+      
+      console.log('Update success, returned data:', data);
       return data;
     } catch (error) {
       console.error('Error updating project:', error);

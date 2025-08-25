@@ -66,8 +66,10 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
     setIsLoading(true);
 
     try {
+      console.log('Submitting form data:', formData);
+      
       if (mode === 'create') {
-        await ClientDashboardService.createProject({
+        const result = await ClientDashboardService.createProject({
           name: formData.name,
           slug: formData.slug,
           project_url: formData.project_url || undefined,
@@ -75,15 +77,20 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
           featured_image_url: formData.featured_image_url || undefined,
           is_featured: formData.is_featured,
         });
+        console.log('Create result:', result);
       } else if (mode === 'edit' && projectId) {
-        await ClientDashboardService.updateProject(projectId, {
+        const updateData = {
           name: formData.name,
           slug: formData.slug,
           project_url: formData.project_url || undefined,
           status: formData.status,
           featured_image_url: formData.featured_image_url || undefined,
           is_featured: formData.is_featured,
-        });
+        };
+        console.log('Update data being sent:', updateData);
+        
+        const result = await ClientDashboardService.updateProject(projectId, updateData);
+        console.log('Update result:', result);
       }
 
       router.push('/dashboard/projects');
@@ -244,21 +251,30 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
                         <div className="relative group border-2 border-dashed border-border rounded-lg p-4">
                           <div className="flex items-center gap-4">
                             <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-muted">
-                              <Image
-                                src={formData.featured_image_url}
-                                alt="Preview gambar proyek"
-                                fill
-                                className="object-cover"
-                                onError={(e) => {
-                                  const target = e.target as HTMLImageElement;
-                                  target.style.display = 'none';
-                                  const fallback = target.parentElement?.querySelector('.fallback-icon') as HTMLElement;
-                                  if (fallback) fallback.style.display = 'flex';
-                                }}
-                              />
-                              <div className="fallback-icon absolute inset-0 hidden items-center justify-center">
-                                <IconPhoto className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
-                              </div>
+                              {formData.featured_image_url ? (
+                                <>
+                                  <Image
+                                    src={formData.featured_image_url}
+                                    alt="Preview gambar proyek"
+                                    fill
+                                    className="object-cover"
+                                    onError={(e) => {
+                                      // Silently handle image load errors
+                                      const target = e.target as HTMLImageElement;
+                                      target.style.display = 'none';
+                                      const fallback = target.parentElement?.querySelector('.fallback-icon') as HTMLElement;
+                                      if (fallback) fallback.style.display = 'flex';
+                                    }}
+                                  />
+                                  <div className="fallback-icon absolute inset-0 hidden items-center justify-center bg-muted">
+                                    <IconPhoto className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
+                                  </div>
+                                </>
+                              ) : (
+                                <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                                  <IconPhoto className="h-8 w-8 text-muted-foreground" aria-hidden="true" />
+                                </div>
+                              )}
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium truncate">

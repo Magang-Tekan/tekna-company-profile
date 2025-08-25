@@ -198,7 +198,8 @@ export class DashboardService {
           name,
           status,
           is_featured,
-          is_active
+          is_active,
+          featured_image_url
         `)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
