@@ -1,4 +1,4 @@
--- Career tables migration
+-- Career tables migration with simplified RLS policies
 -- Created: 2025-08-25
 
 -- Create career_categories table
@@ -226,140 +226,6 @@ CREATE TRIGGER update_career_applications_updated_at
   BEFORE UPDATE ON career_applications
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- RLS Policies
-
--- Career Categories (public read, admin write)
-ALTER TABLE career_categories ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Career categories are viewable by everyone" 
-  ON career_categories FOR SELECT 
-  USING (is_active = true);
-
-CREATE POLICY "Career categories are manageable by admin" 
-  ON career_categories FOR ALL 
-  USING (auth.uid() IN (
-    SELECT user_id FROM user_roles 
-    WHERE role = 'admin'
-  ));
-
--- Career Locations (public read, admin write)
-ALTER TABLE career_locations ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Career locations are viewable by everyone" 
-  ON career_locations FOR SELECT 
-  USING (is_active = true);
-
-CREATE POLICY "Career locations are manageable by admin" 
-  ON career_locations FOR ALL 
-  USING (auth.uid() IN (
-    SELECT user_id FROM user_roles 
-    WHERE role = 'admin'
-  ));
-
--- Career Types (public read, admin write)
-ALTER TABLE career_types ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Career types are viewable by everyone" 
-  ON career_types FOR SELECT 
-  USING (is_active = true);
-
-CREATE POLICY "Career types are manageable by admin" 
-  ON career_types FOR ALL 
-  USING (auth.uid() IN (
-    SELECT user_id FROM user_roles 
-    WHERE role = 'admin'
-  ));
-
--- Career Levels (public read, admin write)
-ALTER TABLE career_levels ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Career levels are viewable by everyone" 
-  ON career_levels FOR SELECT 
-  USING (is_active = true);
-
-CREATE POLICY "Career levels are manageable by admin" 
-  ON career_levels FOR ALL 
-  USING (auth.uid() IN (
-    SELECT user_id FROM user_roles 
-    WHERE role = 'admin'
-  ));
-
--- Career Positions (public read published, admin write)
-ALTER TABLE career_positions ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Career positions are viewable by everyone" 
-  ON career_positions FOR SELECT 
-  USING (is_active = true AND status = 'open' AND published_at IS NOT NULL);
-
-CREATE POLICY "Career positions are manageable by admin" 
-  ON career_positions FOR ALL 
-  USING (auth.uid() IN (
-    SELECT user_id FROM user_roles 
-    WHERE role = 'admin'
-  ));
-
--- Career Skills (public read, admin write)
-ALTER TABLE career_skills ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Career skills are viewable by everyone" 
-  ON career_skills FOR SELECT 
-  USING (is_active = true);
-
-CREATE POLICY "Career skills are manageable by admin" 
-  ON career_skills FOR ALL 
-  USING (auth.uid() IN (
-    SELECT user_id FROM user_roles 
-    WHERE role = 'admin'
-  ));
-
--- Career Position Skills (public read, admin write)
-ALTER TABLE career_position_skills ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Career position skills are viewable by everyone" 
-  ON career_position_skills FOR SELECT 
-  USING (true);
-
-CREATE POLICY "Career position skills are manageable by admin" 
-  ON career_position_skills FOR ALL 
-  USING (auth.uid() IN (
-    SELECT user_id FROM user_roles 
-    WHERE role = 'admin'
-  ));
-
--- Career Applications (applicants can create and view their own, admin can view all)
-ALTER TABLE career_applications ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Anyone can submit applications" 
-  ON career_applications FOR INSERT 
-  WITH CHECK (true);
-
-CREATE POLICY "Applicants can view their own applications" 
-  ON career_applications FOR SELECT 
-  USING (
-    auth.uid() IS NULL OR -- Allow public read for application confirmation
-    auth.uid() IN (
-      SELECT user_id FROM user_roles 
-      WHERE role = 'admin'
-    )
-  );
-
-CREATE POLICY "Admin can manage all applications" 
-  ON career_applications FOR ALL 
-  USING (auth.uid() IN (
-    SELECT user_id FROM user_roles 
-    WHERE role = 'admin'
-  ));
-
--- Career Application Activities (admin only)
-ALTER TABLE career_application_activities ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Application activities are manageable by admin" 
-  ON career_application_activities FOR ALL 
-  USING (auth.uid() IN (
-    SELECT user_id FROM user_roles 
-    WHERE role = 'admin'
-  ));
-
 -- Functions for view counting
 CREATE OR REPLACE FUNCTION increment_position_views(position_id uuid)
 RETURNS void AS $$
@@ -371,28 +237,86 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Function to update application count
-CREATE OR REPLACE FUNCTION update_position_applications_count(position_id uuid)
-RETURNS void AS $$
+CREATE OR REPLACE FUNCTION public.increment_applications_count()
+RETURNS TRIGGER AS $BODY$
 BEGIN
-  UPDATE career_positions 
-  SET applications_count = (
-    SELECT COUNT(*) 
-    FROM career_applications 
-    WHERE career_applications.position_id = position_id
-  )
-  WHERE id = position_id;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Trigger to update applications count when new application is created
-CREATE OR REPLACE FUNCTION trigger_update_applications_count()
-RETURNS TRIGGER AS $$
-BEGIN
-  PERFORM update_position_applications_count(NEW.position_id);
+  UPDATE public.career_positions
+  SET applications_count = applications_count + 1
+  WHERE id = NEW.position_id;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$BODY$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE TRIGGER update_applications_count_trigger
-  AFTER INSERT ON career_applications
-  FOR EACH ROW EXECUTE FUNCTION trigger_update_applications_count();
+-- Trigger to update applications count when new application is created
+CREATE TRIGGER on_application_created_increment_count
+  AFTER INSERT ON public.career_applications
+  FOR EACH ROW EXECUTE FUNCTION public.increment_applications_count();
+
+-- Simplified RLS Policies (not too strict)
+-- Enable RLS on all career tables
+ALTER TABLE career_categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE career_locations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE career_types ENABLE ROW LEVEL SECURITY;
+ALTER TABLE career_levels ENABLE ROW LEVEL SECURITY;
+ALTER TABLE career_positions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE career_skills ENABLE ROW LEVEL SECURITY;
+ALTER TABLE career_position_skills ENABLE ROW LEVEL SECURITY;
+ALTER TABLE career_applications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE career_application_activities ENABLE ROW LEVEL SECURITY;
+
+-- Simple policies: Allow public read access, authenticated users can insert applications
+-- Career Categories - Public read, admin write
+CREATE POLICY "Career categories public read" ON career_categories FOR SELECT USING (true);
+CREATE POLICY "Career categories admin write" ON career_categories FOR ALL USING (
+  auth.uid() IN (SELECT user_id FROM user_roles WHERE role = 'admin')
+);
+
+-- Career Locations - Public read, admin write
+CREATE POLICY "Career locations public read" ON career_locations FOR SELECT USING (true);
+CREATE POLICY "Career locations admin write" ON career_locations FOR ALL USING (
+  auth.uid() IN (SELECT user_id FROM user_roles WHERE role = 'admin')
+);
+
+-- Career Types - Public read, admin write
+CREATE POLICY "Career types public read" ON career_types FOR SELECT USING (true);
+CREATE POLICY "Career types admin write" ON career_types FOR ALL USING (
+  auth.uid() IN (SELECT user_id FROM user_roles WHERE role = 'admin')
+);
+
+-- Career Levels - Public read, admin write
+CREATE POLICY "Career levels public read" ON career_levels FOR SELECT USING (true);
+CREATE POLICY "Career levels admin write" ON career_levels FOR ALL USING (
+  auth.uid() IN (SELECT user_id FROM user_roles WHERE role = 'admin')
+);
+
+-- Career Positions - Public read published, admin write
+CREATE POLICY "Career positions public read" ON career_positions FOR SELECT USING (
+  is_active = true AND status = 'open' AND published_at IS NOT NULL
+);
+CREATE POLICY "Career positions admin write" ON career_positions FOR ALL USING (
+  auth.uid() IN (SELECT user_id FROM user_roles WHERE role = 'admin')
+);
+
+-- Career Skills - Public read, admin write
+CREATE POLICY "Career skills public read" ON career_skills FOR SELECT USING (true);
+CREATE POLICY "Career skills admin write" ON career_skills FOR ALL USING (
+  auth.uid() IN (SELECT user_id FROM user_roles WHERE role = 'admin')
+);
+
+-- Career Position Skills - Public read, admin write
+CREATE POLICY "Career position skills public read" ON career_position_skills FOR SELECT USING (true);
+CREATE POLICY "Career position skills admin write" ON career_position_skills FOR ALL USING (
+  auth.uid() IN (SELECT user_id FROM user_roles WHERE role = 'admin')
+);
+
+-- Career Applications - Anyone can submit, admin can manage
+CREATE POLICY "Career applications public insert" ON career_applications FOR INSERT WITH CHECK (true);
+CREATE POLICY "Career applications public read" ON career_applications FOR SELECT USING (true);
+CREATE POLICY "Career applications admin manage" ON career_applications FOR ALL USING (
+  auth.uid() IN (SELECT user_id FROM user_roles WHERE role = 'admin')
+);
+
+-- Career Application Activities - Admin only
+CREATE POLICY "Career application activities admin only" ON career_application_activities FOR ALL USING (
+  auth.uid() IN (SELECT user_id FROM user_roles WHERE role = 'admin')
+);

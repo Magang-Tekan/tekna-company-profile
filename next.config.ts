@@ -7,7 +7,17 @@ const nextConfig: NextConfig = {
       test: /\.(glb|gltf)$/,
       type: 'asset/resource',
     });
+    
+    // Exclude Deno/Supabase functions from compilation
+    config.externals = config.externals || {};
+    config.externals['supabase/functions'] = 'commonjs supabase/functions';
+    
     return config;
+  },
+  // Exclude supabase functions from TypeScript checking
+  typescript: {
+    ignoreBuildErrors: false,
+    tsconfigPath: './tsconfig.json'
   },
   // Image optimization
   images: {

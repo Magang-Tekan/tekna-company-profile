@@ -458,26 +458,95 @@ export class CareerService {
     }
   }
 
-  async submitApplication(application: Omit<CareerApplication, 'id' | 'status' | 'applied_at' | 'last_activity_at' | 'created_at' | 'updated_at'>): Promise<boolean> {
+  async submitApplication(application: Omit<CareerApplication, 'id' | 'status' | 'applied_at' | 'last_activity_at' | 'created_at' | 'updated_at'>): Promise<{ success: boolean; error?: string }> {
     try {
-      const { error } = await this.supabase
+      // Validate required fields
+      if (!application.first_name || !application.last_name || !application.email || !application.position_id) {
+        return { 
+          success: false, 
+          error: 'Missing required fields: first_name, last_name, email, position_id' 
+        };
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(application.email)) {
+        return { 
+          success: false, 
+          error: 'Invalid email format' 
+        };
+      }
+
+      const { data, error } = await this.supabase
         .from('career_applications')
         .insert({
           ...application,
           status: 'submitted',
           applied_at: new Date().toISOString(),
           last_activity_at: new Date().toISOString()
-        });
+        })
+        .select('id')
+        .single();
 
       if (error) {
         console.error('Error submitting application:', error);
-        return false;
+        // Provide more detailed error information
+        let errorMessage = 'Failed to submit application';
+        if (error.code) {
+          errorMessage += ` (Code: ${error.code})`;
+        }
+        if (error.message) {
+          errorMessage += `: ${error.message}`;
+        }
+        if (error.details) {
+          errorMessage += ` - ${error.details}`;
+        }
+        if (error.hint) {
+          errorMessage += ` - Hint: ${error.hint}`;
+        }
+        
+        return { 
+          success: false, 
+          error: errorMessage
+        };
       }
 
-      return true;
+      if (!data) {
+        return { 
+          success: false, 
+          error: 'Application submitted but no confirmation received' 
+        };
+      }
+
+      // Try to send email notification manually (as fallback if database trigger fails)
+      try {
+        await this.sendEmailNotification({
+          ...application,
+          id: data.id,
+          status: 'submitted'
+        }, 'confirmation');
+      } catch (emailError) {
+        console.warn('Failed to send email notification manually:', emailError);
+        // Don't fail the application submission if email fails
+      }
+
+      return { success: true };
     } catch (error) {
       console.error('Error in submitApplication:', error);
-      return false;
+      let errorMessage = 'Unknown error occurred';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error && typeof error === 'object' && 'message' in error) {
+        errorMessage = String(error.message);
+      }
+      
+      return { 
+        success: false, 
+        error: errorMessage
+      };
     }
   }
 
@@ -504,6 +573,49 @@ export class CareerService {
     } catch (error) {
       console.error('Error in getAllPositions:', error);
       return [];
+    }
+  }
+
+  // Send email notification manually if database trigger fails
+  private async sendEmailNotification(application: Partial<CareerApplication> & { old_status?: string }, type: 'confirmation' | 'status_update' = 'confirmation'): Promise<void> {
+    try {
+      // Get position details
+      const { data: positionData } = await this.supabase
+        .from('career_positions')
+        .select('title, slug')
+        .eq('id', application.position_id)
+        .single();
+
+      if (!positionData) {
+        console.warn('Position not found for email notification:', application.position_id);
+        return;
+      }
+
+      // Call edge function directly
+      const response = await fetch('/api/send-application-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          application_id: application.id,
+          applicant_email: application.email,
+          applicant_name: `${application.first_name} ${application.last_name}`,
+          position_id: application.position_id,
+          position_title: positionData.title,
+          position_slug: positionData.slug,
+          type,
+          old_status: type === 'status_update' ? application.old_status : undefined,
+          new_status: type === 'status_update' ? application.status : undefined
+        })
+      });
+
+      if (!response.ok) {
+        console.warn('Failed to send email notification:', response.statusText);
+      }
+    } catch (error) {
+      console.warn('Error sending email notification:', error);
+      // Don't throw error as this is not critical for application submission
     }
   }
 

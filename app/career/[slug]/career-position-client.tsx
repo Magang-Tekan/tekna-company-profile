@@ -82,9 +82,9 @@ export default function CareerPositionClient({ slug }: CareerPositionClientProps
         ...applicationData
       }
 
-      const success = await careerService.submitApplication(application)
+      const result = await careerService.submitApplication(application)
       
-      if (success) {
+      if (result.success) {
         setShowApplicationForm(false)
         setApplicationData({
           first_name: '',
@@ -98,13 +98,20 @@ export default function CareerPositionClient({ slug }: CareerPositionClientProps
           github_url: '',
           source: 'website'
         })
-        alert('Application submitted successfully!')
+        alert('Application submitted successfully! You will receive a confirmation email shortly.')
       } else {
-        throw new Error('Failed to submit application')
+        // Log the detailed error for debugging
+        console.error('Application submission failed:', result.error)
+        throw new Error(result.error || 'Failed to submit application')
       }
     } catch (error) {
       console.error('Error submitting application:', error)
-      alert('Failed to submit application. Please try again.')
+      // Show more specific error message
+      let errorMessage = 'Failed to submit application. Please try again.'
+      if (error instanceof Error && error.message) {
+        errorMessage = `Failed to submit application: ${error.message}`
+      }
+      alert(errorMessage)
     } finally {
       setApplying(false)
     }
