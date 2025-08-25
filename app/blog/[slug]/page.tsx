@@ -11,6 +11,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { IconCalendar, IconEye } from '@tabler/icons-react';
 import { ContentRenderer } from '@/components/content-renderer';
+import { BlogPostStructuredData } from '@/components/structured-data';
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -46,12 +47,12 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 
   return {
-    title: `${post.title} | Tekna Solutions Blog`,
-    description: post.excerpt || post.title,
-    keywords: '',
+    title: post.meta_title || `${post.title} | Tekna Solutions Blog`,
+    description: post.meta_description || post.excerpt || post.title,
+    keywords: post.meta_keywords || '',
     openGraph: {
-      title: post.title,
-      description: post.excerpt || post.title,
+      title: post.meta_title || post.title,
+      description: post.meta_description || post.excerpt || post.title,
       images: post.featured_image_url ? [
         {
           url: post.featured_image_url,
@@ -66,8 +67,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     },
     twitter: {
       card: 'summary_large_image',
-      title: post.title,
-      description: post.excerpt || post.title,
+      title: post.meta_title || post.title,
+      description: post.meta_description || post.excerpt || post.title,
       images: post.featured_image_url ? [post.featured_image_url] : [],
     },
   };
@@ -104,6 +105,23 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <PublicLayout>
+      <BlogPostStructuredData 
+        post={{
+          title: post.title,
+          slug: post.slug,
+          excerpt: post.excerpt,
+          content: post.content,
+          featured_image_url: post.featured_image_url,
+          published_at: post.published_at,
+          updated_at: post.created_at,
+          author_name: post.author_name,
+          category: post.category ? {
+            name: post.category.name,
+            slug: post.category.slug
+          } : undefined
+        }} 
+        siteUrl={process.env.NEXT_PUBLIC_SITE_URL || 'https://tekna-solutions.com'} 
+      />
       <article className="container mx-auto px-4 py-12 md:px-6 lg:py-16">
         
         {/* Article Header */}

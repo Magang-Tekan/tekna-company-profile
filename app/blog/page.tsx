@@ -1,6 +1,7 @@
 import { PublicService } from '@/lib/services/public.service';
 import { PublicLayout } from '@/components/layout/public-layout';
 import { BlogGrid } from '@/components/blog/blog-grid';
+import { Metadata } from 'next';
 
 interface BlogPageProps {
   searchParams: Promise<{
@@ -10,6 +11,22 @@ interface BlogPageProps {
     featured?: string;
   }>;
 }
+
+export const metadata: Metadata = {
+  title: 'Blog | Tekna Solutions - Insights & Latest News',
+  description: 'Explore our articles about technology, design, and innovation that shape the future of digital experiences.',
+  keywords: 'blog, technology, innovation, web development, AI, machine learning, digital solutions',
+  openGraph: {
+    title: 'Blog | Tekna Solutions',
+    description: 'Explore our articles about technology, design, and innovation that shape the future of digital experiences.',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Blog | Tekna Solutions',
+    description: 'Explore our articles about technology, design, and innovation that shape the future of digital experiences.',
+  },
+};
 
 async function getBlogData(params: {
   page?: number;

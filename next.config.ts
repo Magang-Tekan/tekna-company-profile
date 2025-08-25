@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  // Add headers for GLB files and caching
+  // Add headers for SEO and performance
   async headers() {
     return [
       {
@@ -54,7 +54,45 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        source: '/blog/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, s-maxage=86400',
+          },
+        ],
+      },
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin',
+          },
+        ],
+      },
     ];
+  },
+  // Enable compression
+  compress: true,
+  // Enable source maps in development
+  productionBrowserSourceMaps: false,
+  // Optimize bundle size
+  experimental: {
+    // optimizeCss: true, // Disabled due to critters module issue
   },
 };
 

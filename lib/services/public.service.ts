@@ -63,6 +63,7 @@ export class PublicService {
           featured_image_url,
           author_name,
           published_at,
+          created_at,
           view_count,
           category_id,
           is_featured,
