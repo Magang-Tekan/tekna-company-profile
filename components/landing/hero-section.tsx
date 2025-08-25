@@ -100,7 +100,7 @@ export function HeroSection() {
       >
         {/* Sticky container that remains centered during scroll */}
         <div 
-          className="sticky top-0 left-0 w-full h-screen flex items-center justify-center"
+          className="sticky top-0 left-0 w-full h-screen flex items-center justify-center pointer-events-none"
           style={{
             zIndex: 40, // Higher than projects section to stay visible
             background: 'transparent' // Pastikan container juga transparan
@@ -108,7 +108,7 @@ export function HeroSection() {
         >
           {/* Content 1 - Initial Hero Text with smooth transitions */}
           <motion.div
-            className="absolute z-10 text-center max-w-4xl px-4 pointer-events-auto"
+            className="absolute z-10 text-center max-w-4xl px-4 pointer-events-none"
             style={{
               opacity: contentOpacity.content1,
               transform: `translateY(${contentOpacity.content1 === 1 ? 0 : 20}px)`,
@@ -124,10 +124,10 @@ export function HeroSection() {
               Building scalable websites, mobile apps, and IoT solutions for the future.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg" className="text-lg px-8 py-6">
+              <Button asChild size="lg" className="text-lg px-8 py-6 pointer-events-auto">
                 <Link href="/projects">Portfolio</Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6">
+              <Button asChild size="lg" variant="outline" className="text-lg px-8 py-6 pointer-events-auto">
                 <Link href="/contact">Reach Us</Link>
               </Button>
             </div>
@@ -135,7 +135,7 @@ export function HeroSection() {
 
           {/* Content 2 - Our Services with smooth transitions */}
           <motion.div
-            className="absolute z-10 text-center max-w-4xl px-4 pointer-events-auto"
+            className="absolute z-10 text-center max-w-4xl px-4 pointer-events-none"
             style={{
               opacity: contentOpacity.content2,
               transform: `translateY(${contentOpacity.content2 === 1 ? 0 : 20}px)`,
@@ -154,7 +154,7 @@ export function HeroSection() {
 
           {/* Content 3 - Featured Projects with smooth transitions */}
           <motion.div
-            className="absolute z-10 text-center max-w-4xl px-4 pointer-events-auto"
+            className="absolute z-10 text-center max-w-4xl px-4 pointer-events-none"
             style={{
               opacity: contentOpacity.content3,
               transform: `translateY(${contentOpacity.content3 === 1 ? 0 : 20}px)`,

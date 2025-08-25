@@ -263,7 +263,7 @@ export function World(props: WorldProps) {
   }
   
   return (
-    <Canvas scene={sceneRef.current} camera={cameraRef.current}>
+    <Canvas scene={sceneRef.current} camera={cameraRef.current} style={{ pointerEvents: 'auto' }}>
       <WebGLRendererConfig />
       <ambientLight color={globeConfig.ambientLight} intensity={0.6} />
       <directionalLight

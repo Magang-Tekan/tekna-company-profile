@@ -440,7 +440,7 @@ export function GlobeBackground() {
       className="fixed inset-0 flex items-center justify-center"
       style={{ zIndex: 1 }}
     >
-      <div className="w-[120vw] h-[120vh] relative">
+      <div className="w-[120vw] h-[120vh] relative pointer-events-auto">
         <World data={sampleArcs} globeConfig={globeConfig} />
       </div>
     </div>
