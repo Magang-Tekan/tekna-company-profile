@@ -71,8 +71,8 @@ export function Globe({ globeConfig, data }: WorldProps) {
     atmosphereColor: "#ffffff",
     showAtmosphere: true,
     atmosphereAltitude: 0.1,
-    polygonColor: "rgba(255,255,255,0.7)",
-    globeColor: "#1d072e",
+    polygonColor: "rgba(16, 185, 129, 0.8)", // emerald-500 - daratan neon
+    globeColor: "#bfdbfe", // blue-200 - lautan terang
     emissive: "#000000",
     emissiveIntensity: 0.1,
     shininess: 0.9,

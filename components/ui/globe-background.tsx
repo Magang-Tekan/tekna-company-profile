@@ -37,21 +37,21 @@ export function GlobeBackground() {
         autoRotateSpeed: 0.5,
       };
     } else {
-      // Light theme - warna yang lebih menarik dan kontras
+      // Light theme - globe terang dengan daratan neon yang menyala
       return {
-        pointSize: 4,
-        globeColor: "#e2e8f0", // slate-200 - lebih solid dan kontras
+        pointSize: 6, // lebih besar untuk efek neon
+        globeColor: "#bfdbfe", // blue-200 - lautan sangat terang agar teks terlihat
         showAtmosphere: true,
-        atmosphereColor: "#1e293b", // slate-800 - kontras yang lebih kuat
-        atmosphereAltitude: 0.15,
-        emissive: "#94a3b8", // slate-400
-        emissiveIntensity: 0.2,
-        shininess: 0.8,
-        polygonColor: "rgba(30, 41, 59, 0.5)", // slate-800 dengan opacity yang lebih tinggi
-        ambientLight: "#1e293b", // slate-800
-        directionalLeftLight: "#475569", // slate-600
-        directionalTopLight: "#334155", // slate-700
-        pointLight: "#1e293b", // slate-800
+        atmosphereColor: "#e0f2fe", // sky-100 - atmosfer sangat terang
+        atmosphereAltitude: 0.1,
+        emissive: "#dbeafe", // blue-100 - cahaya terang
+        emissiveIntensity: 0.3,
+        shininess: 0.7,
+        polygonColor: "rgba(16, 185, 129, 1)", // emerald-500 - daratan neon hijau terang
+        ambientLight: "#ffffff", // putih penuh untuk kontras teks
+        directionalLeftLight: "#f3f4f6", // gray-100 - cahaya terang
+        directionalTopLight: "#e5e7eb", // gray-200 - cahaya lembut
+        pointLight: "#ffffff", // putih penuh
         arcTime: 1000,
         arcLength: 0.9,
         rings: 1,
@@ -69,7 +69,7 @@ export function GlobeBackground() {
   const sampleArcs = useMemo(() => {
     const colors = theme === 'dark' 
       ? ["#06b6d4", "#3b82f6", "#6366f1"] 
-      : ["#1e293b", "#475569", "#64748b"]; // Warna slate yang lebih kontras untuk light theme
+      : ["#10b981", "#059669", "#047857"]; // Warna hijau neon yang terlihat jelas untuk arc
 
     return [
       {
