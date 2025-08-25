@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { Menu, X, Rocket, Code, Globe, Users, Star } from "lucide-react";
+import { Menu, X, Rocket, Code, Globe, Users, Star, Briefcase } from "lucide-react";
 import { useState } from "react";
 import { useNavbarAnimation } from "@/hooks/use-navbar-animation";
 import { usePathname } from "next/navigation";
@@ -51,10 +51,10 @@ export function AppHeader() {
     themeSwitcherRef
   } = useNavbarAnimation({
     onFloatingStart: () => {
-      console.log('Navbar started floating');
+      // Navbar started floating
     },
     onFloatingEnd: () => {
-      console.log('Navbar returned to normal');
+      // Navbar returned to normal
     }
   });
 
@@ -133,6 +133,17 @@ export function AppHeader() {
             <Globe className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
             Blog
           </Link>
+          <Link 
+            href="/career" 
+            className={`flex items-center gap-2 transition-all duration-300 hover:scale-105 group ${
+              pathname.startsWith('/career') 
+                ? 'text-foreground font-semibold' 
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Briefcase className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+            Karir
+          </Link>
         </nav>
 
         {/* Right Section - Theme Toggle & Mobile Menu */}
@@ -202,6 +213,18 @@ export function AppHeader() {
               >
                 <Globe className="w-4 h-4" />
                 Blog
+              </Link>
+              <Link 
+                href="/career" 
+                className={`flex items-center gap-3 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 ${
+                  pathname.startsWith('/career') 
+                    ? 'text-foreground font-semibold bg-muted/30' 
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Briefcase className="w-4 h-4" />
+                Karir
               </Link>
             </nav>
           </div>
