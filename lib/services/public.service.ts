@@ -77,12 +77,13 @@ export class PublicService {
         .eq('is_active', true);
 
       // Apply filters
-      if (search) {
-        query = query.or(`title.ilike.%${search}%,excerpt.ilike.%${search}%`);
+      if (search && search.trim()) {
+        query = query.or(`title.ilike.%${search.trim()}%,excerpt.ilike.%${search.trim()}%`);
       }
 
-      if (category) {
-        query = query.eq('categories.slug', category);
+      if (category && category.trim()) {
+        // Fix: Filter by category_id instead of categories.slug
+        query = query.eq('category_id', category);
       }
 
       if (featured) {
@@ -94,7 +95,9 @@ export class PublicService {
         .order('published_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
 
       const totalPages = Math.ceil((count || 0) / limit);
 
@@ -389,7 +392,6 @@ export class PublicService {
   static async getFeaturedProjects(language: string = 'en') {
     const supabase = await createClient();
     try {
-      console.log('Fetching featured projects for language:', language);
       
       // First get the language ID
       const { data: languageData, error: languageError } = await supabase
@@ -403,8 +405,6 @@ export class PublicService {
         console.error('Language not found:', language, languageError);
         return [];
       }
-
-      console.log('Found language ID:', languageData.id);
 
       // Get featured projects with translations and images
       const { data: projects, error: projectsError } = await supabase
@@ -431,8 +431,6 @@ export class PublicService {
         return [];
       }
 
-      console.log('Found projects:', projects?.length || 0);
-
       if (!projects || projects.length === 0) return [];
 
       // Get translations for all projects
@@ -454,8 +452,6 @@ export class PublicService {
         console.error('Error fetching project translations:', translationsError);
       }
 
-      console.log('Found translations:', translations?.length || 0);
-
       // Get images for all projects
       const { data: images, error: imagesError } = await supabase
         .from('project_images')
@@ -472,8 +468,6 @@ export class PublicService {
       if (imagesError) {
         console.error('Error fetching project images:', imagesError);
       }
-
-      console.log('Found images:', images?.length || 0);
 
       // Transform the data to match the expected interface
       const result = projects.map(project => {
@@ -497,7 +491,6 @@ export class PublicService {
         };
       });
 
-      console.log('Returning transformed projects:', result.length);
       return result;
 
     } catch (error) {

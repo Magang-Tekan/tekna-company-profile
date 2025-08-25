@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { ImageWithFallback } from '@/components/ui/image-with-fallback';
-import { ShareButton } from '@/components/ui/share-button';
+import { ShareButton } from '@/components/blog/share-button';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
@@ -170,8 +170,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
               {/* Share Button */}
               <ShareButton 
+                url={`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/blog/${post.slug}`}
                 title={post.title}
-                text={post.excerpt || ''}
+                description={post.excerpt || ''}
                 variant="outline"
                 size="sm"
                 className="gap-2 px-4"

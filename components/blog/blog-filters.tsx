@@ -48,7 +48,7 @@ export function BlogFilters({
 }: BlogFiltersProps) {
   const [filters, setFilters] = useState({
     search: initialFilters.search || '',
-    category: initialFilters.category || '',
+    category: initialFilters.category || 'all',
     featured: initialFilters.featured || false,
     sortBy: initialFilters.sortBy || 'newest' as const,
   });
@@ -70,11 +70,17 @@ export function BlogFilters({
       // Debounce search, immediate for others
       if (filters.search !== lastFiltersState.search) {
         const timer = setTimeout(() => {
-          onFilterChange(filters);
+          onFilterChange({
+            ...filters,
+            category: filters.category === 'all' ? '' : filters.category
+          });
         }, 500);
         return () => clearTimeout(timer);
       } else {
-        onFilterChange(filters);
+        onFilterChange({
+          ...filters,
+          category: filters.category === 'all' ? '' : filters.category
+        });
       }
     }
   }, [filters, lastFiltersState, onFilterChange]);
@@ -98,15 +104,18 @@ export function BlogFilters({
   const clearFilters = () => {
     const newFilters = {
       search: '',
-      category: '',
+      category: 'all',
       featured: false,
       sortBy: 'newest' as const,
     };
     setFilters(newFilters);
-    onFilterChange(newFilters);
+    onFilterChange({
+      ...newFilters,
+      category: ''
+    });
   };
 
-  const hasActiveFilters = filters.search || filters.category || filters.featured;
+  const hasActiveFilters = filters.search || (filters.category !== 'all') || filters.featured;
 
   return (
     <Card className="mb-8 shadow-sm border-2 border-muted/50">
@@ -123,20 +132,28 @@ export function BlogFilters({
               placeholder="Search articles..."
               value={filters.search}
               onChange={(e) => handleSearchChange(e.target.value)}
-              className="pl-10 pr-10 h-11 text-base focus:ring-2 focus:ring-primary"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  onFilterChange(filters);
+                }
+              }}
+              className="pl-10 pr-24 h-11 text-base focus:ring-2 focus:ring-primary"
               disabled={isLoading}
               aria-describedby={filters.search ? "search-description" : undefined}
             />
+            
+            {/* Search Button */}
+            <Button
+              onClick={() => onFilterChange(filters)}
+              disabled={isLoading || !filters.search.trim()}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-7 px-3 text-sm"
+              size="sm"
+            >
+              Search
+            </Button>
+            
             {filters.search && (
               <>
-                <button
-                  onClick={() => handleSearchChange('')}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-sm"
-                  disabled={isLoading}
-                  aria-label="Clear search"
-                >
-                  <IconX className="h-4 w-4" />
-                </button>
                 <div id="search-description" className="sr-only">
                   Search results are being filtered by: {filters.search}
                 </div>
@@ -159,7 +176,7 @@ export function BlogFilters({
               {isExpanded ? 'Hide Advanced Filters' : 'Show Advanced Filters'}
               {hasActiveFilters && (
                 <Badge variant="secondary" className="ml-1 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground">
-                  {[filters.category, filters.featured].filter(Boolean).length}
+                  {[filters.category !== 'all' ? 1 : 0, filters.featured].filter(Boolean).length}
                 </Badge>
               )}
             </Button>
@@ -200,9 +217,9 @@ export function BlogFilters({
                       <SelectValue placeholder="All categories" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All categories</SelectItem>
+                      <SelectItem value="all">All categories</SelectItem>
                       {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.slug}>
+                        <SelectItem key={category.id} value={category.id}>
                           <div className="flex items-center gap-2">
                             <div 
                               className="w-3 h-3 rounded-full flex-shrink-0"
@@ -264,11 +281,11 @@ export function BlogFilters({
           {/* Enhanced Active Filters Display */}
           {hasActiveFilters && (
             <div className="flex flex-wrap gap-2 pt-4 border-t border-muted/50">
-              {filters.category && (
+              {filters.category !== 'all' && (
                 <Badge variant="secondary" className="gap-2 px-3 py-1">
-                  Category: {categories.find(c => c.slug === filters.category)?.name}
+                  Category: {categories.find(c => c.id === filters.category)?.name}
                   <button
-                    onClick={() => handleCategoryChange('')}
+                    onClick={() => handleCategoryChange('all')}
                     className="hover:text-foreground transition-colors focus:outline-none focus:ring-1 focus:ring-primary rounded-sm"
                     disabled={isLoading}
                     aria-label="Remove category filter"
