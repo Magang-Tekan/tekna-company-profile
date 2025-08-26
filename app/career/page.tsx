@@ -85,9 +85,12 @@ export default function CareerPage() {
   const loadPositions = useCallback(async () => {
     setLoading(true)
     try {
-      console.log('Loading positions with params:', searchParams)
+      
       const result = await careerService.getPublicPositions(searchParams)
-      console.log('Positions result:', result)
+      
+      if (result.positions.length > 0) {
+      }
+      
       setPositions(result.positions)
       setTotalCount(result.total)
       setTotalPages(result.totalPages)
@@ -111,14 +114,36 @@ export default function CareerPage() {
   }
 
   const handleFilterChange = (key: string, value: string) => {
-    setSearchParams(prev => ({
-      ...prev,
-      filters: { 
-        ...prev.filters, 
-        [key]: value === 'all' ? undefined : value 
-      },
-      page: 1
-    }))
+    
+    // Don't process 'all' values
+    if (value === 'all') {
+      setSearchParams(prev => {
+        const newParams = {
+          ...prev,
+          filters: { 
+            ...prev.filters, 
+            [key]: undefined 
+          },
+          page: 1
+        }
+        console.log('New search params (cleared filter):', newParams)
+        return newParams
+      })
+      return
+    }
+    
+    setSearchParams(prev => {
+      const newParams = {
+        ...prev,
+        filters: { 
+          ...prev.filters, 
+          [key]: value 
+        },
+        page: 1
+      }
+      console.log('New search params (set filter):', newParams)
+      return newParams
+    })
   }
 
   const handleSortChange = (sort: string) => {
