@@ -13,6 +13,7 @@ import { IconLoader2, IconArrowLeft, IconX, IconPhoto } from "@tabler/icons-reac
 import { ClientDashboardService } from "@/lib/services/client-dashboard.service";
 import { MediaUpload } from "@/components/media-upload";
 import type { MediaFile } from "@/lib/services/media.service";
+import { useToast } from '@/hooks/use-toast'
 
 interface ProjectFormData {
   name: string;
@@ -41,6 +42,8 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
     featured_image_url: initialData?.featured_image_url || '',
     is_featured: initialData?.is_featured || false,
   });
+
+  const { toast } = useToast()
 
   // Generate slug from name
   const generateSlug = (name: string) => {
@@ -77,6 +80,11 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
           is_featured: formData.is_featured,
         });
         console.log('Create result:', result);
+        toast({
+          title: "Project Created!",
+          description: "Project has been created successfully.",
+          variant: "success",
+        })
       } else if (mode === 'edit' && projectId) {
         const updateData = {
           name: formData.name,
@@ -90,13 +98,22 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
         
         const result = await ClientDashboardService.updateProject(projectId, updateData);
         console.log('Update result:', result);
+        toast({
+          title: "Project Updated!",
+          description: "Project has been updated successfully.",
+          variant: "success",
+        })
       }
 
       router.push('/dashboard/projects');
       router.refresh();
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert(mode === 'create' ? 'Failed to create project' : 'Failed to update project');
+      toast({
+        title: "Error",
+        description: mode === 'create' ? 'Failed to create project' : 'Failed to update project',
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false);
     }
@@ -129,7 +146,11 @@ export function ProjectForm({ mode, initialData, projectId }: Readonly<ProjectFo
     
     // Use toast notification instead of alert for better UX
     // For now using alert, but can be replaced with toast library
-    alert(`Upload gagal: ${userFriendlyMessage}`);
+    toast({
+      title: "Upload Failed",
+      description: `Upload gagal: ${userFriendlyMessage}`,
+      variant: "destructive",
+    })
   };
 
   // Remove featured image

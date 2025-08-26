@@ -18,6 +18,7 @@ import { IconEye, IconEyeOff, IconTag, IconUser, IconFileText, IconSettings, Ico
 import Image from 'next/image';
 import { ContentRenderer } from './content-renderer';
 import { MarkdownEditor } from './markdown-editor';
+import { useToast } from '@/hooks/use-toast'
 
 interface PostFormProps {
   postId?: string;
@@ -80,6 +81,8 @@ export function PostForm({ postId, initialData }: PostFormProps) {
     meta_description: initialData?.meta_description || '',
     meta_keywords: initialData?.meta_keywords || '',
   });
+
+  const { toast } = useToast()
 
   // Load categories and authors
   useEffect(() => {
@@ -169,15 +172,29 @@ export function PostForm({ postId, initialData }: PostFormProps) {
 
       if (postId) {
         await ClientDashboardService.updatePost(postId, dataToSubmit);
+        toast({
+          title: "Post Updated!",
+          description: "Post has been updated successfully.",
+          variant: "success",
+        })
       } else {
         await ClientDashboardService.createPost(dataToSubmit);
+        toast({
+          title: "Post Created!",
+          description: "Post has been created successfully.",
+          variant: "success",
+        })
       }
       
       router.push('/dashboard/blog');
       router.refresh();
     } catch (error) {
       console.error('Error saving post:', error);
-      alert(error instanceof Error ? error.message : 'Terjadi kesalahan');
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : 'Terjadi kesalahan',
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false);
     }
@@ -244,12 +261,20 @@ export function PostForm({ postId, initialData }: PostFormProps) {
 
   const handleFileUpload = async (file: File) => {
     if (!file.type.startsWith('image/')) {
-      alert('Hanya file gambar yang diperbolehkan');
+      toast({
+        title: "Invalid File Type",
+        description: "Hanya file gambar yang diperbolehkan",
+        variant: "destructive",
+      })
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      alert('Ukuran file maksimal 5MB');
+      toast({
+        title: "File Too Large",
+        description: "Ukuran file maksimal 5MB",
+        variant: "destructive",
+      })
       return;
     }
 
@@ -259,9 +284,18 @@ export function PostForm({ postId, initialData }: PostFormProps) {
       // In production, you'd upload to your storage service
       const placeholderUrl = URL.createObjectURL(file);
       setFormData(prev => ({ ...prev, featured_image_url: placeholderUrl }));
+      toast({
+        title: "Image Uploaded!",
+        description: "Post image has been uploaded successfully.",
+        variant: "success",
+      })
     } catch (error) {
       console.error('Error uploading file:', error);
-      alert('Gagal upload file');
+      toast({
+        title: "Upload Failed",
+        description: "Gagal upload file",
+        variant: "destructive",
+      })
     } finally {
       setIsUploading(false);
     }

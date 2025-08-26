@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
 import { IconDeviceFloppy, IconX, IconUser, IconUpload } from '@tabler/icons-react';
+import { useToast } from '@/hooks/use-toast'
 
 interface AuthorFormProps {
   authorId?: string;
@@ -92,6 +93,7 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
     sort_order: initialData?.sort_order || 0,
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
+  const { toast } = useToast()
 
   // Validation function
   const validateForm = (): boolean => {
@@ -184,8 +186,18 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
     try {
       if (authorId) {
         await ClientDashboardService.updateAuthor(authorId, formData);
+        toast({
+          title: "Author Updated!",
+          description: "Author has been updated successfully.",
+          variant: "success",
+        })
       } else {
         await ClientDashboardService.createAuthor(formData);
+        toast({
+          title: "Author Created!",
+          description: "Author has been created successfully.",
+          variant: "success",
+        })
       }
       
       if (onSuccess) {
@@ -196,7 +208,11 @@ export function AuthorForm({ authorId, initialData, onSuccess, onCancel }: Autho
       }
     } catch (error) {
       console.error('Error saving author:', error);
-      alert(error instanceof Error ? error.message : 'Terjadi kesalahan');
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : 'Terjadi kesalahan',
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false);
     }

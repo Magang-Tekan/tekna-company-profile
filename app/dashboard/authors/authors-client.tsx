@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
 import { useRealtimeAuthors } from '@/lib/hooks/use-realtime-simple';
 import { IconPlus, IconEdit, IconTrash, IconMail } from '@tabler/icons-react';
+import { useToast } from '@/hooks/use-toast'
 
 interface Author {
   id: string;
@@ -30,6 +31,7 @@ export function AuthorsPageClient({ initialAuthors }: AuthorsPageClientProps) {
   const router = useRouter();
   const [authors, setAuthors] = useState<Author[]>(initialAuthors);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast()
 
   // Real-time sync for authors
   useRealtimeAuthors(() => {
@@ -54,9 +56,18 @@ export function AuthorsPageClient({ initialAuthors }: AuthorsPageClientProps) {
     try {
       await ClientDashboardService.deleteAuthor(authorId);
       setAuthors(prev => prev.filter(author => author.id !== authorId));
+      toast({
+        title: "Author Deleted!",
+        description: "Author has been deleted successfully.",
+        variant: "success",
+      })
     } catch (error) {
       console.error('Error deleting author:', error);
-      alert(error instanceof Error ? error.message : 'Failed to delete author');
+      toast({
+        title: "Delete Failed",
+        description: error instanceof Error ? error.message : 'Failed to delete author',
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false);
     }

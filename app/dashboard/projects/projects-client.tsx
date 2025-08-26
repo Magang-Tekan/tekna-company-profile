@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { IconFolder, IconPlus, IconSearch, IconFilter, IconEdit, IconTrash, IconLoader2 } from "@tabler/icons-react";
 import { ClientDashboardService } from "@/lib/services/client-dashboard.service";
+import { useToast } from '@/hooks/use-toast'
 
 interface Project {
   id: string;
@@ -27,6 +28,7 @@ export default function ProjectsPageClient({ initialProjects }: Readonly<Project
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const { toast } = useToast()
 
   const handleDelete = async (projectId: string) => {
     if (!confirm('Apakah Anda yakin ingin menghapus proyek ini?')) {
@@ -37,9 +39,18 @@ export default function ProjectsPageClient({ initialProjects }: Readonly<Project
     try {
       await ClientDashboardService.deleteProject(projectId);
       setProjects(prev => prev.filter(p => p.id !== projectId));
+      toast({
+        title: "Project Deleted!",
+        description: "Project has been deleted successfully.",
+        variant: "success",
+      })
     } catch (error) {
       console.error('Error deleting project:', error);
-      alert('Gagal menghapus proyek');
+      toast({
+        title: "Delete Failed",
+        description: "Gagal menghapus proyek",
+        variant: "destructive",
+      })
     } finally {
       setDeletingId(null);
     }

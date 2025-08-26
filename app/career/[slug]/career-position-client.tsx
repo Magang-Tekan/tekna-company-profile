@@ -19,12 +19,14 @@ import {
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { CareerService, CareerPosition } from "@/lib/services/career"
+import { useToast } from '@/hooks/use-toast'
 
 interface CareerPositionClientProps {
   slug: string
 }
 
 export default function CareerPositionClient({ slug }: CareerPositionClientProps) {
+  const { toast } = useToast()
   const [position, setPosition] = useState<CareerPosition | null>(null)
   const [relatedPositions, setRelatedPositions] = useState<CareerPosition[]>([])
   const [loading, setLoading] = useState(true)
@@ -98,7 +100,12 @@ export default function CareerPositionClient({ slug }: CareerPositionClientProps
           github_url: '',
           source: 'website'
         })
-        alert('Application submitted successfully! You will receive a confirmation email shortly.')
+        
+        toast({
+          title: "Application Submitted!",
+          description: "You will receive a confirmation email shortly.",
+          variant: "success",
+        })
       } else {
         // Log the detailed error for debugging
         console.error('Application submission failed:', result.error)
@@ -111,7 +118,12 @@ export default function CareerPositionClient({ slug }: CareerPositionClientProps
       if (error instanceof Error && error.message) {
         errorMessage = `Failed to submit application: ${error.message}`
       }
-      alert(errorMessage)
+      
+      toast({
+        title: "Submission Failed",
+        description: errorMessage,
+        variant: "destructive",
+      })
     } finally {
       setApplying(false)
     }
@@ -152,7 +164,11 @@ export default function CareerPositionClient({ slug }: CareerPositionClientProps
     } else {
       // Fallback to copying URL
       navigator.clipboard.writeText(window.location.href)
-      alert('Position URL copied to clipboard!')
+      toast({
+        title: "URL Copied!",
+        description: "Position URL copied to clipboard!",
+        variant: "success",
+      })
     }
   }
 

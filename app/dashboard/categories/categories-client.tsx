@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
 import { useRealtimeCategories } from '@/lib/hooks/use-realtime-simple';
 import { IconPlus, IconEdit, IconTrash } from '@tabler/icons-react';
+import { useToast } from '@/hooks/use-toast'
 
 interface Category {
   id: string;
@@ -29,6 +30,7 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
   const router = useRouter();
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast()
 
   // Real-time sync for categories
   useRealtimeCategories(() => {
@@ -53,9 +55,18 @@ export function CategoriesPageClient({ initialCategories }: CategoriesPageClient
     try {
       await ClientDashboardService.deleteCategory(categoryId);
       setCategories(prev => prev.filter(category => category.id !== categoryId));
+      toast({
+        title: "Category Deleted!",
+        description: "Category has been deleted successfully.",
+        variant: "success",
+      })
     } catch (error) {
       console.error('Error deleting category:', error);
-      alert(error instanceof Error ? error.message : 'Failed to delete category');
+      toast({
+        title: "Delete Failed",
+        description: error instanceof Error ? error.message : 'Failed to delete category',
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false);
     }

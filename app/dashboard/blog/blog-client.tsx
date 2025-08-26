@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
 import { useRealtimeBlogPosts } from '@/lib/hooks/use-realtime-simple';
 import { IconPlus, IconEdit, IconTrash, IconEye, IconCalendar, IconUser, IconSearch, IconSortAscending, IconSortDescending, IconExternalLink } from '@tabler/icons-react';
+import { useToast } from '@/hooks/use-toast'
 
 interface BlogPost {
   id: string;
@@ -46,6 +47,7 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
   const [sortBy, setSortBy] = useState<'created_at' | 'title' | 'status'>('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [expandedPost, setExpandedPost] = useState<string | null>(null);
+  const { toast } = useToast()
 
   // Real-time sync for blog posts
   useRealtimeBlogPosts(() => {
@@ -107,9 +109,18 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
     try {
       await ClientDashboardService.deletePost(postId);
       setPosts(prev => prev.filter(post => post.id !== postId));
+      toast({
+        title: "Article Deleted!",
+        description: "Article has been deleted successfully.",
+        variant: "success",
+      });
     } catch (error) {
       console.error('Error deleting post:', error);
-      alert(error instanceof Error ? error.message : 'Failed to delete article');
+      toast({
+        title: "Delete Failed",
+        description: error instanceof Error ? error.message : 'Failed to delete article',
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }

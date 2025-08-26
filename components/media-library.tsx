@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MediaService, type MediaFile } from '@/lib/services/media.service';
 import { IconUpload, IconX, IconCopy, IconDownload, IconLoader2 } from '@tabler/icons-react';
 import Image from 'next/image';
+import { useToast } from '@/hooks/use-toast'
 
 interface MediaLibraryProps {
   onSelect?: (file: MediaFile) => void;
@@ -22,6 +23,7 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast()
 
   // Load media files on component mount
   const loadMediaFiles = async () => {
@@ -50,13 +52,27 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
         const result = await MediaService.uploadFile(file);
         if (result.success && result.file) {
           setMediaFiles(prev => [result.file!, ...prev]);
+          toast({
+            title: "Upload Successful!",
+            description: "File has been uploaded successfully.",
+            variant: "success",
+          })
         } else {
           console.error('Upload failed:', result.error);
+          toast({
+            title: "Upload Failed",
+            description: result.error || 'An error occurred during upload.',
+            variant: "destructive",
+          })
         }
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert(error instanceof Error ? error.message : 'An error occurred during upload.');
+      toast({
+        title: "Upload Failed",
+        description: error instanceof Error ? error.message : 'An error occurred during upload.',
+        variant: "destructive",
+      })
     } finally {
       setIsUploading(false);
     }
@@ -85,18 +101,36 @@ export function MediaLibrary({ onSelect, onClose }: MediaLibraryProps) {
       const success = await MediaService.deleteMediaFile(fileId);
       if (success) {
         setMediaFiles(prev => prev.filter(file => file.id !== fileId));
+        toast({
+          title: "File Deleted!",
+          description: "File has been deleted successfully.",
+          variant: "success",
+        })
       } else {
         alert('Failed to delete file');
+        toast({
+          title: "Delete Failed",
+          description: 'Failed to delete file',
+          variant: "destructive",
+        })
       }
     } catch (error) {
       console.error('Error deleting file:', error);
-      alert('Failed to delete file');
+      toast({
+        title: "Delete Failed",
+        description: 'Failed to delete file',
+        variant: "destructive",
+      })
     }
   };
 
   const copyFileUrl = (url: string) => {
     navigator.clipboard.writeText(url);
-    alert('File URL copied successfully!');
+    toast({
+      title: "URL Copied!",
+      description: "File URL copied successfully!",
+      variant: "success",
+    })
   };
 
   const formatFileSize = (bytes: number) => {

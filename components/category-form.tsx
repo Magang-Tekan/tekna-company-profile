@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ClientDashboardService } from '@/lib/services/client-dashboard.service';
 import { IconDeviceFloppy, IconX, IconPalette } from '@tabler/icons-react';
+import { useToast } from '@/hooks/use-toast'
 
 interface CategoryFormProps {
   categoryId?: string;
@@ -53,6 +54,7 @@ export function CategoryForm({ categoryId, initialData, onSuccess, onCancel }: C
     sort_order: initialData?.sort_order || 0,
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
+  const { toast } = useToast()
 
   // Auto-generate slug when name changes
   useEffect(() => {
@@ -122,8 +124,18 @@ export function CategoryForm({ categoryId, initialData, onSuccess, onCancel }: C
     try {
       if (categoryId) {
         await ClientDashboardService.updateCategory(categoryId, formData);
+        toast({
+          title: "Category Updated!",
+          description: "Category has been updated successfully.",
+          variant: "success",
+        })
       } else {
         await ClientDashboardService.createCategory(formData);
+        toast({
+          title: "Category Created!",
+          description: "Category has been created successfully.",
+          variant: "success",
+        })
       }
       
       if (onSuccess) {
@@ -134,7 +146,11 @@ export function CategoryForm({ categoryId, initialData, onSuccess, onCancel }: C
       }
     } catch (error) {
       console.error('Error saving category:', error);
-      alert(error instanceof Error ? error.message : 'Terjadi kesalahan');
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : 'Terjadi kesalahan',
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false);
     }

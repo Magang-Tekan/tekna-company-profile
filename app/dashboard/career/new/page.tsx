@@ -15,6 +15,7 @@ import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
 
 import { CareerService, CareerCategory, CareerLocation, CareerType, CareerLevel } from '@/lib/services/career'
+import { useToast } from '@/hooks/use-toast'
 
 export default function NewCareerPositionPage() {
   const router = useRouter()
@@ -46,6 +47,7 @@ export default function NewCareerPositionPage() {
   })
 
   const careerService = useMemo(() => new CareerService(), [])
+  const { toast } = useToast()
 
   useEffect(() => {
     const loadData = async () => {
@@ -62,7 +64,11 @@ export default function NewCareerPositionPage() {
         setLevels(levelsData)
       } catch (error) {
         console.error('Failed to load form data:', error)
-        alert('Failed to load form data')
+        toast({
+          title: "Error",
+          description: "Failed to load form data",
+          variant: "destructive",
+        })
       }
     }
     loadData()
@@ -101,14 +107,22 @@ export default function NewCareerPositionPage() {
       const result = await careerService.createPosition(submitData)
 
       if (result) {
-        alert(`Position ${status === 'open' ? 'created and published' : 'saved as draft'} successfully`)
+        toast({
+          title: "Position Created!",
+          description: `Position ${status === 'open' ? 'created and published' : 'saved as draft'} successfully`,
+          variant: "success",
+        })
         router.push('/dashboard/career')
       } else {
         throw new Error('Failed to create position')
       }
     } catch (error) {
       console.error('Failed to create position:', error)
-      alert('Failed to create position')
+      toast({
+        title: "Error",
+        description: "Failed to create position",
+        variant: "destructive",
+      })
     } finally {
       setLoading(false)
     }
