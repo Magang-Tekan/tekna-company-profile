@@ -13,6 +13,9 @@ import { IconCalendar, IconEye } from "@tabler/icons-react";
 import { ContentRenderer } from "@/components/content-renderer";
 import { BlogPostStructuredData } from "@/components/structured-data";
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
 }

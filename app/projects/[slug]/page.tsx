@@ -4,6 +4,9 @@ import { ProjectDetailClient } from "@/components/projects/project-detail-client
 import { PublicService } from "@/lib/services/public.service";
 import { BlogBreadcrumbs } from "@/components/blog/blog-breadcrumbs";
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
 }
