@@ -4,6 +4,9 @@ import { BlogGrid } from "@/components/blog/blog-grid";
 import { Badge } from "@/components/ui/badge";
 import { notFound } from "next/navigation";
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{
