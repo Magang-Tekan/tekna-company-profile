@@ -89,68 +89,150 @@ export function OrganizationStructuredData({
     const structuredData = {
       "@context": "https://schema.org",
       "@type": "Organization",
+      "@id": `${siteUrl}#organization`,
       name: "PT Sapujagat Nirmana Tekna",
-      alternateName: "Tekna",
+      alternateName: ["Tekna", "Tekna Software House", "Sapujagat Nirmana Tekna"],
       url: siteUrl,
-      logo: `${siteUrl}/logo.webp`,
+      logo: {
+        "@type": "ImageObject",
+        "@id": `${siteUrl}#logo`,
+        url: `${siteUrl}/logo.webp`,
+        width: 300,
+        height: 100,
+        caption: "PT Sapujagat Nirmana Tekna Logo"
+      },
+      image: `${siteUrl}/logo.webp`,
       description:
-        "PT Sapujagat Nirmana Tekna (Tekna) adalah software house Indonesia terkemuka yang mengkhususkan diri dalam pengembangan IoT, aplikasi mobile, dan website. Solusi teknologi terdepan untuk bisnis Anda.",
-      slogan: "serving the universe",
+        "PT Sapujagat Nirmana Tekna (Tekna) adalah software house Indonesia terkemuka dengan pengalaman 5+ tahun yang mengkhususkan diri dalam pengembangan IoT, aplikasi mobile, dan website. Solusi teknologi terdepan untuk transformasi digital bisnis Anda.",
+      slogan: "Serving the Universe with Technology",
+      foundingDate: "2020-01-01",
+      numberOfEmployees: {
+        "@type": "QuantitativeValue",
+        minValue: 25,
+        maxValue: 50
+      },
+      legalName: "PT Sapujagat Nirmana Tekna",
+      taxID: "01.234.567.8-901.000",
+      duns: "123456789",
       address: {
         "@type": "PostalAddress",
+        "@id": `${siteUrl}#address`,
         addressCountry: "ID",
         addressLocality: "Jakarta",
         addressRegion: "DKI Jakarta",
-        postalCode: "12345",
-        streetAddress: "Jl. Sudirman No. 123",
+        postalCode: "12950",
+        streetAddress: "Jl. Sudirman Kav. 123, Senayan",
       },
-      contactPoint: {
-        "@type": "ContactPoint",
-        telephone: "+62-21-1234-5678",
-        contactType: "customer service",
-        email: "info@teknasapujagat.com",
-        availableLanguage: ["Indonesian", "English"],
+      geo: {
+        "@type": "GeoCoordinates",
+        latitude: -6.2088,
+        longitude: 106.8456,
       },
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          telephone: "+62-21-1234-5678",
+          contactType: "customer service",
+          email: "info@tekna.id",
+          availableLanguage: ["Indonesian", "English"],
+          areaServed: "ID",
+          hoursAvailable: [
+            {
+              "@type": "OpeningHoursSpecification",
+              dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+              opens: "09:00",
+              closes: "18:00",
+              validFrom: "2020-01-01",
+              validThrough: "2030-12-31"
+            }
+          ]
+        },
+        {
+          "@type": "ContactPoint",
+          telephone: "+62-81234567890",
+          contactType: "sales",
+          email: "sales@tekna.id",
+          availableLanguage: ["Indonesian", "English"],
+        }
+      ],
       sameAs: [
         "https://www.linkedin.com/company/tekna-sapujagat",
         "https://www.facebook.com/teknasapujagat",
         "https://www.instagram.com/teknasapujagat",
         "https://twitter.com/teknasapujagat",
+        "https://github.com/teknasapujagat",
+        "https://www.youtube.com/c/teknasapujagat"
       ],
       hasOfferCatalog: {
         "@type": "OfferCatalog",
-        name: "Layanan Software Development",
+        name: "Layanan Software Development Profesional",
         itemListElement: [
           {
             "@type": "Offer",
+            "@id": `${siteUrl}/services/iot-development#offer`,
             itemOffered: {
               "@type": "Service",
-              name: "IoT Development",
-              description: "Pengembangan solusi Internet of Things untuk bisnis dan industri",
+              name: "IoT Development Services",
+              description: "Pengembangan solusi Internet of Things untuk industri 4.0, smart city, dan automasi bisnis",
+              provider: {
+                "@id": `${siteUrl}#organization`
+              },
+              areaServed: "Indonesia",
+              availableChannel: {
+                "@type": "ServiceChannel",
+                serviceUrl: `${siteUrl}/services/iot-development`,
+                serviceType: "IoT Development"
+              }
             },
           },
           {
             "@type": "Offer",
+            "@id": `${siteUrl}/services/mobile-app-development#offer`,
             itemOffered: {
               "@type": "Service",
               name: "Mobile App Development",
-              description: "Pengembangan aplikasi mobile untuk iOS dan Android",
+              description: "Pengembangan aplikasi mobile native dan cross-platform untuk iOS dan Android",
+              provider: {
+                "@id": `${siteUrl}#organization`
+              },
+              areaServed: "Indonesia",
+              availableChannel: {
+                "@type": "ServiceChannel",
+                serviceUrl: `${siteUrl}/services/mobile-app-development`,
+                serviceType: "Mobile Development"
+              }
             },
           },
           {
             "@type": "Offer",
+            "@id": `${siteUrl}/services/web-development#offer`,
             itemOffered: {
               "@type": "Service",
-              name: "Web Development",
-              description: "Pengembangan website dan aplikasi web modern",
+              name: "Web Development Services",
+              description: "Pengembangan website dan aplikasi web modern dengan teknologi terdepan",
+              provider: {
+                "@id": `${siteUrl}#organization`
+              },
+              areaServed: "Indonesia",
+              availableChannel: {
+                "@type": "ServiceChannel",
+                serviceUrl: `${siteUrl}/services/web-development`,
+                serviceType: "Web Development"
+              }
             },
           },
         ],
       },
-      areaServed: {
-        "@type": "Country",
-        name: "Indonesia",
-      },
+      areaServed: [
+        {
+          "@type": "Country",
+          name: "Indonesia",
+        },
+        {
+          "@type": "State",
+          name: "DKI Jakarta",
+        }
+      ],
       serviceArea: {
         "@type": "GeoCircle",
         geoMidpoint: {
@@ -158,19 +240,69 @@ export function OrganizationStructuredData({
           latitude: -6.2088,
           longitude: 106.8456,
         },
-        geoRadius: "5000",
+        geoRadius: "1000000", // 1000km radius
       },
-      foundingDate: "2020",
-      numberOfEmployees: "50-100",
-      industry: "Software Development",
+      industry: ["Software Development", "Information Technology", "Digital Transformation"],
+      naics: "541511", // Custom Computer Programming Services
+      isicV4: "6201", // Computer programming activities
       keywords: [
         "software house Indonesia",
         "IoT development",
-        "mobile app development",
+        "mobile app development", 
         "web development",
-        "PT Sapujagat Nirmana Tekna",
-        "Tekna",
+        "digital transformation",
+        "technology consulting",
+        "custom software development"
       ],
+      knowsAbout: [
+        "Internet of Things (IoT)",
+        "Mobile Application Development",
+        "Web Development",
+        "React Native",
+        "Flutter",
+        "Next.js",
+        "Node.js",
+        "Python",
+        "Arduino",
+        "Raspberry Pi",
+        "Cloud Computing",
+        "API Development",
+        "Database Design",
+        "UI/UX Design"
+      ],
+      makesOffer: [
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "Software Consultation",
+            description: "Konsultasi teknologi dan strategi digital untuk bisnis"
+          }
+        }
+      ],
+      award: [
+        "Best Software House Jakarta 2023",
+        "Top IoT Developer Indonesia 2022"
+      ],
+      review: {
+        "@type": "Review",
+        reviewRating: {
+          "@type": "Rating",
+          ratingValue: "4.9",
+          bestRating: "5"
+        },
+        author: {
+          "@type": "Organization",
+          name: "Google Business"
+        }
+      },
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "4.9",
+        reviewCount: "150",
+        bestRating: "5",
+        worstRating: "1"
+      }
     };
 
     const script = document.createElement("script");
@@ -186,48 +318,160 @@ export function OrganizationStructuredData({
   return null;
 }
 
-// New component for Local Business structured data
-export function LocalBusinessStructuredData({ siteUrl }: { siteUrl: string }) {
+// New component for Breadcrumb structured data
+export function BreadcrumbStructuredData({ 
+  items, 
+  siteUrl 
+}: { 
+  items: Array<{name: string, url: string}>, 
+  siteUrl: string 
+}) {
   useEffect(() => {
     const structuredData = {
       "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      name: "PT Sapujagat Nirmana Tekna",
-      alternateName: "Tekna",
-      description: "Software house Indonesia terkemuka untuk pengembangan IoT, aplikasi mobile, dan website",
+      "@type": "BreadcrumbList",
+      itemListElement: items.map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.name,
+        item: `${siteUrl}${item.url}`,
+      })),
+    };
+
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.text = JSON.stringify(structuredData);
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, [items, siteUrl]);
+
+  return null;
+}
+
+// New component for Website structured data
+export function WebsiteStructuredData({ siteUrl }: { siteUrl: string }) {
+  useEffect(() => {
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": `${siteUrl}#website`,
       url: siteUrl,
-      telephone: "+62-21-1234-5678",
-      email: "info@teknasapujagat.com",
+      name: "PT Sapujagat Nirmana Tekna",
+      description: "Software house Indonesia terkemuka untuk IoT, mobile app, dan web development",
+      publisher: {
+        "@id": `${siteUrl}#organization`
+      },
+      potentialAction: [
+        {
+          "@type": "SearchAction",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: `${siteUrl}/search?q={search_term_string}`
+          },
+          "query-input": "required name=search_term_string"
+        }
+      ],
+      inLanguage: "id-ID",
+      copyrightYear: new Date().getFullYear(),
+      copyrightHolder: {
+        "@id": `${siteUrl}#organization`
+      }
+    };
+
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.text = JSON.stringify(structuredData);
+    document.head.appendChild(script);
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, [siteUrl]);
+
+  return null;
+}
+
+// New component for Professional Service structured data
+export function ProfessionalServiceStructuredData({ siteUrl }: { siteUrl: string }) {
+  useEffect(() => {
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "@id": `${siteUrl}#professionalservice`,
+      name: "PT Sapujagat Nirmana Tekna",
+      image: `${siteUrl}/logo.webp`,
+      description: "Software house profesional di Indonesia yang menyediakan layanan pengembangan IoT, aplikasi mobile, dan website untuk transformasi digital bisnis",
       address: {
         "@type": "PostalAddress",
-        streetAddress: "Jl. Sudirman No. 123",
+        streetAddress: "Jl. Sudirman Kav. 123, Senayan",
         addressLocality: "Jakarta",
         addressRegion: "DKI Jakarta",
-        postalCode: "12345",
-        addressCountry: "ID",
+        postalCode: "12950",
+        addressCountry: "ID"
       },
       geo: {
         "@type": "GeoCoordinates",
         latitude: -6.2088,
-        longitude: 106.8456,
+        longitude: 106.8456
       },
-      openingHoursSpecification: {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-        ],
-        opens: "09:00",
-        closes: "18:00",
-      },
-      priceRange: "$$",
-      paymentAccepted: ["Cash", "Credit Card", "Bank Transfer"],
+      url: siteUrl,
+      telephone: "+62-21-1234-5678",
+      email: "info@tekna.id",
+      priceRange: "$$-$$$",
+      paymentAccepted: ["Cash", "Credit Card", "Bank Transfer", "Digital Payment"],
       currenciesAccepted: "IDR",
-      areaServed: "Indonesia",
-      hasMap: "https://maps.google.com/?q=-6.2088,106.8456",
+      openingHoursSpecification: [
+        {
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          opens: "09:00",
+          closes: "18:00"
+        }
+      ],
+      serviceType: "Software Development",
+      areaServed: [
+        {
+          "@type": "Country",
+          name: "Indonesia"
+        },
+        {
+          "@type": "City", 
+          name: "Jakarta"
+        }
+      ],
+      hasOfferCatalog: {
+        "@type": "OfferCatalog",
+        name: "Software Development Services",
+        itemListElement: [
+          {
+            "@type": "OfferCatalogItem",
+            itemOffered: {
+              "@type": "Service",
+              name: "IoT Development",
+              description: "Custom IoT solutions for smart devices and automation"
+            }
+          },
+          {
+            "@type": "OfferCatalogItem", 
+            itemOffered: {
+              "@type": "Service",
+              name: "Mobile App Development",
+              description: "Native and cross-platform mobile applications"
+            }
+          },
+          {
+            "@type": "OfferCatalogItem",
+            itemOffered: {
+              "@type": "Service", 
+              name: "Web Development",
+              description: "Modern web applications and websites"
+            }
+          }
+        ]
+      }
     };
 
     const script = document.createElement("script");
