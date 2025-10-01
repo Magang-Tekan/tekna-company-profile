@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { SessionProvider } from '@/components/session-provider'
 import { AnalyticsTracker } from '@/components/analytics-tracker'
-import { OrganizationStructuredData } from '@/components/structured-data'
+import { OrganizationStructuredData, WebsiteStructuredData, ProfessionalServiceStructuredData } from '@/components/structured-data'
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from '@/components/ui/toaster'
 
@@ -10,67 +10,98 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: {
-    default: 'PT Sapujagat Nirmana Tekna - Software House Indonesia | IoT, Mobile & Web Development',
-    template: '%s | PT Sapujagat Nirmana Tekna'
+    default: 'PT Sapujagat Nirmana Tekna - Software House Indonesia Terdepan | IoT, Mobile & Web Development',
+    template: '%s | PT Sapujagat Nirmana Tekna - Software House Indonesia'
   },
-  description: 'PT Sapujagat Nirmana Tekna (Tekna) adalah software house Indonesia terkemuka yang mengkhususkan diri dalam pengembangan IoT, aplikasi mobile, dan website. Solusi teknologi terdepan untuk bisnis Anda.',
+  description: 'PT Sapujagat Nirmana Tekna (Tekna) adalah software house Indonesia terkemuka dengan pengalaman 5+ tahun. Spesialisasi IoT development, mobile app iOS/Android, dan web development modern. Solusi teknologi terpercaya untuk transformasi digital bisnis Anda.',
   keywords: [
+    // Primary keywords
     'software house Indonesia',
-    'IoT development',
-    'mobile app development',
-    'web development',
-    'PT Sapujagat Nirmana Tekna',
-    'Tekna',
-    'Tekna Sapujagat',
-    'Tekna Sapujagat Nirmana',
-    'Tekna Sapujagat Nirmana Tekna',
-    'Tekna Indonesia',
+    'software house Semarang',
     'jasa pembuatan aplikasi',
-    'developer Indonesia',
+    'developer aplikasi Indonesia',
+    
+    // Service specific
+    'IoT development Indonesia',
+    'Internet of Things developer',
+    'mobile app development',
+    'aplikasi mobile iOS Android',
+    'web development Semarang',
+    'website development Indonesia',
+    'aplikasi web modern',
+    
+    // Company specific
+    'PT Sapujagat Nirmana Tekna',
+    'Tekna software house',
+    'Tekna developer',
+    'Tekna Indonesia',
+    
+    // Industry terms
+    'transformasi digital',
     'teknologi IoT',
-    'aplikasi mobile',
-    'website development'
+    'solusi teknologi bisnis',
+    'custom software development',
+    'enterprise application',
+    'startup technology partner'
   ],
-  authors: [{ name: 'PT Sapujagat Nirmana Tekna' }],
+  authors: [{ name: 'PT Sapujagat Nirmana Tekna', url: 'https://tekna.id' }],
   creator: 'PT Sapujagat Nirmana Tekna',
   publisher: 'PT Sapujagat Nirmana Tekna',
+  category: 'Technology',
+  classification: 'Business',
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://teknasapujagat.com'),
+  metadataBase: new URL('https://tekna.id'),
   alternates: {
     canonical: '/',
+    languages: {
+      'id-ID': '/',
+      'en-US': '/en',
+    },
   },
-      openGraph: {
-      type: 'website',
-      locale: 'id_ID',
-      url: 'https://teknasapujagat.com',
-      title: 'PT Sapujagat Nirmana Tekna - Software House Indonesia | IoT, Mobile & Web Development',
-      description: 'Software house Indonesia terkemuka untuk pengembangan IoT, aplikasi mobile, dan website. Solusi teknologi terdepan untuk bisnis Anda.',
-      siteName: 'PT Sapujagat Nirmana Tekna',
-      images: [
-        {
-          url: '/images/og-image.jpg',
-          width: 1200,
-          height: 630,
-          alt: 'PT Sapujagat Nirmana Tekna - Software House Indonesia',
-        },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: 'PT Sapujagat Nirmana Tekna - Software House Indonesia',
-      description: 'Software house Indonesia terkemuka untuk pengembangan IoT, aplikasi mobile, dan website.',
-      images: ['/images/twitter-image.jpg'],
-    },
+  openGraph: {
+    type: 'website',
+    locale: 'id_ID',
+    url: 'https://tekna.id',
+    title: 'PT Sapujagat Nirmana Tekna - Software House Indonesia Terdepan | IoT, Mobile & Web Development',
+    description: 'Software house Indonesia terkemuka dengan pengalaman 5+ tahun. Spesialisasi IoT, mobile app, dan web development. Partner terpercaya untuk transformasi digital bisnis Anda.',
+    siteName: 'PT Sapujagat Nirmana Tekna',
+    images: [
+      {
+        url: '/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'PT Sapujagat Nirmana Tekna - Software House Indonesia Terdepan',
+        type: 'image/jpeg',
+      },
+      {
+        url: '/images/og-image-square.jpg',
+        width: 600,
+        height: 600,
+        alt: 'Tekna - Software House Indonesia',
+        type: 'image/jpeg',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@teknasapujagat',
+    creator: '@teknasapujagat',
+    title: 'PT Sapujagat Nirmana Tekna - Software House Indonesia',
+    description: 'Software house Indonesia terkemuka untuk IoT, mobile app, dan web development. Partner teknologi terpercaya untuk bisnis modern.',
+    images: ['/images/twitter-image.jpg'],
+  },
   robots: {
     index: true,
     follow: true,
+    nocache: true,
     googleBot: {
       index: true,
       follow: true,
+      noimageindex: false,
       'max-video-preview': -1,
       'max-image-preview': 'large',
       'max-snippet': -1,
@@ -80,6 +111,13 @@ export const metadata: Metadata = {
     google: 'dUP293sjOn3I-CYGejwzikIUXE1qB27-TYSaIE1wClY',
     yandex: 'your-yandex-verification-code',
     yahoo: 'your-yahoo-verification-code',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'theme-color': '#000000',
+    'color-scheme': 'dark light',
   },
 }
 
@@ -91,16 +129,46 @@ export default function RootLayout({
   return (
     <html lang="id" className="scroll-smooth" suppressHydrationWarning>
       <head>
-        <link rel="canonical" href="https://teknasapujagat.com" />
-        <meta name="geo.region" content="ID" />
-        <meta name="geo.placename" content="Jakarta, Indonesia" />
+        <link rel="canonical" href="https://tekna.id" />
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        
+        {/* Geographic meta tags */}
+        <meta name="geo.region" content="ID-SMG" />
+        <meta name="geo.placename" content="Semarang, Indonesia" />
         <meta name="geo.position" content="-6.2088;106.8456" />
         <meta name="ICBM" content="-6.2088, 106.8456" />
+        
+        {/* Additional SEO meta tags */}
         <meta name="distribution" content="global" />
         <meta name="rating" content="general" />
-        <meta name="revisit-after" content="7 days" />
+        <meta name="revisit-after" content="3 days" />
         <meta name="language" content="Indonesian" />
         <meta name="country" content="Indonesia" />
+        <meta name="target" content="all" />
+        <meta name="audience" content="all" />
+        <meta name="coverage" content="Worldwide" />
+        
+        {/* Business specific */}
+        <meta name="business-type" content="Software Development" />
+        <meta name="industry" content="Technology" />
+        <meta name="page-topic" content="Software House Indonesia" />
+        
+        {/* Mobile optimization */}
+        <meta name="HandheldFriendly" content="True" />
+        <meta name="MobileOptimized" content="320" />
+        
+        {/* Favicon and app icons */}
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        
+        {/* Manifest for PWA */}
+        <link rel="manifest" href="/manifest.json" />
+        
+        {/* Preload critical resources */}
+        <link rel="preload" href="/logo.webp" as="image" type="image/webp" />
       </head>
       <body className={inter.className}>
         <ThemeProvider
@@ -111,7 +179,9 @@ export default function RootLayout({
           <SessionProvider>
             <AnalyticsTracker>
               {children}
-              <OrganizationStructuredData siteUrl="https://teknasapujagat.com" />
+              <OrganizationStructuredData siteUrl="https://tekna.id" />
+              <WebsiteStructuredData siteUrl="https://tekna.id" />
+              <ProfessionalServiceStructuredData siteUrl="https://tekna.id" />
               <Toaster />
             </AnalyticsTracker>
           </SessionProvider>
