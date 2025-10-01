@@ -31,4 +31,4 @@ Allow: /robots.txt
 Crawl-delay: 1
 
 # Sitemap location
-Sitemap: https://teknasapujagat.com/sitemap.xml
+Sitemap: https://tekna.id/sitemap.xml
