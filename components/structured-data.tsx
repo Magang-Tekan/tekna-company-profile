@@ -90,9 +90,26 @@ export function OrganizationStructuredData({
       "@context": "https://schema.org",
       "@type": "Organization",
       "@id": `${siteUrl}#organization`,
-      name: "PT Sapujagat Nirmana Tekna",
-      alternateName: ["Tekna", "Tekna Software House", "Sapujagat Nirmana Tekna"],
+      name: "PT. Sapujagat Nirmana Tekna",
+      alternateName: ["Tekna", "Tekna Software House", "Sapujagat Nirmana Tekna", "Tekna.id", "PT Sapujagat Nirmana Tekna"],
       url: siteUrl,
+      identifier: [
+        {
+          "@type": "PropertyValue",
+          name: "Domain",
+          value: "tekna.id"
+        },
+        {
+          "@type": "PropertyValue", 
+          name: "Legal Name",
+          value: "PT. Sapujagat Nirmana Tekna"
+        },
+        {
+          "@type": "PropertyValue",
+          name: "Business Registration",
+          value: "Limited Liability Company"
+        }
+      ],
       logo: {
         "@type": "ImageObject",
         "@id": `${siteUrl}#logo`,
@@ -103,7 +120,7 @@ export function OrganizationStructuredData({
       },
       image: `${siteUrl}/logo.webp`,
       description:
-        "PT Sapujagat Nirmana Tekna (Tekna) adalah software house Indonesia terkemuka dengan pengalaman 5+ tahun yang mengkhususkan diri dalam pengembangan IoT, aplikasi mobile, dan website. Solusi teknologi terdepan untuk transformasi digital bisnis Anda.",
+        "PT. Sapujagat Nirmana Tekna (Tekna) adalah software house Indonesia terkemuka berlokasi di Semarang dengan pengalaman 5+ tahun yang mengkhususkan diri dalam pengembangan IoT, aplikasi mobile, dan website. Solusi teknologi terdepan untuk transformasi digital bisnis Anda.",
       slogan: "Serving the Universe with Technology",
       foundingDate: "2020-01-01",
       numberOfEmployees: {
@@ -111,27 +128,27 @@ export function OrganizationStructuredData({
         minValue: 25,
         maxValue: 50
       },
-      legalName: "PT Sapujagat Nirmana Tekna",
+      legalName: "PT. Sapujagat Nirmana Tekna",
       taxID: "01.234.567.8-901.000",
       duns: "123456789",
       address: {
         "@type": "PostalAddress",
         "@id": `${siteUrl}#address`,
         addressCountry: "ID",
-        addressLocality: "Jakarta",
-        addressRegion: "DKI Jakarta",
-        postalCode: "12950",
-        streetAddress: "Jl. Sudirman Kav. 123, Senayan",
+        addressLocality: "Semarang",
+        addressRegion: "Jawa Tengah",
+        postalCode: "50000",
+        streetAddress: "Jl. Klipang Raya Ruko Amsterdam Nomor 9 E",
       },
       geo: {
         "@type": "GeoCoordinates",
-        latitude: -6.2088,
-        longitude: 106.8456,
+        latitude: -6.9932,
+        longitude: 110.4203,
       },
       contactPoint: [
         {
           "@type": "ContactPoint",
-          telephone: "+62-21-1234-5678",
+          telephone: "+62-24-1234-5678",
           contactType: "customer service",
           email: "info@tekna.id",
           availableLanguage: ["Indonesian", "English"],
@@ -230,15 +247,19 @@ export function OrganizationStructuredData({
         },
         {
           "@type": "State",
-          name: "DKI Jakarta",
+          name: "Jawa Tengah",
+        },
+        {
+          "@type": "City",
+          name: "Semarang",
         }
       ],
       serviceArea: {
         "@type": "GeoCircle",
         geoMidpoint: {
           "@type": "GeoCoordinates",
-          latitude: -6.2088,
-          longitude: 106.8456,
+          latitude: -6.9932,
+          longitude: 110.4203,
         },
         geoRadius: "1000000", // 1000km radius
       },
@@ -246,13 +267,17 @@ export function OrganizationStructuredData({
       naics: "541511", // Custom Computer Programming Services
       isicV4: "6201", // Computer programming activities
       keywords: [
+        "PT. Sapujagat Nirmana Tekna",
         "software house Indonesia",
+        "software house Semarang", 
         "IoT development",
         "mobile app development", 
         "web development",
         "digital transformation",
         "technology consulting",
-        "custom software development"
+        "custom software development",
+        "Jawa Tengah",
+        "Klipang Raya"
       ],
       knowsAbout: [
         "Internet of Things (IoT)",
@@ -359,8 +384,8 @@ export function WebsiteStructuredData({ siteUrl }: { siteUrl: string }) {
       "@type": "WebSite",
       "@id": `${siteUrl}#website`,
       url: siteUrl,
-      name: "PT Sapujagat Nirmana Tekna",
-      description: "Software house Indonesia terkemuka untuk IoT, mobile app, dan web development",
+      name: "PT. Sapujagat Nirmana Tekna",
+      description: "PT. Sapujagat Nirmana Tekna - Software house Indonesia terkemuka berlokasi di Semarang untuk IoT, mobile app, dan web development",
       publisher: {
         "@id": `${siteUrl}#organization`
       },
@@ -401,24 +426,24 @@ export function ProfessionalServiceStructuredData({ siteUrl }: { siteUrl: string
       "@context": "https://schema.org",
       "@type": "ProfessionalService",
       "@id": `${siteUrl}#professionalservice`,
-      name: "PT Sapujagat Nirmana Tekna",
+      name: "PT. Sapujagat Nirmana Tekna",
       image: `${siteUrl}/logo.webp`,
-      description: "Software house profesional di Indonesia yang menyediakan layanan pengembangan IoT, aplikasi mobile, dan website untuk transformasi digital bisnis",
+      description: "Software house profesional di Semarang, Indonesia yang menyediakan layanan pengembangan IoT, aplikasi mobile, dan website untuk transformasi digital bisnis",
       address: {
         "@type": "PostalAddress",
-        streetAddress: "Jl. Sudirman Kav. 123, Senayan",
-        addressLocality: "Jakarta",
-        addressRegion: "DKI Jakarta",
-        postalCode: "12950",
+        streetAddress: "Jl. Klipang Raya Ruko Amsterdam Nomor 9 E",
+        addressLocality: "Semarang",
+        addressRegion: "Jawa Tengah",
+        postalCode: "50000",
         addressCountry: "ID"
       },
       geo: {
         "@type": "GeoCoordinates",
-        latitude: -6.2088,
-        longitude: 106.8456
+        latitude: -6.9932,
+        longitude: 110.4203
       },
       url: siteUrl,
-      telephone: "+62-21-1234-5678",
+      telephone: "+62-24-1234-5678",
       email: "info@tekna.id",
       priceRange: "$$-$$$",
       paymentAccepted: ["Cash", "Credit Card", "Bank Transfer", "Digital Payment"],
@@ -438,8 +463,12 @@ export function ProfessionalServiceStructuredData({ siteUrl }: { siteUrl: string
           name: "Indonesia"
         },
         {
+          "@type": "State", 
+          name: "Jawa Tengah"
+        },
+        {
           "@type": "City", 
-          name: "Jakarta"
+          name: "Semarang"
         }
       ],
       hasOfferCatalog: {

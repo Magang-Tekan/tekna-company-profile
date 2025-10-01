@@ -11,16 +11,21 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: {
-    default: 'PT Sapujagat Nirmana Tekna - Software House Indonesia Terdepan | IoT, Mobile & Web Development',
-    template: '%s | PT Sapujagat Nirmana Tekna - Software House Indonesia'
+    default: 'PT. Sapujagat Nirmana Tekna (Tekna.id) - Software House Indonesia Terdepan | IoT, Mobile & Web Development',
+    template: '%s | PT. Sapujagat Nirmana Tekna - Tekna.id'
   },
-  description: 'PT Sapujagat Nirmana Tekna (Tekna) adalah software house Indonesia terkemuka dengan pengalaman 5+ tahun. Spesialisasi IoT development, mobile app iOS/Android, dan web development modern. Solusi teknologi terpercaya untuk transformasi digital bisnis Anda.',
+  description: 'PT. Sapujagat Nirmana Tekna (Tekna.id) adalah software house Indonesia terkemuka berlokasi di Semarang dengan pengalaman 5+ tahun. Spesialisasi IoT development, mobile app iOS/Android, dan web development modern. Solusi teknologi terpercaya untuk transformasi digital bisnis Anda.',
   keywords: [
     // Primary keywords
+    'PT. Sapujagat Nirmana Tekna',
+    'PT Sapujagat Nirmana Tekna',
+    'tekna.id',
+    'Tekna software house',
     'software house Indonesia',
     'software house Semarang',
     'jasa pembuatan aplikasi',
     'developer aplikasi Indonesia',
+    'software house Jawa Tengah',
     
     // Service specific
     'IoT development Indonesia',
@@ -32,10 +37,11 @@ export const metadata: Metadata = {
     'aplikasi web modern',
     
     // Company specific
-    'PT Sapujagat Nirmana Tekna',
-    'Tekna software house',
+    'PT. Sapujagat Nirmana Tekna Semarang',
     'Tekna developer',
     'Tekna Indonesia',
+    'Sapujagat Nirmana Tekna',
+    'Klipang Raya Semarang',
     
     // Industry terms
     'transformasi digital',
@@ -67,9 +73,9 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'id_ID',
     url: 'https://tekna.id',
-    title: 'PT Sapujagat Nirmana Tekna - Software House Indonesia Terdepan | IoT, Mobile & Web Development',
-    description: 'Software house Indonesia terkemuka dengan pengalaman 5+ tahun. Spesialisasi IoT, mobile app, dan web development. Partner terpercaya untuk transformasi digital bisnis Anda.',
-    siteName: 'PT Sapujagat Nirmana Tekna',
+    title: 'PT. Sapujagat Nirmana Tekna (Tekna.id) - Software House Indonesia Terdepan | IoT, Mobile & Web Development',
+    description: 'PT. Sapujagat Nirmana Tekna (Tekna.id) - Software house Indonesia terkemuka berlokasi di Semarang dengan pengalaman 5+ tahun. Spesialisasi IoT, mobile app, dan web development. Partner terpercaya untuk transformasi digital bisnis Anda.',
+    siteName: 'PT. Sapujagat Nirmana Tekna - Tekna.id',
     images: [
       {
         url: '/images/og-image.jpg',
@@ -91,8 +97,8 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: '@teknasapujagat',
     creator: '@teknasapujagat',
-    title: 'PT Sapujagat Nirmana Tekna - Software House Indonesia',
-    description: 'Software house Indonesia terkemuka untuk IoT, mobile app, dan web development. Partner teknologi terpercaya untuk bisnis modern.',
+    title: 'PT. Sapujagat Nirmana Tekna - Software House Indonesia',
+    description: 'Software house Indonesia terkemuka berlokasi di Semarang untuk IoT, mobile app, dan web development. Partner teknologi terpercaya untuk bisnis modern.',
     images: ['/images/twitter-image.jpg'],
   },
   robots: {
@@ -136,9 +142,9 @@ export default function RootLayout({
         
         {/* Geographic meta tags */}
         <meta name="geo.region" content="ID-SMG" />
-        <meta name="geo.placename" content="Semarang, Indonesia" />
-        <meta name="geo.position" content="-6.2088;106.8456" />
-        <meta name="ICBM" content="-6.2088, 106.8456" />
+        <meta name="geo.placename" content="Semarang, Jawa Tengah, Indonesia" />
+        <meta name="geo.position" content="-6.9932;110.4203" />
+        <meta name="ICBM" content="-6.9932, 110.4203" />
         
         {/* Additional SEO meta tags */}
         <meta name="distribution" content="global" />
