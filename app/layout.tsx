@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import './globals.css'
 import { SessionProvider } from '@/components/session-provider'
 import { AnalyticsTracker } from '@/components/analytics-tracker'
 import { OrganizationStructuredData } from '@/components/structured-data'
@@ -78,7 +77,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'your-google-verification-code',
+    google: 'dUP293sjOn3I-CYGejwzikIUXE1qB27-TYSaIE1wClY',
     yandex: 'your-yandex-verification-code',
     yahoo: 'your-yahoo-verification-code',
   },
