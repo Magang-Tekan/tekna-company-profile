@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import './globals.css'
 import { SessionProvider } from '@/components/session-provider'
 import { AnalyticsTracker } from '@/components/analytics-tracker'
 import { OrganizationStructuredData, WebsiteStructuredData, ProfessionalServiceStructuredData } from '@/components/structured-data'
