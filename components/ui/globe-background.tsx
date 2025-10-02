@@ -2,8 +2,9 @@
 
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useEffect, useCallback } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useGlobeState } from "@/lib/stores/landing-store";
 
 // Lazy load globe only when needed
 const World = dynamic(
@@ -17,7 +18,13 @@ const World = dynamic(
 export function GlobeBackground() {
   const { theme } = useTheme();
   const isMobile = useIsMobile();
-  const [shouldRenderGlobe, setShouldRenderGlobe] = useState(false);
+  const { 
+    globeConfig, 
+    shouldRenderGlobe, 
+    setGlobeConfig, 
+    setSampleArcs, 
+    setShouldRenderGlobe 
+  } = useGlobeState();
 
   // Delay globe rendering to prioritize FCP
   useEffect(() => {
@@ -26,10 +33,10 @@ export function GlobeBackground() {
     }, 100); // Small delay to let FCP complete first
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [setShouldRenderGlobe]);
 
   // Konfigurasi globe yang responsif terhadap tema
-  const getGlobeConfig = () => {
+  const getGlobeConfig = useCallback(() => {
     if (theme === "dark") {
       return {
         pointSize: 4,
@@ -78,18 +85,22 @@ export function GlobeBackground() {
         autoRotateSpeed: 0.5,
       };
     }
-  };
+  }, [theme]);
 
-  const globeConfig = getGlobeConfig();
+  // Update globe config in global state when theme changes
+  useEffect(() => {
+    const config = getGlobeConfig();
+    setGlobeConfig(config);
+  }, [getGlobeConfig, setGlobeConfig]);
 
   // Memoize sampleArcs to prevent Globe reset on content changes
-  const sampleArcs = useMemo(() => {
+  const memoizedSampleArcs = useMemo(() => {
     const colors =
       theme === "dark"
         ? ["#06b6d4", "#3b82f6", "#6366f1"]
         : ["#10b981", "#059669", "#047857"]; // Warna hijau neon yang terlihat jelas untuk arc
 
-    return [
+    const arcs = [
       {
         order: 1,
         startLat: -19.885592,
@@ -451,7 +462,14 @@ export function GlobeBackground() {
         color: colors[0],
       },
     ];
+    
+    return arcs;
   }, [theme]); // Only recreate when theme changes
+
+  // Update sampleArcs in global state when theme changes
+  useEffect(() => {
+    setSampleArcs(memoizedSampleArcs);
+  }, [memoizedSampleArcs, setSampleArcs]);
 
   // Don't render globe on mobile for better performance
   if (isMobile) {
@@ -467,9 +485,9 @@ export function GlobeBackground() {
         className="w-[120vw] h-[120vh] relative"
         style={{ pointerEvents: "auto" }}
       >
-        {shouldRenderGlobe && (
+        {shouldRenderGlobe && globeConfig && (
           <World
-            data={sampleArcs}
+            data={memoizedSampleArcs}
             globeConfig={globeConfig}
           />
         )}

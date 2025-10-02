@@ -1,51 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { InfiniteSlider } from '@/components/motion-primitives/infinite-slider';
 import { ProgressiveBlur } from '@/components/motion-primitives/progressive-blur';
-
-interface Partner {
-  id: string;
-  logo_url: string;
-  created_at: string;
-  updated_at: string;
-}
+import { usePartnersData } from '@/hooks/use-landing-data';
 
 export function PartnersSection() {
-  const [partners, setPartners] = useState<Partner[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPartners = async () => {
-      try {
-        const response = await fetch("/api/partners?limit=20");
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (data.partners && Array.isArray(data.partners)) {
-          // Filter partners yang memiliki logo_url
-          const validPartners = data.partners.filter(
-            (partner: Partner) => partner.logo_url && partner.logo_url.trim() !== ""
-          );
-          setPartners(validPartners);
-        }
-      } catch (error) {
-        console.error("Error fetching partners:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Delay fetching to prioritize FCP
-    const timer = setTimeout(fetchPartners, 200);
-    return () => clearTimeout(timer);
-  }, []);
-
+  const { partners, loading } = usePartnersData();
 
   // Show minimal loading state or hide completely during loading
   if (loading) {

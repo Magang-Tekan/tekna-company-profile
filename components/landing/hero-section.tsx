@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import {
   Dialog,
   DialogDescription,
@@ -16,35 +16,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { XIcon } from "lucide-react";
+import { useHeroState, useContactFormState } from "@/lib/stores/landing-store";
 
 export function HeroSection() {
-  const [contentOpacity, setContentOpacity] = useState({
-    content1: 1,
-    content2: 0,
-    content3: 0,
-  });
-
-  // Form state for the contact dialog
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    company: "",
-    message: "",
-  });
-
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const { contentOpacity, setContentOpacity } = useHeroState();
+  const { 
+    contactForm, 
+    dialogOpen, 
+    setContactForm, 
+    resetContactForm, 
+    setDialogOpen 
+  } = useContactFormState();
 
   // Handle form input changes
   const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setContactForm({ [field]: value });
   };
 
   // Reset form when dialog closes
   const handleDialogOpenChange = (open: boolean) => {
     setDialogOpen(open);
     if (!open) {
-      setFormData({ name: "", email: "", phone: "", company: "", message: "" });
+      resetContactForm();
     }
   };
 
@@ -52,10 +45,10 @@ export function HeroSection() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Here you can add your form submission logic
-    console.log("Form submitted:", formData);
+    console.log("Form submitted:", contactForm);
     // Close dialog after submission
     setDialogOpen(false);
-    setFormData({ name: "", email: "", phone: "", company: "", message: "" });
+    resetContactForm();
   };
 
   // Simplified scroll animation handler for better performance
@@ -119,7 +112,7 @@ export function HeroSection() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [setContentOpacity]);
 
   return (
     <>
@@ -186,7 +179,7 @@ export function HeroSection() {
                           <Label htmlFor="name">Name</Label>
                           <Input
                             id="name"
-                            value={formData.name}
+                            value={contactForm.name}
                             onChange={(e) =>
                               handleInputChange("name", e.target.value)
                             }
@@ -199,7 +192,7 @@ export function HeroSection() {
                           <Input
                             id="email"
                             type="email"
-                            value={formData.email}
+                            value={contactForm.email}
                             onChange={(e) =>
                               handleInputChange("email", e.target.value)
                             }
@@ -212,7 +205,7 @@ export function HeroSection() {
                           <Input
                             id="phone"
                             type="tel"
-                            value={formData.phone}
+                            value={contactForm.phone}
                             onChange={(e) =>
                               handleInputChange("phone", e.target.value)
                             }
@@ -224,7 +217,7 @@ export function HeroSection() {
                           <Label htmlFor="company">Company</Label>
                           <Input
                             id="company"
-                            value={formData.company}
+                            value={contactForm.company}
                             onChange={(e) =>
                               handleInputChange("company", e.target.value)
                             }
@@ -236,7 +229,7 @@ export function HeroSection() {
                           <Label htmlFor="message">Message</Label>
                           <Textarea
                             id="message"
-                            value={formData.message}
+                            value={contactForm.message}
                             onChange={(e) =>
                               handleInputChange("message", e.target.value)
                             }
