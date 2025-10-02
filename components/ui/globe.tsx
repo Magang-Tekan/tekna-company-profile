@@ -273,20 +273,26 @@ export function World(props: WorldProps) {
       style={{ pointerEvents: "auto" }}
     >
       <WebGLRendererConfig />
-      <ambientLight color={globeConfig.ambientLight} intensity={0.6} />
+      <ambientLight color={globeConfig.ambientLight} intensity={0.8} />
       <directionalLight
         color={globeConfig.directionalLeftLight}
-        position={new Vector3(-400, 100, 400)}
-        intensity={1.0}
+        position={new Vector3(400, 100, -400)} // Posisi di belakang Indonesia
+        intensity={1.2}
       />
       <directionalLight
         color={globeConfig.directionalTopLight}
-        position={new Vector3(-200, 500, 200)}
-        intensity={1.0}
+        position={new Vector3(200, 500, -200)} // Posisi di belakang Indonesia
+        intensity={1.2}
       />
       <pointLight
         color={globeConfig.pointLight}
-        position={new Vector3(-200, 500, 200)}
+        position={new Vector3(200, 500, -200)} // Posisi di belakang Indonesia
+        intensity={1.0}
+      />
+      {/* Light tambahan untuk menyinari Indonesia dari belakang */}
+      <directionalLight
+        color="#ffffff"
+        position={new Vector3(300, 200, -300)} // Posisi optimal untuk Indonesia
         intensity={0.8}
       />
       <Globe {...props} />
