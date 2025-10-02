@@ -127,3 +127,95 @@ export async function prefetchProjectImages(projects: Array<{
     await prefetchImages(otherImages);
   }
 }
+
+/**
+ * Progressive prefetch for gallery images - loads one by one to avoid overwhelming
+ */
+export async function prefetchGalleryImagesProgressively(
+  images: Array<{ image_url: string }>,
+  delay: number = 100 // 100ms delay between each image
+): Promise<void> {
+  if (!images || images.length === 0) {
+    return;
+  }
+
+  const validImages = images.filter(img => img.image_url && img.image_url.trim() !== '');
+  
+  if (validImages.length === 0) {
+    return;
+  }
+
+  // Prefetch images one by one with delay
+  for (let i = 0; i < validImages.length; i++) {
+    try {
+      await prefetchImage(validImages[i].image_url);
+      
+      // Add delay between images to avoid overwhelming the network
+      if (i < validImages.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    } catch (error) {
+      console.warn(`Failed to prefetch gallery image ${i + 1}:`, error);
+    }
+  }
+}
+
+/**
+ * Extract image URLs from blog posts for prefetching
+ */
+export function extractBlogImageUrls(posts: Array<{
+  featured_image_url?: string;
+}>): string[] {
+  const imageUrls: string[] = [];
+  
+  posts.forEach(post => {
+    if (post.featured_image_url) {
+      imageUrls.push(post.featured_image_url);
+    }
+  });
+  
+  return imageUrls;
+}
+
+/**
+ * Prefetch blog post images
+ */
+export async function prefetchBlogImages(posts: Array<{
+  featured_image_url?: string;
+}>): Promise<void> {
+  const imageUrls = extractBlogImageUrls(posts);
+  
+  if (imageUrls.length > 0) {
+    await prefetchImages(imageUrls);
+  }
+}
+
+/**
+ * Prefetch single project detail images (featured + gallery)
+ */
+export async function prefetchProjectDetailImages(project: {
+  featured_image_url?: string;
+  images?: Array<{
+    image_url: string;
+  }>;
+}): Promise<void> {
+  const imageUrls: string[] = [];
+  
+  // Add featured image first (priority)
+  if (project.featured_image_url) {
+    imageUrls.push(project.featured_image_url);
+  }
+  
+  // Add gallery images
+  if (project.images && project.images.length > 0) {
+    project.images.forEach(img => {
+      if (img.image_url) {
+        imageUrls.push(img.image_url);
+      }
+    });
+  }
+  
+  if (imageUrls.length > 0) {
+    await prefetchImages(imageUrls);
+  }
+}

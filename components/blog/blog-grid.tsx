@@ -7,6 +7,7 @@ import { BlogFilters } from "@/components/blog/blog-filters";
 import { Pagination, PaginationInfo } from "@/components/blog/pagination";
 import { BlogCard } from "@/components/blog/blog-card";
 import { IconSearch, IconX } from "@tabler/icons-react";
+import { prefetchBlogImages } from "@/lib/utils/image-prefetch";
 
 interface BlogPost {
   id: string;
@@ -120,6 +121,13 @@ export function BlogGrid({
 
         setPosts(transformedPosts);
         setPagination(result.pagination);
+
+        // Prefetch images for better performance
+        if (transformedPosts.length > 0) {
+          prefetchBlogImages(transformedPosts).catch((error) => {
+            console.warn("Failed to prefetch blog images:", error);
+          });
+        }
       } catch (error) {
         console.error("Error fetching posts:", error);
       } finally {
@@ -151,6 +159,15 @@ export function BlogGrid({
     }
   }, [fetchPosts, filters, initialPosts.length]);
 
+  // Prefetch initial posts images
+  useEffect(() => {
+    if (initialPosts.length > 0) {
+      prefetchBlogImages(initialPosts).catch((error) => {
+        console.warn("Failed to prefetch initial blog images:", error);
+      });
+    }
+  }, [initialPosts]);
+
   return (
     <section className="space-y-8">
       {/* Enhanced Blog Filters */}
@@ -176,7 +193,7 @@ export function BlogGrid({
           className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
           aria-label="Loading blog articles"
         >
-          {Array.from({ length: pagination.limit }).map((_, index) => (
+          {Array.from({ length: pagination.limit }, (_, index) => (
             <div key={`skeleton-${index}`} className="flex flex-col">
               <Skeleton className="aspect-video w-full" />
               <div className="p-6 space-y-3">
