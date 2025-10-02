@@ -6,7 +6,7 @@ import { AnalyticsTracker } from '@/components/analytics-tracker'
 import { OrganizationStructuredData, WebsiteStructuredData, ProfessionalServiceStructuredData } from '@/components/structured-data'
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from '@/components/ui/toaster'
-import { GlobePreloader } from '@/components/globe-preloader'
+// Removed GlobePreloader for better FCP performance
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -198,6 +198,13 @@ export default function RootLayout({
         
         {/* Preload critical resources */}
         <link rel="preload" href="/logo.webp" as="image" type="image/webp" />
+        
+        {/* Preload critical fonts */}
+        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+        
+        {/* Preload critical CSS */}
+        <link rel="preload" href="/globals.css" as="style" />
       </head>
       <body className={inter.className}>
         <ThemeProvider
@@ -207,7 +214,6 @@ export default function RootLayout({
         >
           <SessionProvider>
             <AnalyticsTracker>
-              <GlobePreloader />
               {children}
               <OrganizationStructuredData siteUrl="https://tekna.id" />
               <WebsiteStructuredData siteUrl="https://tekna.id" />

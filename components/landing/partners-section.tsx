@@ -19,16 +19,13 @@ export function PartnersSection() {
   useEffect(() => {
     const fetchPartners = async () => {
       try {
-        console.log("Fetching partners...");
         const response = await fetch("/api/partners?limit=20");
-        console.log("Response status:", response.status);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
-        console.log("Partners data:", data);
 
         if (data.partners && Array.isArray(data.partners)) {
           // Filter partners yang memiliki logo_url
@@ -36,11 +33,6 @@ export function PartnersSection() {
             (partner: Partner) => partner.logo_url && partner.logo_url.trim() !== ""
           );
           setPartners(validPartners);
-        } else {
-          console.warn("/api/partners returned no data or error", {
-            status: response.status,
-            data,
-          });
         }
       } catch (error) {
         console.error("Error fetching partners:", error);
@@ -49,7 +41,9 @@ export function PartnersSection() {
       }
     };
 
-    fetchPartners();
+    // Delay fetching to prioritize FCP
+    const timer = setTimeout(fetchPartners, 200);
+    return () => clearTimeout(timer);
   }, []);
 
   const skeletonIds = [
@@ -63,22 +57,9 @@ export function PartnersSection() {
     "sk-7",
   ];
 
+  // Show minimal loading state or hide completely during loading
   if (loading) {
-    return (
-      <section className="bg-background py-16 md:py-24 relative z-30">
-        <div className="group relative m-auto max-w-6xl px-6">
-          <div className="py-6">
-            <div className="flex gap-16 md:gap-32 animate-pulse">
-              {skeletonIds.map((id) => (
-                <div key={id} className="flex shrink-0">
-                  <div className="w-32 md:w-64 h-16 md:h-24 bg-muted rounded"></div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    );
+    return null; // Hide loading state for instant FCP
   }
 
   if (partners.length === 0) {

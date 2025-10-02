@@ -33,39 +33,43 @@ export function ProjectsSectionClient({
 
   const [imagesPrefetched, setImagesPrefetched] = useState(false);
 
-  // Prefetch images on component mount for better performance
+  // Delay image prefetching to prioritize FCP
   useEffect(() => {
     if (projects && projects.length > 0 && !imagesPrefetched) {
-      prefetchProjectImages(projects)
-        .then(() => {
-          setImagesPrefetched(true);
-        })
-        .catch((error) => {
-          console.warn("Failed to prefetch project images:", error);
-          setImagesPrefetched(true); // Still set to true to avoid retries
-        });
+      // Delay prefetching to not block initial render
+      const timer = setTimeout(() => {
+        prefetchProjectImages(projects)
+          .then(() => {
+            setImagesPrefetched(true);
+          })
+          .catch((error) => {
+            console.warn("Failed to prefetch project images:", error);
+            setImagesPrefetched(true); // Still set to true to avoid retries
+          });
+      }, 500); // Delay prefetching by 500ms
+
+      return () => clearTimeout(timer);
     }
   }, [projects, imagesPrefetched]);
 
-  // Animation variants
+  // Simplified animation variants for better performance
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3,
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
       },
     },
   };
 
   const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 50, scale: 0.9 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
-      scale: 1,
-      transition: { duration: 0.8, ease: "easeOut" },
+      transition: { duration: 0.4, ease: "easeOut" },
     },
   };
 
@@ -99,14 +103,12 @@ export function ProjectsSectionClient({
               key={project.id}
               variants={itemVariants}
               custom={index}
-              initial={{ opacity: 0, scale: 0.8, y: 80, filter: "blur(10px)" }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{
                 opacity: 1,
-                scale: 1,
                 y: 0,
-                filter: "blur(0px)",
                 transition: {
-                  duration: 0.6,
+                  duration: 0.3,
                   ease: "easeOut",
                 },
               }}
@@ -129,64 +131,31 @@ function ProjectRow({
   readonly project: ProjectData;
   readonly isReversed: boolean;
 }) {
-  // Enhanced image animation dengan parallax-like effect
+  // Simplified animations for better performance
   const imageVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      scale: 1.2,
-      rotateY: isReversed ? -20 : 20,
-      rotateX: 5,
-      filter: "blur(6px)",
-    },
+    hidden: { opacity: 0, scale: 0.95 },
     visible: {
       opacity: 1,
       scale: 1,
-      rotateY: 0,
-      rotateX: 0,
-      filter: "blur(0px)",
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
+      transition: { duration: 0.3, ease: "easeOut" },
     },
   };
 
-  // Enhanced content animation
   const contentVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      x: isReversed ? 60 : -60,
-      y: 30,
-      scale: 0.95,
-      filter: "blur(4px)",
-    },
+    hidden: { opacity: 0, x: isReversed ? 20 : -20 },
     visible: {
       opacity: 1,
       x: 0,
-      y: 0,
-      scale: 1,
-      filter: "blur(0px)",
-      transition: {
-        duration: 0.5,
-        ease: "easeOut",
-      },
+      transition: { duration: 0.3, ease: "easeOut" },
     },
   };
 
   const textVariants: Variants = {
-    hidden: {
-      opacity: 0,
-      y: 25,
-      scale: 0.98,
-    },
+    hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,
       y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.4,
-        ease: "easeOut",
-      },
+      transition: { duration: 0.2, ease: "easeOut" },
     },
   };
 
@@ -203,17 +172,16 @@ function ProjectRow({
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           whileHover={{
-            scale: 1.02,
-            rotateY: isReversed ? 2 : -2,
-            transition: { duration: 0.3 },
+            scale: 1.01,
+            transition: { duration: 0.2 },
           }}
         >
           <div className="relative aspect-video overflow-hidden rounded-2xl shadow-2xl">
             {project.featured_image_url ? (
               <motion.div
-                initial={{ scale: 1.1 }}
+                initial={{ scale: 1.05 }}
                 whileInView={{ scale: 1 }}
-                transition={{ duration: 0.7, ease: "easeOut" }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
                 className="w-full h-full"
               >
                 <Image
@@ -250,11 +218,10 @@ function ProjectRow({
             {/* Enhanced Status Badge */}
             <motion.div
               className="absolute top-4 right-4"
-              initial={{ opacity: 0, scale: 0.6, rotateZ: -10 }}
-              whileInView={{ opacity: 1, scale: 1, rotateZ: 0 }}
-              transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.2 }}
               viewport={{ once: true }}
-              whileHover={{ scale: 1.1, rotateZ: 5 }}
             ></motion.div>
           </div>
         </motion.div>
@@ -304,9 +271,9 @@ function ProjectRow({
             transition={{ delay: 0.3 }}
           >
             <motion.div
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.2 }}
             >
               <Button
                 size="lg"

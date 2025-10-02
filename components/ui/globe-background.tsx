@@ -2,9 +2,10 @@
 
 import dynamic from "next/dynamic";
 import { useTheme } from "next-themes";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+// Lazy load globe only when needed
 const World = dynamic(
   () => import("@/components/ui/globe").then((m) => m.World),
   {
@@ -16,6 +17,16 @@ const World = dynamic(
 export function GlobeBackground() {
   const { theme } = useTheme();
   const isMobile = useIsMobile();
+  const [shouldRenderGlobe, setShouldRenderGlobe] = useState(false);
+
+  // Delay globe rendering to prioritize FCP
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShouldRenderGlobe(true);
+    }, 100); // Small delay to let FCP complete first
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Konfigurasi globe yang responsif terhadap tema
   const getGlobeConfig = () => {
@@ -442,6 +453,11 @@ export function GlobeBackground() {
     ];
   }, [theme]); // Only recreate when theme changes
 
+  // Don't render globe on mobile for better performance
+  if (isMobile) {
+    return null;
+  }
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center"
@@ -449,12 +465,14 @@ export function GlobeBackground() {
     >
       <div
         className="w-[120vw] h-[120vh] relative"
-        style={{ pointerEvents: isMobile ? "none" : "auto" }}
+        style={{ pointerEvents: "auto" }}
       >
-        <World
-          data={sampleArcs}
-          globeConfig={globeConfig}
-        />
+        {shouldRenderGlobe && (
+          <World
+            data={sampleArcs}
+            globeConfig={globeConfig}
+          />
+        )}
       </div>
     </div>
   );
