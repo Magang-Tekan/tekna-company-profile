@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Color, Scene, Fog, PerspectiveCamera, Group } from "three";
+import { Color, Scene, Fog, PerspectiveCamera, Vector3, Group } from "three";
 import ThreeGlobe from "three-globe";
 import { useThree, Canvas, extend } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
@@ -82,17 +82,18 @@ export function Globe({ globeConfig, data }: WorldProps) {
     ...globeConfig,
   };
 
-  // Simplified globe initialization for better performance
+  // Instant globe initialization - no delays
   useEffect(() => {
     if (!globeRef.current && groupRef.current) {
+      // Initialize immediately for instant globe shape
       globeRef.current = new ThreeGlobe();
       groupRef.current?.add(globeRef.current);
       
-      // Set basic globe properties with reduced complexity
+      // Set basic globe properties immediately
       globeRef.current
         .hexPolygonsData(countries.features)
-        .hexPolygonResolution(2) // Reduced resolution for better performance
-        .hexPolygonMargin(0.8)
+        .hexPolygonResolution(3)
+        .hexPolygonMargin(0.7)
         .showAtmosphere(defaultProps.showAtmosphere)
         .atmosphereColor(defaultProps.atmosphereColor)
         .atmosphereAltitude(defaultProps.atmosphereAltitude)
@@ -125,44 +126,65 @@ export function Globe({ globeConfig, data }: WorldProps) {
     globeConfig.shininess,
   ]);
 
-  // Simplified data loading for better performance
+  // Instant data loading - no delays
   useEffect(() => {
     if (!globeRef.current || !isInitialized || !data || loadingStage !== 'data') return;
 
-    // Simplified points creation
-    const points = data.slice(0, 10).map(arc => ({
-      size: defaultProps.pointSize,
-      order: arc.order,
-      color: arc.color,
-      lat: arc.startLat,
-      lng: arc.startLng,
-    }));
+    const arcs = data;
+    const points = [];
+    for (const arc of arcs) {
+      points.push({
+        size: defaultProps.pointSize,
+        order: arc.order,
+        color: arc.color,
+        lat: arc.startLat,
+        lng: arc.startLng,
+      });
+      points.push({
+        size: defaultProps.pointSize,
+        order: arc.order,
+        color: arc.color,
+        lat: arc.endLat,
+        lng: arc.endLng,
+      });
+    }
 
-    // Add simplified arcs data
+    // remove duplicates for same lat and lng
+    const filteredPoints = points.filter(
+      (v, i, a) =>
+        a.findIndex((v2) =>
+          ["lat", "lng"].every(
+            (k) => v2[k as "lat" | "lng"] === v[k as "lat" | "lng"]
+          )
+        ) === i
+    );
+
+    // Add arcs data immediately
     if (globeRef.current) {
       globeRef.current
-        .arcsData(data.slice(0, 20)) // Limit arcs for better performance
+        .arcsData(data)
         .arcStartLat((d) => (d as { startLat: number }).startLat * 1)
         .arcStartLng((d) => (d as { startLng: number }).startLng * 1)
         .arcEndLat((d) => (d as { endLat: number }).endLat * 1)
         .arcEndLng((d) => (d as { endLng: number }).endLng * 1)
-        .arcColor((e: Position) => e.color)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .arcColor((e: any) => (e as Position).color)
         .arcAltitude((e) => (e as { arcAlt: number }).arcAlt * 1)
-        .arcStroke(() => 0.3)
+        .arcStroke(() => [0.32, 0.28, 0.3][Math.round(Math.random() * 2)])
         .arcDashLength(defaultProps.arcLength)
         .arcDashInitialGap((e) => (e as { order: number }).order * 1)
-        .arcDashGap(20)
+        .arcDashGap(15)
         .arcDashAnimateTime(() => defaultProps.arcTime);
 
-      // Add simplified points data
+      // Add points data immediately
       globeRef.current
-        .pointsData(points)
+        .pointsData(filteredPoints)
         .pointColor((e) => (e as { color: string }).color)
         .pointsMerge(true)
         .pointAltitude(0.0)
-        .pointRadius(1.5);
+        .pointRadius(2);
 
-      // Simplified rings data
+      // Add rings data immediately
       globeRef.current
         .ringsData([])
         .ringColor(() => defaultProps.polygonColor)
@@ -186,22 +208,20 @@ export function Globe({ globeConfig, data }: WorldProps) {
     defaultProps.polygonColor,
   ]);
 
-  // Simplified animations for better performance
+  // Instant animations - start immediately
   useEffect(() => {
     if (!globeRef.current || !isInitialized || !data || loadingStage !== 'animations') return;
 
     const interval = setInterval(() => {
       if (!globeRef.current) return;
 
-      // Simplified rings animation
       const newNumbersOfRings = genRandomNumbers(
         0,
-        Math.min(data.length, 10), // Limit rings for better performance
-        Math.floor(Math.min(data.length, 10) * 0.6)
+        data.length,
+        Math.floor((data.length * 4) / 5)
       );
 
       const ringsData = data
-        .slice(0, 10) // Limit data for better performance
         .filter((d, i) => newNumbersOfRings.includes(i))
         .map((d) => ({
           lat: d.startLat,
@@ -210,7 +230,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
         }));
 
       globeRef.current.ringsData(ringsData);
-    }, 3000); // Slower animation for better performance
+    }, 2000);
 
     setLoadingStage('complete');
     return () => {
@@ -225,8 +245,7 @@ export function WebGLRendererConfig() {
   const { gl, size } = useThree();
 
   useEffect(() => {
-    // Optimized renderer settings for better performance
-    gl.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio
+    gl.setPixelRatio(window.devicePixelRatio);
     gl.setSize(size.width, size.height);
     gl.setClearColor(0xffaaff, 0);
   }, [gl, size.width, size.height]);
@@ -237,41 +256,38 @@ export function WebGLRendererConfig() {
 export function World(props: WorldProps) {
   const { globeConfig } = props;
 
-  // Optimized scene and camera for better performance
+  // Gunakan useMemo untuk scene dan camera yang persisten
   const sceneRef = useRef<Scene | null>(null);
   const cameraRef = useRef<PerspectiveCamera | null>(null);
 
-  // Create scene and camera only once with optimized settings
+  // Buat scene dan camera hanya sekali
   sceneRef.current ??= new Scene();
   sceneRef.current.fog = new Fog(0xffffff, 400, 2000);
 
   cameraRef.current ??= new PerspectiveCamera(50, aspect, 180, 1800);
-  cameraRef.current.position.z = cameraZ;
 
   return (
     <Canvas
       scene={sceneRef.current}
       camera={cameraRef.current}
       style={{ pointerEvents: "auto" }}
-      dpr={[1, 2]} // Limit device pixel ratio for better performance
-      performance={{ min: 0.5 }} // Optimize for performance
-      gl={{ antialias: false, alpha: false }} // Disable antialiasing for better performance
-      frameloop="demand" // Only render when needed
-      onCreated={({ gl }) => {
-        gl.setClearColor(0x000000, 0); // Transparent background
-        gl.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limit pixel ratio
-      }}
     >
       <WebGLRendererConfig />
-      <ambientLight color={globeConfig.ambientLight} />
+      <ambientLight color={globeConfig.ambientLight} intensity={0.6} />
       <directionalLight
         color={globeConfig.directionalLeftLight}
+        position={new Vector3(-400, 100, 400)}
+        intensity={1.0}
       />
       <directionalLight
         color={globeConfig.directionalTopLight}
+        position={new Vector3(-200, 500, 200)}
+        intensity={1.0}
       />
       <pointLight
         color={globeConfig.pointLight}
+        position={new Vector3(-200, 500, 200)}
+        intensity={0.8}
       />
       <Globe {...props} />
       <OrbitControls
@@ -279,13 +295,11 @@ export function World(props: WorldProps) {
         enableZoom={false}
         minDistance={cameraZ}
         maxDistance={cameraZ}
-        autoRotateSpeed={0.5} // Slower rotation for better performance
+        autoRotateSpeed={1}
         autoRotate={true}
         minPolarAngle={Math.PI / 3.5}
         maxPolarAngle={Math.PI - Math.PI / 3}
         enabled={true}
-        enableDamping={true} // Smoother rotation
-        dampingFactor={0.1}
       />
     </Canvas>
   );
