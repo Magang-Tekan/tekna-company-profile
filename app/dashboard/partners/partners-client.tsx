@@ -11,6 +11,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Edit, Trash2, Users, Calendar } from "lucide-react";
 import Link from "next/link";
+import { prefetchImages } from "@/lib/utils/image-prefetch";
 
 interface Partner {
   id: string;
@@ -31,6 +32,18 @@ export default function PartnersClient() {
 
       if (data.success) {
         setPartners(data.partners);
+        
+        // Prefetch partner logos for better performance
+        if (data.partners && data.partners.length > 0) {
+          const logoUrls = data.partners
+            .map((partner: Partner) => partner.logo_url)
+            .filter(Boolean);
+          if (logoUrls.length > 0) {
+            prefetchImages(logoUrls).catch((error) => {
+              console.warn("Failed to prefetch partner logos:", error);
+            });
+          }
+        }
       } else {
         throw new Error(data.error || "Failed to fetch partners");
       }

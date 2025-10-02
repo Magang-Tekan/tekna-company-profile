@@ -7,7 +7,7 @@
  * This loads the image into browser cache without displaying it
  */
 export function prefetchImage(src: string): Promise<void> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     if (!src) {
       resolve();
       return;
@@ -164,7 +164,7 @@ export async function prefetchGalleryImagesProgressively(
  * Extract image URLs from blog posts for prefetching
  */
 export function extractBlogImageUrls(posts: Array<{
-  featured_image_url?: string;
+  featured_image_url?: string | null;
 }>): string[] {
   const imageUrls: string[] = [];
   
@@ -181,7 +181,7 @@ export function extractBlogImageUrls(posts: Array<{
  * Prefetch blog post images
  */
 export async function prefetchBlogImages(posts: Array<{
-  featured_image_url?: string;
+  featured_image_url?: string | null;
 }>): Promise<void> {
   const imageUrls = extractBlogImageUrls(posts);
   
