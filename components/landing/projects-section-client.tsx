@@ -4,8 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { motion, useInView, Variants } from "framer-motion";
+import { prefetchProjectImages } from "@/lib/utils/image-prefetch";
 
 interface ProjectData {
   id: string;
@@ -29,6 +30,22 @@ export function ProjectsSectionClient({
 }>) {
   const containerRef = useRef<HTMLDivElement>(null);
   const isVisible = useInView(containerRef, { once: true, margin: "-100px" });
+
+  const [imagesPrefetched, setImagesPrefetched] = useState(false);
+
+  // Prefetch images on component mount for better performance
+  useEffect(() => {
+    if (projects && projects.length > 0 && !imagesPrefetched) {
+      prefetchProjectImages(projects)
+        .then(() => {
+          setImagesPrefetched(true);
+        })
+        .catch((error) => {
+          console.warn("Failed to prefetch project images:", error);
+          setImagesPrefetched(true); // Still set to true to avoid retries
+        });
+    }
+  }, [projects, imagesPrefetched]);
 
   // Animation variants
   const containerVariants: Variants = {
@@ -203,8 +220,18 @@ function ProjectRow({
                   src={project.featured_image_url}
                   alt={project.name}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-opacity duration-300"
                   sizes="(max-width: 768px) 100vw, 50vw"
+                  priority={true}
+                  quality={85}
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                  onLoad={() => {
+                    // Image loaded successfully
+                  }}
+                  onError={(e) => {
+                    console.warn(`Failed to load image: ${project.featured_image_url}`, e);
+                  }}
                 />
               </motion.div>
             ) : (
