@@ -31,6 +31,10 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { ContentRenderer } from "@/components/content-renderer";
+import { generateMetadata } from "./metadata";
+import { CareerStructuredData } from "@/components/career-structured-data";
+
+export { generateMetadata };
 
 export default function CareerDetailPage() {
   const { slug } = useParams();
@@ -234,6 +238,31 @@ export default function CareerDetailPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {position && (
+        <CareerStructuredData
+          position={{
+            title: position.title,
+            slug: position.slug,
+            summary: position.summary,
+            description: position.description,
+            requirements: position.requirements,
+            benefits: position.benefits,
+            salary_min: position.salary_min,
+            salary_max: position.salary_max,
+            salary_currency: position.salary_currency,
+            application_deadline: position.application_deadline,
+            start_date: position.start_date,
+            remote_allowed: position.remote_allowed,
+            category: position.category,
+            location: position.location,
+            type: position.type,
+            level: position.level,
+            created_at: position.created_at,
+            updated_at: position.updated_at,
+          }}
+          siteUrl={process.env.NEXT_PUBLIC_SITE_URL || "https://tekna.id"}
+        />
+      )}
       {/* Mobile Header */}
       <div className="lg:hidden bg-card border-b sticky top-0 z-40">
         <div className="flex items-center justify-between p-4">

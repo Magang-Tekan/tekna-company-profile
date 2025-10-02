@@ -49,7 +49,26 @@ export const metadata: Metadata = {
     'solusi teknologi bisnis',
     'custom software development',
     'enterprise application',
-    'startup technology partner'
+    'startup technology partner',
+    
+    // Career keywords
+    'tekna career',
+    'lowongan kerja tekna',
+    'karir tekna',
+    'lowongan kerja software house',
+    'lowongan kerja semarang',
+    'lowongan kerja IT semarang',
+    'lowongan kerja developer',
+    'lowongan kerja IoT',
+    'lowongan kerja mobile app',
+    'lowongan kerja web development',
+    'PT Sapujagat Nirmana Tekna career',
+    'tekna.id career',
+    'software house career indonesia',
+    'tech jobs semarang',
+    'developer jobs indonesia',
+    'remote work indonesia',
+    'startup jobs semarang'
   ],
   authors: [{ name: 'PT Sapujagat Nirmana Tekna', url: 'https://tekna.id' }],
   creator: 'PT Sapujagat Nirmana Tekna',
@@ -131,7 +150,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  readonly children: React.ReactNode
 }) {
   return (
     <html lang="id" className="scroll-smooth" suppressHydrationWarning>
@@ -170,6 +189,8 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="icon" href="/logo.webp" type="image/webp" />
         
         {/* Manifest for PWA */}
         <link rel="manifest" href="/manifest.json" />

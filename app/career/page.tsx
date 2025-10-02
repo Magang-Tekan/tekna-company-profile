@@ -43,6 +43,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { ContentRenderer } from "@/components/content-renderer";
+import { CareerStructuredData } from "@/components/career-structured-data";
 
 export default function CareerPage() {
   const router = useRouter();
@@ -371,6 +372,20 @@ export default function CareerPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Career Structured Data */}
+      {positions.length > 0 && (
+        <CareerStructuredData
+          position={{
+            title: "Lowongan Kerja Tekna",
+            slug: "career",
+            summary: "Temukan lowongan kerja terbaru di Tekna",
+            description: "Bergabunglah dengan tim Tekna! Temukan lowongan kerja terbaru di software house Indonesia terkemuka.",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }}
+          siteUrl={process.env.NEXT_PUBLIC_SITE_URL || "https://tekna.id"}
+        />
+      )}
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-primary via-primary/90 to-primary/80 text-primary-foreground overflow-hidden">
         <BackgroundPaths />

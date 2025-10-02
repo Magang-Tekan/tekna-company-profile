@@ -68,7 +68,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/career`,
       lastModified: currentDate,
       changeFrequency: 'weekly' as const,
-      priority: 0.7,
+      priority: 0.8,
     },
     // Contact and business pages
     {
