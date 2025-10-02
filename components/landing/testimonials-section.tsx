@@ -59,8 +59,8 @@ const hardcodedTestimonials = [
   },
 ];
 
-export async function TestimonialsSection() {
-  // Use hardcoded testimonials instead of fetching from database
+export function TestimonialsSection() {
+  // Use hardcoded testimonials for instant loading
   const testimonials = hardcodedTestimonials;
 
   if (testimonials.length === 0) {
@@ -68,12 +68,12 @@ export async function TestimonialsSection() {
   }
 
   return (
-    <section className="w-full py-24 md:py-32 lg:py-40 bg-background relative z-30">
+    <section className="w-full py-20 md:py-24 lg:py-32 bg-background relative z-30">
       {/* Smooth transition gradient from top */}
-      <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-background via-background/95 to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-background via-background/95 to-transparent" />
 
       <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <div className="text-center max-w-2xl mx-auto mb-12">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-foreground">
             What Our Clients Say
           </h2>
@@ -81,19 +81,19 @@ export async function TestimonialsSection() {
             We are proud to work with great companies.
           </p>
         </div>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((testimonial) => (
-            <Card key={testimonial.id} className="bg-card">
+            <Card key={testimonial.id} className="bg-card hover:shadow-lg transition-shadow duration-200 border-0 shadow-sm">
               <CardContent className="p-6">
-                <p className="mb-6 text-muted-foreground">
+                <p className="mb-6 text-muted-foreground leading-relaxed text-sm">
                   &ldquo;{testimonial.testimonial_text || ""}&rdquo;
                 </p>
                 <div className="flex items-center gap-4">
-                  <Avatar>
+                  <Avatar className="w-10 h-10">
                     <AvatarImage
                       src={testimonial.client_avatar_url || undefined}
                     />
-                    <AvatarFallback>
+                    <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                       {testimonial.client_name &&
                       testimonial.client_name.length > 0
                         ? testimonial.client_name.charAt(0).toUpperCase()
@@ -101,10 +101,10 @@ export async function TestimonialsSection() {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-semibold text-foreground">
+                    <p className="font-semibold text-foreground text-sm">
                       {testimonial.client_name || "Unknown"}
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {testimonial.client_position || "Position"},{" "}
                       {testimonial.client_company || "Company"}
                     </p>

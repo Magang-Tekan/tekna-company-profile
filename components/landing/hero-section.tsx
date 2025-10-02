@@ -58,7 +58,7 @@ export function HeroSection() {
     setFormData({ name: "", email: "", phone: "", company: "", message: "" });
   };
 
-  // Scroll animation handler for sticky hero content transitions
+  // Simplified scroll animation handler for better performance
   useEffect(() => {
     let ticking = false;
 
@@ -66,65 +66,36 @@ export function HeroSection() {
       const currentScrollY = window.scrollY;
       const viewportHeight = window.innerHeight;
 
-      // Define transition ranges for sticky hero content
-      const content1End = viewportHeight * 0.8; // Content 1 visible until 80vh scroll
-      const content2Start = viewportHeight * 0.6; // Content 2 starts appearing at 60vh
-      const content2End = viewportHeight * 1.6; // Content 2 visible until 160vh scroll
-      const content3Start = viewportHeight * 1.4; // Content 3 starts appearing at 140vh
-      const content3End = viewportHeight * 2.4; // Content 3 visible until 240vh scroll
+      // Simplified transition ranges
+      const content1End = viewportHeight * 0.8;
+      const content2Start = viewportHeight * 0.6;
+      const content2End = viewportHeight * 1.6;
+      const content3Start = viewportHeight * 1.4;
+      const content3End = viewportHeight * 2.4;
 
-      // Calculate opacity for each content section
-      let content1Opacity = 0;
+      // Simplified opacity calculations
+      const content1Opacity = currentScrollY <= content1End ? 1 : Math.max(0, 1 - (currentScrollY - content1End) / (viewportHeight * 0.4));
+      
       let content2Opacity = 0;
-      let content3Opacity = 0;
-
-      // Content 1 logic - starts visible, fades out
-      if (currentScrollY <= content1End) {
-        content1Opacity = 1;
-      } else {
-        content1Opacity = Math.max(
-          0,
-          1 - (currentScrollY - content1End) / (viewportHeight * 0.4)
-        );
-      }
-
-      // Content 2 logic - fades in then out
       if (currentScrollY >= content2Start && currentScrollY <= content2End) {
         if (currentScrollY < content1End) {
-          // Fade in
-          content2Opacity =
-            (currentScrollY - content2Start) / (content1End - content2Start);
+          content2Opacity = (currentScrollY - content2Start) / (content1End - content2Start);
         } else if (currentScrollY > content2End - viewportHeight * 0.4) {
-          // Fade out
-          content2Opacity = Math.max(
-            0,
-            1 -
-              (currentScrollY - (content2End - viewportHeight * 0.4)) /
-                (viewportHeight * 0.4)
-          );
+          content2Opacity = Math.max(0, 1 - (currentScrollY - (content2End - viewportHeight * 0.4)) / (viewportHeight * 0.4));
         } else {
-          // Fully visible
           content2Opacity = 1;
         }
       }
 
-      // Content 3 logic - fades in and stays visible longer
+      let content3Opacity = 0;
       if (currentScrollY >= content3Start) {
         if (currentScrollY < content3End) {
-          content3Opacity = Math.min(
-            1,
-            (currentScrollY - content3Start) / (viewportHeight * 0.4)
-          );
+          content3Opacity = Math.min(1, (currentScrollY - content3Start) / (viewportHeight * 0.4));
         } else {
-          // Fade out when projects section is near
-          content3Opacity = Math.max(
-            0,
-            1 - (currentScrollY - content3End) / (viewportHeight * 0.3)
-          );
+          content3Opacity = Math.max(0, 1 - (currentScrollY - content3End) / (viewportHeight * 0.3));
         }
       }
 
-      // Update state with calculated opacities
       setContentOpacity({
         content1: Math.max(0, Math.min(1, content1Opacity)),
         content2: Math.max(0, Math.min(1, content2Opacity)),
@@ -141,8 +112,9 @@ export function HeroSection() {
       }
     };
 
+    // Use passive listener for better performance
     window.addEventListener("scroll", handleScroll, { passive: true });
-    updateScrollY(); // Initial call
+    updateScrollY();
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -173,9 +145,9 @@ export function HeroSection() {
             style={{
               opacity: contentOpacity.content1,
               transform: `translateY(${
-                contentOpacity.content1 === 1 ? 0 : 20
+                contentOpacity.content1 === 1 ? 0 : 10
               }px)`,
-              transition: "all 0.3s ease-out",
+              transition: "opacity 0.2s ease-out, transform 0.2s ease-out",
             }}
           >
             <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl leading-tight text-foreground mb-6">
@@ -298,9 +270,9 @@ export function HeroSection() {
             style={{
               opacity: contentOpacity.content2,
               transform: `translateY(${
-                contentOpacity.content2 === 1 ? 0 : 20
+                contentOpacity.content2 === 1 ? 0 : 10
               }px)`,
-              transition: "all 0.3s ease-out",
+              transition: "opacity 0.2s ease-out, transform 0.2s ease-out",
             }}
           >
             <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl leading-tight text-foreground mb-6">
@@ -320,9 +292,9 @@ export function HeroSection() {
             style={{
               opacity: contentOpacity.content3,
               transform: `translateY(${
-                contentOpacity.content3 === 1 ? 0 : 20
+                contentOpacity.content3 === 1 ? 0 : 10
               }px)`,
-              transition: "all 0.3s ease-out",
+              transition: "opacity 0.2s ease-out, transform 0.2s ease-out",
             }}
           >
             <h2 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl leading-tight text-foreground mb-6">
