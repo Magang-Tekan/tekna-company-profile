@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import useSWR, { mutate as globalMutate } from "swr";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { ClientDashboardService } from "@/lib/services/client-dashboard.service";
 import { useRealtimeBlogPosts } from "@/lib/hooks/use-realtime-simple";
+import { prefetchBlogImages } from "@/lib/utils/image-prefetch";
 import {
   IconPlus,
   IconEdit,
@@ -76,12 +77,20 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
     globalMutate("/api/posts");
   });
 
+  // Prefetch blog images for better performance
+  useEffect(() => {
+    if (posts?.length > 0) {
+      prefetchBlogImages(posts).catch((error) => {
+        console.warn("Failed to prefetch blog images:", error);
+      });
+    }
+  }, [posts]);
+
   const filteredPosts = useMemo(() => {
     const filtered = posts.filter((post) => {
       const matchesSearch =
         post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (post.excerpt &&
-          post.excerpt.toLowerCase().includes(searchTerm.toLowerCase()));
+        post.excerpt?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus =
         statusFilter === "all" || post.status === statusFilter;
       return matchesSearch && matchesStatus;

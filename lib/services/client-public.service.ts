@@ -1,73 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr";
 
-interface ProjectsFilters {
-  page?: number;
-  limit?: number;
-  search?: string;
-  featured?: boolean;
-}
-
-interface ProjectsResponse {
-  data: Array<{
-    id: string;
-    name: string;
-    slug: string;
-    project_url?: string;
-    featured_image_url?: string;
-    description: string;
-    short_description?: string;
-    is_featured: boolean;
-    is_active: boolean;
-    sort_order: number;
-    created_at: string;
-    updated_at: string;
-  }>;
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
-}
-
-interface ProjectDetail {
-  id: string;
-  name: string;
-  slug: string;
-  project_url?: string;
-  featured_image_url?: string;
-  description: string;
-  short_description?: string;
-  is_featured: boolean;
-  created_at: string;
-  updated_at: string;
-  view_count: number;
-  images: Array<{
-    id: string;
-    image_url: string;
-    alt_text?: string;
-    caption?: string;
-    sort_order: number;
-  }>;
-  translations?: Array<{
-    language_id: string;
-    description: string;
-    short_description?: string;
-    meta_title?: string;
-    meta_description?: string;
-  }>;
-}
-
-interface RelatedProject {
-  id: string;
-  name: string;
-  slug: string;
-  featured_image_url?: string;
-  short_description?: string;
-}
-
 export class ClientPublicService {
   private static readonly supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -82,7 +14,12 @@ export class ClientPublicService {
     limit = 12,
     search,
     featured,
-  }: ProjectsFilters = {}): Promise<ProjectsResponse> {
+  }: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    featured?: boolean;
+  } = {}) {
     try {
       const offset = (page - 1) * limit;
       
@@ -164,7 +101,7 @@ export class ClientPublicService {
   /**
    * Get project by slug with full details (client-side)
    */
-  static async getProjectBySlug(slug: string): Promise<ProjectDetail | null> {
+  static async getProjectBySlug(slug: string) {
     try {
       // First get the basic project data
       const { data: project, error: projectError } = await this.supabase
@@ -225,7 +162,7 @@ export class ClientPublicService {
   static async getRelatedProjects(
     currentProjectId: string,
     limit: number = 3
-  ): Promise<RelatedProject[]> {
+  ) {
     try {
       const { data, error } = await this.supabase
         .from('projects')

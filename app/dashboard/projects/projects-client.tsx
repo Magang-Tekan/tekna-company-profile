@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,6 +29,7 @@ import {
 import { ClientDashboardService } from "@/lib/services/client-dashboard.service";
 import useSWR, { mutate as globalMutate } from "swr";
 import { useToast } from "@/hooks/use-toast";
+import { prefetchProjectImages } from "@/lib/utils/image-prefetch";
 
 interface Project {
   id: string;
@@ -57,6 +58,15 @@ export default function ProjectsPageClient({
   });
 
   const projects = (apiPayload?.data as Project[]) || initialProjects;
+
+  // Prefetch project images for better performance
+  useEffect(() => {
+    if (projects?.length > 0) {
+      prefetchProjectImages(projects).catch((error) => {
+        console.warn("Failed to prefetch project images:", error);
+      });
+    }
+  }, [projects]);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -68,8 +78,7 @@ export default function ProjectsPageClient({
     const filtered = projects.filter((project) => {
       const matchesSearch =
         project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (project.description &&
-          project.description.toLowerCase().includes(searchTerm.toLowerCase()));
+        project.description?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus =
         statusFilter === "all" || 
         (statusFilter === "active" && project.is_active) ||

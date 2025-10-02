@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { ProjectsListingClient } from "@/components/projects/projects-listing-client";
 import { PublicService } from "@/lib/services/public.service";
 import { BlogBreadcrumbs } from "@/components/blog/blog-breadcrumbs";
+import { prefetchProjectImages } from "@/lib/utils/image-prefetch";
 
 interface ProjectData {
   id: string;
@@ -57,6 +58,16 @@ export default async function ProjectsPage({ searchParams }: Readonly<ProjectsPa
     search,
     featured: featured || undefined,
   });
+
+  // Prefetch project images for better performance
+  if (projectsData.data && projectsData.data.length > 0) {
+    try {
+      await prefetchProjectImages(projectsData.data);
+    } catch (error) {
+      console.warn("Failed to prefetch project images:", error);
+      // Continue execution even if prefetch fails
+    }
+  }
 
   // Custom breadcrumbs for projects listing
   const breadcrumbItems = [

@@ -105,13 +105,17 @@ export function AppHeader() {
             <Code className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
             Beranda
           </button>
-          <button
-            onClick={() => navigateToSection("projects")}
-            className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group cursor-pointer"
+          <Link
+            href="/projects"
+            className={`flex items-center gap-2 transition-all duration-300 hover:scale-105 group ${
+              pathname === "/projects"
+                ? "text-foreground font-semibold"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
           >
             <Rocket className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
             Proyek
-          </button>
+          </Link>
           <button
             onClick={() => navigateToSection("partners")}
             className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group cursor-pointer"
@@ -185,13 +189,18 @@ export function AppHeader() {
                 <Code className="w-4 h-4" />
                 Beranda
               </button>
-              <button
-                onClick={() => navigateToSection("projects")}
-                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 cursor-pointer text-left w-full"
+              <Link
+                href="/projects"
+                className={`flex items-center gap-3 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 ${
+                  pathname === "/projects"
+                    ? "text-foreground font-semibold bg-muted/30"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 <Rocket className="w-4 h-4" />
                 Proyek
-              </button>
+              </Link>
               <button
                 onClick={() => navigateToSection("partners")}
                 className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 cursor-pointer text-left w-full"
