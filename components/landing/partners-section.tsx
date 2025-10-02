@@ -46,16 +46,6 @@ export function PartnersSection() {
     return () => clearTimeout(timer);
   }, []);
 
-  const skeletonIds = [
-    "sk-0",
-    "sk-1",
-    "sk-2",
-    "sk-3",
-    "sk-4",
-    "sk-5",
-    "sk-6",
-    "sk-7",
-  ];
 
   // Show minimal loading state or hide completely during loading
   if (loading) {
