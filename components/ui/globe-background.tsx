@@ -9,6 +9,7 @@ const World = dynamic(
   () => import("@/components/ui/globe").then((m) => m.World),
   {
     ssr: false,
+    loading: () => null, // No loading UI - instant appearance
   }
 );
 
@@ -453,7 +454,6 @@ export function GlobeBackground() {
         <World
           data={sampleArcs}
           globeConfig={globeConfig}
-          isInteractive={!isMobile}
         />
       </div>
     </div>
