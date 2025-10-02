@@ -2,6 +2,7 @@ import { PublicService } from "@/lib/services/public.service";
 import { PublicLayout } from "@/components/layout/public-layout";
 import { BlogGrid } from "@/components/blog/blog-grid";
 import { Metadata } from "next";
+import { prefetchBlogImages } from "@/lib/utils/image-prefetch";
 
 interface BlogPageProps {
   searchParams: Promise<{
@@ -66,7 +67,7 @@ async function getBlogData(params: {
   }
 }
 
-export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
+export default async function BlogIndexPage({ searchParams }: Readonly<BlogPageProps>) {
   const resolvedSearchParams = await searchParams;
   const page = parseInt(resolvedSearchParams.page || "1");
   const search = resolvedSearchParams.search || "";
@@ -79,6 +80,16 @@ export default async function BlogIndexPage({ searchParams }: BlogPageProps) {
     category,
     featured,
   });
+
+  // Prefetch blog images for better performance
+  if (posts && posts.length > 0) {
+    try {
+      await prefetchBlogImages(posts);
+    } catch (error) {
+      console.warn("Failed to prefetch blog images:", error);
+      // Continue execution even if prefetch fails
+    }
+  }
 
   return (
     <PublicLayout>

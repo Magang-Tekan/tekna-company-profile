@@ -12,6 +12,7 @@ import { Metadata } from "next";
 import { IconCalendar, IconEye } from "@tabler/icons-react";
 import { ContentRenderer } from "@/components/content-renderer";
 import { BlogPostStructuredData } from "@/components/structured-data";
+import { prefetchBlogImages } from "@/lib/utils/image-prefetch";
 
 // Force dynamic rendering for this route
 export const dynamic = 'force-dynamic';
@@ -90,6 +91,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   }
 
   const relatedPosts = await getRelatedPosts(post.id, post.category_id);
+
+  // Prefetch blog images for better performance
+  try {
+    await prefetchBlogImages([post, ...relatedPosts]);
+  } catch (error) {
+    console.warn("Failed to prefetch blog images:", error);
+    // Continue execution even if prefetch fails
+  }
 
   const getAuthorInitials = (authorName: string) => {
     if (!authorName) return "AD";

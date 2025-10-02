@@ -37,6 +37,7 @@ import {
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ContentRenderer } from "@/components/content-renderer";
+import { prefetchGalleryImagesProgressively } from "@/lib/utils/image-prefetch";
 
 interface ProjectImage {
   id: string;
@@ -117,6 +118,17 @@ export function ProjectDetailClient({
 
     trackView();
   }, [project.id]);
+
+  // Progressive prefetch for gallery images
+  useEffect(() => {
+    if (allImages && allImages.length > 0) {
+      // Prefetch gallery images progressively (one by one)
+      prefetchGalleryImagesProgressively(allImages, 150) // 150ms delay between images
+        .catch((error) => {
+          console.warn("Failed to prefetch gallery images:", error);
+        });
+    }
+  }, [allImages]);
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -261,8 +273,11 @@ export function ProjectDetailClient({
                                   src={image.image_url}
                                   alt={image.alt_text || `${project.name} - Image ${index + 1}`}
                                   fill
-                                  className="object-cover"
+                                  className="object-cover transition-opacity duration-300"
                                   sizes="(max-width: 768px) 50vw, 33vw"
+                                  quality={85}
+                                  placeholder="blur"
+                                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                                 />
                               </div>
                             </DialogTrigger>
@@ -280,6 +295,8 @@ export function ProjectDetailClient({
                                   fill
                                   className="object-contain"
                                   sizes="90vw"
+                                  quality={90}
+                                  priority={index < 3} // Priority for first 3 images
                                 />
                               </AspectRatio>
                             </DialogContent>

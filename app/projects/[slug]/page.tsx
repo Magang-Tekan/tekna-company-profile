@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ProjectDetailClient } from "@/components/projects/project-detail-client";
 import { PublicService } from "@/lib/services/public.service";
 import { BlogBreadcrumbs } from "@/components/blog/blog-breadcrumbs";
+import { prefetchProjectDetailImages } from "@/lib/utils/image-prefetch";
 
 // Force dynamic rendering for this route
 export const dynamic = 'force-dynamic';
@@ -99,6 +100,14 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
     } catch (error) {
       console.error("Error fetching related projects:", error);
       // Continue without related projects rather than failing the entire page
+    }
+
+    // Prefetch project images for better performance
+    try {
+      await prefetchProjectDetailImages(project);
+    } catch (error) {
+      console.warn("Failed to prefetch project images:", error);
+      // Continue execution even if prefetch fails
     }
 
     // Custom breadcrumbs for project detail
