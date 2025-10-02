@@ -268,12 +268,12 @@ export function ProjectDetailClient({
                         {allImages.map((image, index) => (
                           <Dialog key={image.id}>
                             <DialogTrigger asChild>
-                              <div className="relative aspect-video cursor-pointer overflow-hidden rounded-lg hover:opacity-80 transition-opacity">
+                              <div className="relative aspect-video cursor-pointer overflow-hidden rounded-lg hover:opacity-80 transition-opacity duration-300 ease-in">
                                 <Image
                                   src={image.image_url}
                                   alt={image.alt_text || `${project.name} - Image ${index + 1}`}
                                   fill
-                                  className="object-cover transition-opacity duration-300"
+                                  className="object-cover transition-opacity duration-300 ease-in"
                                   sizes="(max-width: 768px) 50vw, 33vw"
                                   quality={85}
                                   placeholder="blur"
@@ -293,7 +293,7 @@ export function ProjectDetailClient({
                                   src={image.image_url}
                                   alt={image.alt_text || project.name}
                                   fill
-                                  className="object-contain"
+                                  className="object-contain transition-opacity duration-300 ease-in"
                                   sizes="90vw"
                                   quality={90}
                                   priority={index < 3} // Priority for first 3 images
