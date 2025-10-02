@@ -8,9 +8,7 @@ import countries from "@/data/globe.json";
 
 declare module "@react-three/fiber" {
   interface ThreeElements {
-    threeGlobe: ThreeElements["mesh"] & {
-      (): ThreeGlobe;
-    };
+    threeGlobe: () => ThreeGlobe;
   }
 }
 
@@ -57,15 +55,15 @@ export type GlobeConfig = {
 };
 
 interface WorldProps {
-  globeConfig: GlobeConfig;
-  data: Position[];
-  isInteractive?: boolean;
+  readonly globeConfig: GlobeConfig;
+  readonly data: Position[];
 }
 
 export function Globe({ globeConfig, data }: WorldProps) {
   const globeRef = useRef<ThreeGlobe | null>(null);
   const groupRef = useRef<Group | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [loadingStage, setLoadingStage] = useState<'shape' | 'data' | 'animations' | 'complete'>('shape');
 
   const defaultProps = {
     pointSize: 1,
@@ -84,14 +82,27 @@ export function Globe({ globeConfig, data }: WorldProps) {
     ...globeConfig,
   };
 
-  // Initialize globe only once
+  // Instant globe initialization - no delays
   useEffect(() => {
     if (!globeRef.current && groupRef.current) {
+      // Initialize immediately for instant globe shape
       globeRef.current = new ThreeGlobe();
-      groupRef.current.add(globeRef.current);
+      groupRef.current?.add(globeRef.current);
+      
+      // Set basic globe properties immediately
+      globeRef.current
+        .hexPolygonsData(countries.features)
+        .hexPolygonResolution(3)
+        .hexPolygonMargin(0.7)
+        .showAtmosphere(defaultProps.showAtmosphere)
+        .atmosphereColor(defaultProps.atmosphereColor)
+        .atmosphereAltitude(defaultProps.atmosphereAltitude)
+        .hexPolygonColor(() => defaultProps.polygonColor);
+      
       setIsInitialized(true);
+      setLoadingStage('data');
     }
-  }, []);
+  }, [defaultProps.showAtmosphere, defaultProps.atmosphereColor, defaultProps.atmosphereAltitude, defaultProps.polygonColor]);
 
   // Build material when globe is initialized or when relevant props change
   useEffect(() => {
@@ -115,14 +126,13 @@ export function Globe({ globeConfig, data }: WorldProps) {
     globeConfig.shininess,
   ]);
 
-  // Build data when globe is initialized or when data changes
+  // Instant data loading - no delays
   useEffect(() => {
-    if (!globeRef.current || !isInitialized || !data) return;
+    if (!globeRef.current || !isInitialized || !data || loadingStage !== 'data') return;
 
     const arcs = data;
     const points = [];
-    for (let i = 0; i < arcs.length; i++) {
-      const arc = arcs[i];
+    for (const arc of arcs) {
       points.push({
         size: defaultProps.pointSize,
         order: arc.order,
@@ -149,62 +159,58 @@ export function Globe({ globeConfig, data }: WorldProps) {
         ) === i
     );
 
-    globeRef.current
-      .hexPolygonsData(countries.features)
-      .hexPolygonResolution(3)
-      .hexPolygonMargin(0.7)
-      .showAtmosphere(defaultProps.showAtmosphere)
-      .atmosphereColor(defaultProps.atmosphereColor)
-      .atmosphereAltitude(defaultProps.atmosphereAltitude)
-      .hexPolygonColor(() => defaultProps.polygonColor);
+    // Add arcs data immediately
+    if (globeRef.current) {
+      globeRef.current
+        .arcsData(data)
+        .arcStartLat((d) => (d as { startLat: number }).startLat * 1)
+        .arcStartLng((d) => (d as { startLng: number }).startLng * 1)
+        .arcEndLat((d) => (d as { endLat: number }).endLat * 1)
+        .arcEndLng((d) => (d as { endLng: number }).endLng * 1)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .arcColor((e: any) => (e as Position).color)
+        .arcAltitude((e) => (e as { arcAlt: number }).arcAlt * 1)
+        .arcStroke(() => [0.32, 0.28, 0.3][Math.round(Math.random() * 2)])
+        .arcDashLength(defaultProps.arcLength)
+        .arcDashInitialGap((e) => (e as { order: number }).order * 1)
+        .arcDashGap(15)
+        .arcDashAnimateTime(() => defaultProps.arcTime);
 
-    globeRef.current
-      .arcsData(data)
-      .arcStartLat((d) => (d as { startLat: number }).startLat * 1)
-      .arcStartLng((d) => (d as { startLng: number }).startLng * 1)
-      .arcEndLat((d) => (d as { endLat: number }).endLat * 1)
-      .arcEndLng((d) => (d as { endLng: number }).endLng * 1)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .arcColor((e: any) => (e as Position).color)
-      .arcAltitude((e) => (e as { arcAlt: number }).arcAlt * 1)
-      .arcStroke(() => [0.32, 0.28, 0.3][Math.round(Math.random() * 2)])
-      .arcDashLength(defaultProps.arcLength)
-      .arcDashInitialGap((e) => (e as { order: number }).order * 1)
-      .arcDashGap(15)
-      .arcDashAnimateTime(() => defaultProps.arcTime);
+      // Add points data immediately
+      globeRef.current
+        .pointsData(filteredPoints)
+        .pointColor((e) => (e as { color: string }).color)
+        .pointsMerge(true)
+        .pointAltitude(0.0)
+        .pointRadius(2);
 
-    globeRef.current
-      .pointsData(filteredPoints)
-      .pointColor((e) => (e as { color: string }).color)
-      .pointsMerge(true)
-      .pointAltitude(0.0)
-      .pointRadius(2);
+      // Add rings data immediately
+      globeRef.current
+        .ringsData([])
+        .ringColor(() => defaultProps.polygonColor)
+        .ringMaxRadius(defaultProps.maxRings)
+        .ringPropagationSpeed(RING_PROPAGATION_SPEED)
+        .ringRepeatPeriod(
+          (defaultProps.arcTime * defaultProps.arcLength) / defaultProps.rings
+        );
+    }
 
-    globeRef.current
-      .ringsData([])
-      .ringColor(() => defaultProps.polygonColor)
-      .ringMaxRadius(defaultProps.maxRings)
-      .ringPropagationSpeed(RING_PROPAGATION_SPEED)
-      .ringRepeatPeriod(
-        (defaultProps.arcTime * defaultProps.arcLength) / defaultProps.rings
-      );
+    setLoadingStage('animations');
   }, [
     isInitialized,
     data,
+    loadingStage,
     defaultProps.pointSize,
-    defaultProps.showAtmosphere,
-    defaultProps.atmosphereColor,
-    defaultProps.atmosphereAltitude,
-    defaultProps.polygonColor,
     defaultProps.arcLength,
     defaultProps.arcTime,
     defaultProps.rings,
     defaultProps.maxRings,
+    defaultProps.polygonColor,
   ]);
 
-  // Handle rings animation with cleanup
+  // Instant animations - start immediately
   useEffect(() => {
-    if (!globeRef.current || !isInitialized || !data) return;
+    if (!globeRef.current || !isInitialized || !data || loadingStage !== 'animations') return;
 
     const interval = setInterval(() => {
       if (!globeRef.current) return;
@@ -226,10 +232,11 @@ export function Globe({ globeConfig, data }: WorldProps) {
       globeRef.current.ringsData(ringsData);
     }, 2000);
 
+    setLoadingStage('complete');
     return () => {
       clearInterval(interval);
     };
-  }, [isInitialized, data]);
+  }, [isInitialized, data, loadingStage]);
 
   return <group ref={groupRef} />;
 }
@@ -247,21 +254,17 @@ export function WebGLRendererConfig() {
 }
 
 export function World(props: WorldProps) {
-  const { globeConfig, isInteractive = true } = props;
+  const { globeConfig } = props;
 
   // Gunakan useMemo untuk scene dan camera yang persisten
   const sceneRef = useRef<Scene | null>(null);
   const cameraRef = useRef<PerspectiveCamera | null>(null);
 
   // Buat scene dan camera hanya sekali
-  if (!sceneRef.current) {
-    sceneRef.current = new Scene();
-    sceneRef.current.fog = new Fog(0xffffff, 400, 2000);
-  }
+  sceneRef.current ??= new Scene();
+  sceneRef.current.fog = new Fog(0xffffff, 400, 2000);
 
-  if (!cameraRef.current) {
-    cameraRef.current = new PerspectiveCamera(50, aspect, 180, 1800);
-  }
+  cameraRef.current ??= new PerspectiveCamera(50, aspect, 180, 1800);
 
   return (
     <Canvas
@@ -296,7 +299,7 @@ export function World(props: WorldProps) {
         autoRotate={true}
         minPolarAngle={Math.PI / 3.5}
         maxPolarAngle={Math.PI - Math.PI / 3}
-        enabled={isInteractive}
+        enabled={true}
       />
     </Canvas>
   );

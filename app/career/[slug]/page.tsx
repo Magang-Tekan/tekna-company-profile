@@ -31,10 +31,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { ContentRenderer } from "@/components/content-renderer";
-import { generateMetadata } from "./metadata";
 import { CareerStructuredData } from "@/components/career-structured-data";
-
-export { generateMetadata };
 
 export default function CareerDetailPage() {
   const { slug } = useParams();

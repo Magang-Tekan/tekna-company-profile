@@ -6,6 +6,7 @@ import { AnalyticsTracker } from '@/components/analytics-tracker'
 import { OrganizationStructuredData, WebsiteStructuredData, ProfessionalServiceStructuredData } from '@/components/structured-data'
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from '@/components/ui/toaster'
+import { GlobePreloader } from '@/components/globe-preloader'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -206,6 +207,7 @@ export default function RootLayout({
         >
           <SessionProvider>
             <AnalyticsTracker>
+              <GlobePreloader />
               {children}
               <OrganizationStructuredData siteUrl="https://tekna.id" />
               <WebsiteStructuredData siteUrl="https://tekna.id" />
