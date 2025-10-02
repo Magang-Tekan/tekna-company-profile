@@ -56,7 +56,7 @@ export function GlobeBackground() {
         arcLength: 0.9,
         rings: 1,
         maxRings: 3,
-        initialPosition: { lat: 22.3193, lng: 114.1694 },
+        initialPosition: { lat: -6.2, lng: 106.8 }, // Jakarta, Indonesia
         autoRotate: true,
         autoRotateSpeed: 0.5,
       };
@@ -80,7 +80,7 @@ export function GlobeBackground() {
         arcLength: 0.9,
         rings: 1,
         maxRings: 3,
-        initialPosition: { lat: 22.3193, lng: 114.1694 },
+        initialPosition: { lat: -6.2, lng: 106.8 }, // Jakarta, Indonesia
         autoRotate: true,
         autoRotateSpeed: 0.5,
       };
