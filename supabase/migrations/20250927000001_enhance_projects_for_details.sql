@@ -19,6 +19,9 @@ CREATE INDEX IF NOT EXISTS idx_project_translations_lookup ON project_translatio
 -- HELPER FUNCTIONS FOR PROJECT DETAILS
 -- =====================================================
 
+-- Drop existing function first to avoid return type conflicts
+DROP FUNCTION IF EXISTS get_project_by_slug(TEXT, TEXT);
+
 -- Function to get project by slug with translations
 CREATE OR REPLACE FUNCTION get_project_by_slug(project_slug TEXT, language_code TEXT DEFAULT 'en')
 RETURNS TABLE (

@@ -283,6 +283,7 @@ export class ClientDashboardService {
           sort_order,
           technologies,
           client_name,
+          project_value,
           project_date,
           project_duration,
           team_size,
