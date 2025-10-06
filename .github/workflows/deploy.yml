@@ -45,6 +45,8 @@ jobs:
           # Copy static files
           cp -r .next/static deploy/.next/static
           cp -r public deploy/public
+          # Copy docker-compose.yml
+          cp docker-compose.yml deploy/
           # Create minimal Dockerfile for faster builds
           cat > deploy/Dockerfile <<'EOF'
           FROM node:20-alpine
@@ -99,6 +101,24 @@ jobs:
           target: "/root/project/tekna-company-profile"
           strip_components: 1
           rm: true
+
+      - name: Create environment file on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: root
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 60s
+          command_timeout: 30s
+          script: |
+            cd /root/project/tekna-company-profile
+            # Create .env file with environment variables
+            cat > .env << EOF
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY }}
+            SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+            RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+            EOF
 
       - name: Start containers on VPS
         uses: appleboy/ssh-action@v1.0.3
