@@ -71,10 +71,9 @@ export async function generateMetadata({
 // Generate static params for known projects (optional - for build optimization)
 export async function generateStaticParams() {
   try {
-    const projects = await PublicService.getAllProjects({ limit: 100 });
-    return projects.data.map((project: { slug: string }) => ({
-      slug: project.slug,
-    }));
+    // Return empty array to avoid build-time API calls
+    // Static generation will be handled at request time
+    return [];
   } catch (error) {
     console.error("Error generating static params:", error);
     return [];

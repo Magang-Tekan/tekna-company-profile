@@ -3,6 +3,9 @@ import CareerClient from "./career-client";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 export default async function CareerManagementPage() {
   try {
     // Check authentication and role
