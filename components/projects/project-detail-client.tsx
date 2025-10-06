@@ -82,6 +82,7 @@ interface ProjectDetailData {
   project_duration?: string;
   team_size?: string;
   project_status?: string;
+  project_value?: string;
 }
 
 interface ProjectDetailClientProps {
@@ -350,6 +351,20 @@ export function ProjectDetailClient({
                       </h4>
                       <p className="text-sm">
                         {project.client_name}
+                      </p>
+                    </div>
+                  </>
+                )}
+
+                {project.project_value && (
+                  <>
+                    <Separator />
+                    <div>
+                      <h4 className="font-medium text-sm text-muted-foreground mb-1">
+                        Project Value
+                      </h4>
+                      <p className="text-sm font-semibold text-primary">
+                        {project.project_value}
                       </p>
                     </div>
                   </>

@@ -16,7 +16,14 @@ INSERT INTO projects (
   featured_image_url,
   is_featured,
   is_active,
-  sort_order
+  sort_order,
+  technologies,
+  client_name,
+  project_date,
+  project_duration,
+  team_size,
+  project_status,
+  project_value
 ) VALUES 
 (
   'Smart IoT Dashboard',
@@ -26,7 +33,14 @@ INSERT INTO projects (
   'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800',
   true,
   true,
-  1
+  1,
+  'React, Node.js, PostgreSQL, Docker, AWS',
+  'PT. Teknologi Maju',
+  '2024-01-15',
+  '6 months',
+  '8 developers',
+  'completed',
+  '$75,000'
 ),
 (
   'Mobile ERP Application',
@@ -36,7 +50,14 @@ INSERT INTO projects (
   'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800',
   true,
   true,
-  2
+  2,
+  'React Native, Firebase, Node.js, MongoDB',
+  'CV. Solusi Digital',
+  '2024-03-20',
+  '4 months',
+  '6 developers',
+  'completed',
+  '$45,000'
 ),
 (
   'E-Commerce Platform',
@@ -46,7 +67,14 @@ INSERT INTO projects (
   'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800',
   true,
   true,
-  3
+  3,
+  'Next.js, TypeScript, Stripe, PostgreSQL',
+  'Toko Online Indonesia',
+  '2024-02-10',
+  '5 months',
+  '10 developers',
+  'completed',
+  '$90,000'
 ),
 (
   'Warehouse Management System',
@@ -56,7 +84,14 @@ INSERT INTO projects (
   'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800',
   false,
   true,
-  4
+  4,
+  'Vue.js, Laravel, MySQL, Redis',
+  'PT. Logistik Sukses',
+  '2024-04-01',
+  '8 months',
+  '12 developers',
+  'completed',
+  '$120,000'
 ),
 (
   'Customer Portal Web App',
@@ -66,7 +101,14 @@ INSERT INTO projects (
   'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800',
   false,
   true,
-  5
+  5,
+  'Angular, .NET Core, SQL Server, Azure',
+  'Bank Digital Nusantara',
+  '2024-05-15',
+  '3 months',
+  '5 developers',
+  'completed',
+  '$35,000'
 )
 ON CONFLICT (slug) DO NOTHING;
 

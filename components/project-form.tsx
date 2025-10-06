@@ -47,6 +47,7 @@ interface ProjectFormData {
   project_duration: string;
   team_size: string;
   project_status: string;
+  project_value: string;
   // Tab 4: SEO & Meta
   meta_title: string;
   meta_description: string;
@@ -84,6 +85,7 @@ export function ProjectForm({
     project_duration: initialData?.project_duration || "",
     team_size: initialData?.team_size || "",
     project_status: initialData?.project_status || "completed",
+    project_value: initialData?.project_value || "",
     // Tab 4: SEO & Meta
     meta_title: initialData?.meta_title || "",
     meta_description: initialData?.meta_description || "",
@@ -158,6 +160,7 @@ export function ProjectForm({
               meta_description: formData.meta_description || undefined,
               technologies: formData.technologies || undefined,
               client_name: formData.client_name || undefined,
+              project_value: formData.project_value || undefined,
               project_date: formData.project_date || undefined,
               project_duration: formData.project_duration || undefined,
               team_size: formData.team_size || undefined,
@@ -203,6 +206,7 @@ export function ProjectForm({
           meta_description: formData.meta_description || undefined,
           technologies: formData.technologies || undefined,
           client_name: formData.client_name || undefined,
+          project_value: formData.project_value || undefined,
           project_date: formData.project_date || undefined,
           project_duration: formData.project_duration || undefined,
           team_size: formData.team_size || undefined,
@@ -596,6 +600,26 @@ export function ProjectForm({
                       }
                       placeholder="Client or company name"
                     />
+                  </div>
+
+                  {/* Project Value */}
+                  <div className="space-y-2">
+                    <Label htmlFor="project_value">Project Value</Label>
+                    <Input
+                      id="project_value"
+                      type="text"
+                      value={formData.project_value}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          project_value: e.target.value,
+                        }))
+                      }
+                      placeholder="e.g., $50,000, €30,000, Rp 500M"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Project value or pricing information
+                    </p>
                   </div>
 
                   {/* Project Date */}

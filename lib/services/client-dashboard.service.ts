@@ -41,6 +41,7 @@ export class ClientDashboardService {
     meta_description?: string;
     technologies?: string;
     client_name?: string;
+    project_value?: string;
     project_date?: string;
     project_duration?: string;
     team_size?: string;
@@ -149,6 +150,7 @@ export class ClientDashboardService {
       meta_description?: string;
       technologies?: string;
       client_name?: string;
+      project_value?: string;
       project_date?: string;
       project_duration?: string;
       team_size?: string;
