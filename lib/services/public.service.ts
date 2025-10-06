@@ -600,6 +600,7 @@ export class PublicService {
         // Additional project information
         technologies: project.technologies,
         client_name: project.client_name,
+        project_value: project.project_value,
         project_date: project.project_date,
         project_duration: project.project_duration,
         team_size: project.team_size,

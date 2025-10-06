@@ -1,6 +1,10 @@
 -- Migration: Update get_project_by_slug function to include additional fields
--- Description: Add technologies, client_name, project_date, etc. to the function
+-- Description: Add technologies, client_name, project_date, project_value, etc. to the function
 -- Created: 2025-01-28
+
+-- Add project_value column to projects table
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS project_value VARCHAR(255);
+COMMENT ON COLUMN projects.project_value IS 'Project value or pricing information (e.g., $50,000, €30,000, etc.)';
 
 -- Drop the existing function first
 DROP FUNCTION IF EXISTS get_project_by_slug(TEXT, TEXT);
