@@ -16,6 +16,17 @@ export const metadata: Metadata = {
     template: '%s | PT. Sapujagat Nirmana Tekna - Tekna.id'
   },
   description: 'PT. Sapujagat Nirmana Tekna (Tekna.id) adalah software house Indonesia terkemuka berlokasi di Semarang dengan pengalaman 5+ tahun. Spesialisasi IoT development, mobile app iOS/Android, dan web development modern. Solusi teknologi terpercaya untuk transformasi digital bisnis Anda.',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' }
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }
+    ],
+    shortcut: '/favicon.ico'
+  },
   keywords: [
     // Primary keywords
     'PT. Sapujagat Nirmana Tekna',
@@ -154,58 +165,58 @@ export default function RootLayout({
   readonly children: React.ReactNode
 }) {
   return (
-    <html lang="id" className="scroll-smooth" suppressHydrationWarning>
-      <head>
-        <link rel="canonical" href="https://tekna.id" />
-        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        
-        {/* Geographic meta tags */}
-        <meta name="geo.region" content="ID-SMG" />
-        <meta name="geo.placename" content="Semarang, Jawa Tengah, Indonesia" />
-        <meta name="geo.position" content="-6.9932;110.4203" />
-        <meta name="ICBM" content="-6.9932, 110.4203" />
-        
-        {/* Additional SEO meta tags */}
-        <meta name="distribution" content="global" />
-        <meta name="rating" content="general" />
-        <meta name="revisit-after" content="3 days" />
-        <meta name="language" content="Indonesian" />
-        <meta name="country" content="Indonesia" />
-        <meta name="target" content="all" />
-        <meta name="audience" content="all" />
-        <meta name="coverage" content="Worldwide" />
-        
-        {/* Business specific */}
-        <meta name="business-type" content="Software Development" />
-        <meta name="industry" content="Technology" />
-        <meta name="page-topic" content="Software House Indonesia" />
-        
-        {/* Mobile optimization */}
-        <meta name="HandheldFriendly" content="True" />
-        <meta name="MobileOptimized" content="320" />
-        
-        {/* Favicon and app icons */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <meta name="msapplication-TileImage" content="/favicon-32x32.png" />
-        
-        {/* Manifest for PWA */}
-        <link rel="manifest" href="/manifest.json" />
-        
-        {/* Preload critical resources */}
-        <link rel="preload" href="/logo.webp" as="image" type="image/webp" />
-        
-        {/* Preload critical fonts */}
-        <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
-        
-        {/* Preload critical CSS */}
-        <link rel="preload" href="/globals.css" as="style" />
-      </head>
+        <html lang="id" className="scroll-smooth" suppressHydrationWarning>
+          <head>
+            <link rel="canonical" href="https://tekna.id" />
+            <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+            
+            {/* Geographic meta tags */}
+            <meta name="geo.region" content="ID-SMG" />
+            <meta name="geo.placename" content="Semarang, Jawa Tengah, Indonesia" />
+            <meta name="geo.position" content="-6.9932;110.4203" />
+            <meta name="ICBM" content="-6.9932, 110.4203" />
+            
+            {/* Additional SEO meta tags */}
+            <meta name="distribution" content="global" />
+            <meta name="rating" content="general" />
+            <meta name="revisit-after" content="3 days" />
+            <meta name="language" content="Indonesian" />
+            <meta name="country" content="Indonesia" />
+            <meta name="target" content="all" />
+            <meta name="audience" content="all" />
+            <meta name="coverage" content="Worldwide" />
+            
+            {/* Business specific */}
+            <meta name="business-type" content="Software Development" />
+            <meta name="industry" content="Technology" />
+            <meta name="page-topic" content="Software House Indonesia" />
+            
+            {/* Mobile optimization */}
+            <meta name="HandheldFriendly" content="True" />
+            <meta name="MobileOptimized" content="320" />
+            
+            {/* Favicon and app icons */}
+            <link rel="icon" href="/favicon.ico" sizes="any" />
+            <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+            <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+            <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+            <link rel="shortcut icon" href="/favicon.ico" />
+            <meta name="msapplication-TileImage" content="/favicon-32x32.png" />
+            
+            {/* Manifest for PWA */}
+            <link rel="manifest" href="/manifest.json" />
+            
+            {/* Preload critical resources */}
+            <link rel="preload" href="/logo.webp" as="image" type="image/webp" />
+            
+            {/* Preload critical fonts */}
+            <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" />
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+            
+            {/* Preload critical CSS */}
+            <link rel="preload" href="/globals.css" as="style" />
+          </head>
       <body className={inter.className}>
         <ThemeProvider
           attribute="class"
