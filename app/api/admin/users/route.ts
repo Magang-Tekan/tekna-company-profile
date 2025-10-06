@@ -1,19 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-);
-
 export async function GET() {
   try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    );
     // 1. Get all users from Supabase Auth
     const {
       data: { users: authUsers },
@@ -78,19 +77,15 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Debug: Check environment variables
-    console.log("Environment variables check:");
-    console.log(
-      "NEXT_PUBLIC_SUPABASE_URL:",
-      process.env.NEXT_PUBLIC_SUPABASE_URL
-    );
-    console.log(
-      "SUPABASE_SERVICE_ROLE_KEY exists:",
-      !!process.env.SUPABASE_SERVICE_ROLE_KEY
-    );
-    console.log(
-      "SUPABASE_SERVICE_ROLE_KEY length:",
-      process.env.SUPABASE_SERVICE_ROLE_KEY?.length
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
     );
 
     const body = await request.json();

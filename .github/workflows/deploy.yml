@@ -26,7 +26,7 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-          NEXT_PUBLIC_SUPABASE_URL: https://rarxrbqpndlfxchdxnat.supabase.co
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
@@ -39,7 +39,7 @@ jobs:
           # Copy static files
           cp -r .next/static deploy/.next/static
           cp -r public deploy/public
-          # Create minimal Dockerfile
+          # Create minimal Dockerfile for faster builds
           cat > deploy/Dockerfile <<'EOF'
           FROM node:20-alpine
           WORKDIR /app
@@ -51,27 +51,6 @@ jobs:
           ENV HOSTNAME="0.0.0.0"
           # Standalone output includes server.js
           CMD ["node", "server.js"]
-          EOF
-          # Create docker-compose.yml
-          cat > deploy/docker-compose.yml <<'EOF'
-          services:
-            app:
-              build: .
-              ports:
-                - "3000:3000"
-              restart: unless-stopped
-              environment:
-                - NODE_ENV=production
-                - NEXT_PUBLIC_SUPABASE_URL=https://rarxrbqpndlfxchdxnat.supabase.co
-                - NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY=${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY}
-                - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
-                - RESEND_API_KEY=${RESEND_API_KEY}
-              healthcheck:
-                test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000', (res) => process.exit(res.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
-                interval: 30s
-                timeout: 10s
-                retries: 3
-                start_period: 40s
           EOF
 
       - name: Stop existing containers on VPS
@@ -107,7 +86,7 @@ jobs:
           command_timeout: 10m
           script: |
             cd /root/project/tekna-company-profile
-            # Build new image (just copy files)
+            # Build new image (just copy files - much faster!)
             docker compose build --no-cache
             # Start container
             docker compose up -d
