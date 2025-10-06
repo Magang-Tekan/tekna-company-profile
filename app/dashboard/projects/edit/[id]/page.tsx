@@ -32,6 +32,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
     meta_description?: string;
     technologies?: string;
     client_name?: string;
+    project_value?: string;
     project_date?: string;
     project_duration?: string;
     team_size?: string;
@@ -105,6 +106,7 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
             meta_description: project.meta_description || "",
             technologies: project.technologies || "",
             client_name: project.client_name || "",
+            project_value: project.project_value || "",
             project_date: project.project_date || "",
             project_duration: project.project_duration || "",
             team_size: project.team_size || "",
