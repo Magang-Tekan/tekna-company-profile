@@ -6,6 +6,9 @@ import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { PublicLayout } from "@/components/layout/public-layout";
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic';
+
 export default async function FAQPage() {
   const contentService = new ContentManagementService();
   
