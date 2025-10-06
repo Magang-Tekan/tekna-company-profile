@@ -135,6 +135,10 @@ export class AdminAuthService {
         .single();
 
       if (roleError || !userRole) {
+        // Check if it's a token expiration issue
+        if (roleError?.code === 'PGRST116' || roleError?.message?.includes('JWT')) {
+          throw new Error("Token expired - please login again");
+        }
         throw new Error("Admin access required");
       }
 
@@ -469,6 +473,19 @@ export class AdminAuthService {
 
       return roleHierarchy[currentAdmin.role] >= roleHierarchy[requiredRole];
     } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Check if current user has valid admin access without throwing errors
+   */
+  static async checkAdminAccess(): Promise<boolean> {
+    try {
+      await this.getCurrentAdmin();
+      return true;
+    } catch (error) {
+      console.error("Admin access check failed:", error);
       return false;
     }
   }

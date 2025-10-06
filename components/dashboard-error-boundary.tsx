@@ -31,7 +31,9 @@ export class DashboardErrorBoundary extends Component<Props, State> {
     if (
       error.message.includes("Admin access required") ||
       error.message.includes("Not authenticated") ||
-      error.message.includes("User not authorized")
+      error.message.includes("User not authorized") ||
+      error.message.includes("Token expired") ||
+      error.message.includes("JWT")
     ) {
       window.location.href = "/auth/login";
     }
