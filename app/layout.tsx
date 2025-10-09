@@ -17,9 +17,21 @@ export const metadata: Metadata = {
   },
   description: 'PT. Sapujagat Nirmana Tekna (Tekna.id) adalah software house Indonesia terkemuka berlokasi di Semarang dengan pengalaman 5+ tahun. Spesialisasi IoT development, mobile app iOS/Android, dan web development modern. Solusi teknologi terpercaya untuk transformasi digital bisnis Anda.',
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
     shortcut: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/favicon.ico',
+      },
+    ],
   },
   keywords: [
     // Primary keywords
@@ -190,16 +202,12 @@ export default function RootLayout({
             <meta name="HandheldFriendly" content="True" />
             <meta name="MobileOptimized" content="320" />
             
-            {/* Favicon and app icons */}
-            <link rel="icon" href="/favicon.ico" sizes="any" />
-            <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-            <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-            <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-            <link rel="shortcut icon" href="/favicon.ico" />
-            <meta name="msapplication-TileImage" content="/favicon-32x32.png" />
-            
             {/* Manifest for PWA */}
             <link rel="manifest" href="/manifest.json" />
+            
+            {/* MS Tile */}
+            <meta name="msapplication-TileImage" content="/favicon-32x32.png" />
+            <meta name="msapplication-TileColor" content="#000000" />
             
             {/* Preload critical resources */}
             <link rel="preload" href="/logo.webp" as="image" type="image/webp" />
