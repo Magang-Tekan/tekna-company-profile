@@ -4,6 +4,9 @@ import { PublicService } from "@/lib/services/public.service";
 import { BlogBreadcrumbs } from "@/components/blog/blog-breadcrumbs";
 import { prefetchProjectImages } from "@/lib/utils/image-prefetch";
 
+// ISR: Revalidate every hour for projects listing
+export const revalidate = 3600; // 1 hour
+
 interface ProjectData {
   id: string;
   name: string;

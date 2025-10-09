@@ -4,8 +4,9 @@ import { BlogGrid } from "@/components/blog/blog-grid";
 import { Badge } from "@/components/ui/badge";
 import { notFound } from "next/navigation";
 
-// Force dynamic rendering for this route
-export const dynamic = 'force-dynamic';
+// ISR: Revalidate every 30 minutes for category pages
+export const revalidate = 1800; // 30 minutes
+export const dynamicParams = true; // Generate new pages on-demand for new categories
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;

@@ -8,6 +8,10 @@ import { GlobeBackground } from "@/components/ui/globe-background";
 import { MainContent } from "@/components/landing/main-content";
 import { LandingCacheManager } from "@/components/landing/landing-cache-manager";
 
+// Force static generation for landing page - fully static for maximum performance
+export const dynamic = 'force-static';
+export const revalidate = false; // Never revalidate - truly static
+
 export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen">

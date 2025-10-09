@@ -14,8 +14,9 @@ import { ContentRenderer } from "@/components/content-renderer";
 import { BlogPostStructuredData } from "@/components/structured-data";
 import { prefetchBlogImages } from "@/lib/utils/image-prefetch";
 
-// Force dynamic rendering for this route
-export const dynamic = 'force-dynamic';
+// ISR: Revalidate every 30 minutes for blog posts
+export const revalidate = 1800; // 30 minutes
+export const dynamicParams = true; // Generate new pages on-demand for new posts
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;

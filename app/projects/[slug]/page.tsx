@@ -5,8 +5,9 @@ import { PublicService } from "@/lib/services/public.service";
 import { BlogBreadcrumbs } from "@/components/blog/blog-breadcrumbs";
 import { prefetchProjectDetailImages } from "@/lib/utils/image-prefetch";
 
-// Force dynamic rendering for this route
-export const dynamic = 'force-dynamic';
+// ISR: Revalidate every hour for fresh content while maintaining performance
+export const revalidate = 3600; // 1 hour
+export const dynamicParams = true; // Generate new pages on-demand for new projects
 
 interface ProjectPageProps {
   params: Promise<{ slug: string }>;
@@ -70,14 +71,9 @@ export async function generateMetadata({
 
 // Generate static params for known projects (optional - for build optimization)
 export async function generateStaticParams() {
-  try {
-    // Return empty array to avoid build-time API calls
-    // Static generation will be handled at request time
-    return [];
-  } catch (error) {
-    console.error("Error generating static params:", error);
-    return [];
-  }
+  // Return empty array to avoid build-time API calls
+  // Static generation will be handled at request time with ISR
+  return [];
 }
 
 export default async function ProjectDetailPage({ params }: ProjectPageProps) {

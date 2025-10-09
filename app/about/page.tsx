@@ -6,6 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { PublicLayout } from "@/components/layout/public-layout";
 
+// ISR: Revalidate every 24 hours for about page (infrequent changes)
+export const revalidate = 86400; // 24 hours
+
 export default async function AboutUsPage() {
   const contentService = new ContentManagementService();
   
