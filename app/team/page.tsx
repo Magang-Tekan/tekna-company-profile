@@ -6,6 +6,9 @@ import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PublicLayout } from "@/components/layout/public-layout";
 
+// ISR: Revalidate every 24 hours for team page (infrequent changes)
+export const revalidate = 86400; // 24 hours
+
 export default async function TeamPage() {
   const contentService = new ContentManagementService();
   

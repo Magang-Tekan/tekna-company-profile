@@ -4,6 +4,9 @@ import { BlogGrid } from "@/components/blog/blog-grid";
 import { Metadata } from "next";
 import { prefetchBlogImages } from "@/lib/utils/image-prefetch";
 
+// ISR: Revalidate every 30 minutes for blog listing
+export const revalidate = 1800; // 30 minutes
+
 interface BlogPageProps {
   searchParams: Promise<{
     page?: string;
