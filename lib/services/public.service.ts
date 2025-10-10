@@ -1,11 +1,11 @@
-import { createClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/server";
 
 export class PublicService {
   /**
    * Get all published blog posts, ordered by newest first.
    */
   static async getPublishedBlogPosts() {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     try {
       const { data, error } = await supabase
         .from("posts")
@@ -52,7 +52,7 @@ export class PublicService {
       featured?: boolean;
     } = {}
   ) {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     const { page = 1, limit = 12, search, category, featured } = params;
     const offset = (page - 1) * limit;
 
@@ -143,7 +143,7 @@ export class PublicService {
    * Get single published blog post by slug
    */
   static async getPublishedPostBySlug(slug: string) {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     try {
       // Get the main post data
       const { data: post, error: postError } = await supabase
@@ -225,7 +225,7 @@ export class PublicService {
     categoryId?: string,
     limit: number = 3
   ) {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     try {
       let query = supabase
         .from("posts")
@@ -302,7 +302,7 @@ export class PublicService {
    * Get all active categories
    */
   static async getActiveCategories() {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     try {
       const { data, error } = await supabase
         .from("categories")
@@ -331,7 +331,7 @@ export class PublicService {
    * Search published blog posts
    */
   static async searchPosts(query: string, limit: number = 10) {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     try {
       const { data, error } = await supabase
         .from("posts")
@@ -368,7 +368,7 @@ export class PublicService {
    * Increment view count for a blog post
    */
   static async incrementViewCount(postId: string) {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     try {
       const { error } = await supabase.rpc("increment_post_views", {
         post_id: postId,
@@ -421,7 +421,7 @@ export class PublicService {
    * Get featured projects with translations.
    */
   static async getFeaturedProjects(language: string = "en") {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     try {
       // First get the language ID
       const { data: languageData, error: languageError } = await supabase
@@ -544,7 +544,7 @@ export class PublicService {
    * Get single project by slug with full details, translations, and images.
    */
   static async getProjectBySlug(slug: string, language: string = "en") {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     try {
       // Get project basic info with translation using the database function
       const { data: projectData, error: projectError } = await supabase.rpc(
@@ -624,7 +624,7 @@ export class PublicService {
       language?: string;
     } = {}
   ) {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     const {
       page = 1,
       limit = 12,
@@ -813,7 +813,7 @@ export class PublicService {
     language: string = "en",
     limit: number = 3
   ) {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     try {
       const { data: relatedProjects, error } = await supabase.rpc(
         "get_related_projects",
@@ -840,7 +840,7 @@ export class PublicService {
    * Increment project view count for analytics.
    */
   static async incrementProjectViews(projectId: string) {
-    const supabase = await createClient();
+    const supabase = createStaticClient();
     try {
       await supabase.rpc("increment_project_views", {
         project_id: projectId,
