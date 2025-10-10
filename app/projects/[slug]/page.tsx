@@ -71,9 +71,15 @@ export async function generateMetadata({
 
 // Generate static params for known projects (optional - for build optimization)
 export async function generateStaticParams() {
-  // Return empty array to avoid build-time API calls
-  // Static generation will be handled at request time with ISR
-  return [];
+  try {
+    const projects = await PublicService.getAllProjects({ limit: 100 });
+    return projects.data.map((project: { slug: string }) => ({
+      slug: project.slug,
+    }));
+  } catch (error) {
+    console.error("Error generating static params:", error);
+    return [];
+  }
 }
 
 export default async function ProjectDetailPage({ params }: ProjectPageProps) {
