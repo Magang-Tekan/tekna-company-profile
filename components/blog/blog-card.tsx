@@ -76,9 +76,10 @@ export function BlogCard({
           <CardHeader className="p-0 relative">
             <div className="aspect-video relative overflow-hidden bg-muted">
               <ImageWithFallback
-                src={post.featured_image_url}
+                src={post.featured_image_url ?? null}
                 alt={post.title}
                 fill
+                size="large"
                 className="object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
               />
             </div>
@@ -108,18 +109,18 @@ export function BlogCard({
             )}
           </CardHeader>
 
-          <CardContent className="p-6">
-            <CardTitle className="text-xl font-semibold leading-snug group-hover:text-primary transition-colors line-clamp-2 mb-3">
+          <CardContent className="p-4">
+            <CardTitle className="text-base font-semibold leading-snug group-hover:text-primary transition-colors line-clamp-2 mb-2">
               {post.title}
             </CardTitle>
             {post.excerpt && (
-              <p className="text-muted-foreground line-clamp-3 leading-relaxed">
+              <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                 {post.excerpt}
               </p>
             )}
           </CardContent>
 
-          <CardFooter className="p-6 pt-0 mt-auto">
+          <CardFooter className="p-4 pt-0 mt-auto">
             <div className="w-full space-y-4">
               {/* Enhanced Author Info with better spacing */}
               <div className="flex items-center gap-3">
