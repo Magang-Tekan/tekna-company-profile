@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -83,6 +83,8 @@ export default function CareerPage() {
   });
 
   const careerService = useMemo(() => new CareerService(), []);
+  const hasAutoSelectedRef = useRef(false);
+  const positionsRef = useRef<CareerPosition[]>([]);
 
   // Debounce search query
   useEffect(() => {
@@ -135,13 +137,9 @@ export default function CareerPage() {
       const result = await careerService.getPublicPositions(searchParams);
       
       setPositions(result.positions);
+      positionsRef.current = result.positions; // Update ref
       setTotalCount(result.total);
       setTotalPages(result.totalPages);
-
-      // Auto-select first position only if no position is currently selected
-      if (result.positions.length > 0 && !selectedPosition) {
-        setSelectedPosition(result.positions[0]);
-      }
     } catch (error) {
       console.error("Error loading positions:", error);
       toast({
@@ -151,7 +149,28 @@ export default function CareerPage() {
     } finally {
       setLoading(false);
     }
-  }, [careerService, searchParams, selectedPosition, toast]);
+  }, [careerService, searchParams, toast]);
+
+  // Auto-select first position only when positions are first loaded
+  const firstPositionId = positions[0]?.id;
+  const positionsLength = positions.length;
+  
+  useEffect(() => {
+    if (positionsLength > 0 && !hasAutoSelectedRef.current && firstPositionId) {
+      // Use ref to get the latest positions to avoid stale closure
+      const firstPosition = positionsRef.current.find(p => p.id === firstPositionId);
+      if (firstPosition) {
+        setSelectedPosition((prev) => {
+          // Only auto-select if no position is currently selected
+          if (!prev) {
+            hasAutoSelectedRef.current = true;
+            return firstPosition;
+          }
+          return prev;
+        });
+      }
+    }
+  }, [firstPositionId, positionsLength]);
 
   useEffect(() => {
     loadInitialData();
