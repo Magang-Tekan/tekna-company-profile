@@ -103,9 +103,17 @@ const ProductCard = ({ product }: { readonly product: Product }) => (
           </CardTitle>
         </div>
         
-        <div className="flex items-center text-xs text-muted-foreground mt-1">
-          <Calendar className="w-3 h-3 mr-1" />
-          {new Date(product.created_at).toLocaleDateString()}
+        <div className="flex items-center justify-between mt-1">
+          <div className="flex items-center text-xs text-muted-foreground">
+            <Calendar className="w-3 h-3 mr-1" />
+            {new Date(product.created_at).toLocaleDateString()}
+          </div>
+          {product.product_price && (
+            <div className="flex items-center gap-1 text-primary font-semibold text-sm">
+              <Tag className="w-3 h-3" />
+              <span>{product.product_price}</span>
+            </div>
+          )}
         </div>
       </CardHeader>
 
@@ -113,14 +121,6 @@ const ProductCard = ({ product }: { readonly product: Product }) => (
         <CardDescription className="line-clamp-2 text-sm">
           {product.short_description || product.description}
         </CardDescription>
-
-        {/* Price Display */}
-        {product.product_price && (
-          <div className="flex items-center gap-2 text-primary font-semibold text-base">
-            <Tag className="w-4 h-4" />
-            <span>{product.product_price}</span>
-          </div>
-        )}
 
         <div className="flex gap-2">
           <Button asChild size="sm" className="w-full">
@@ -155,13 +155,21 @@ const ProductListItem = ({ product }: { readonly product: Product }) => (
           
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-1">
-              <h3 className="font-semibold text-base hover:text-primary transition-colors">
-                <Link href={`/products/${product.slug}`}>
-                  {product.name}
-                </Link>
-              </h3>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-base hover:text-primary transition-colors">
+                  <Link href={`/products/${product.slug}`}>
+                    {product.name}
+                  </Link>
+                </h3>
+              </div>
               
               <div className="flex items-center gap-2 flex-shrink-0">
+                {product.product_price && (
+                  <div className="flex items-center gap-1 text-primary font-semibold text-sm">
+                    <Tag className="w-3 h-3" />
+                    <span>{product.product_price}</span>
+                  </div>
+                )}
                 {product.is_featured && (
                   <Badge variant="secondary" className="text-xs">
                     <Star className="w-3 h-3 mr-1" />
@@ -176,17 +184,9 @@ const ProductListItem = ({ product }: { readonly product: Product }) => (
             </p>
             
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center text-xs text-muted-foreground">
-                  <Calendar className="w-3 h-3 mr-1" />
-                  {new Date(product.created_at).toLocaleDateString()}
-                </div>
-                {product.product_price && (
-                  <div className="flex items-center gap-1 text-primary font-semibold text-sm">
-                    <Tag className="w-3 h-3" />
-                    <span>{product.product_price}</span>
-                  </div>
-                )}
+              <div className="flex items-center text-xs text-muted-foreground">
+                <Calendar className="w-3 h-3 mr-1" />
+                {new Date(product.created_at).toLocaleDateString()}
               </div>
               
               <div className="flex gap-2">
