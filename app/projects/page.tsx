@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { ProjectsListingClient } from "@/components/projects/projects-listing-client";
 import { PublicService } from "@/lib/services/public.service";
-import { BlogBreadcrumbs } from "@/components/blog/blog-breadcrumbs";
+import { AppHeader } from "@/components/layout/public-header";
 import { prefetchProjectImages } from "@/lib/utils/image-prefetch";
 
 // ISR: Revalidate every hour for projects listing
@@ -72,19 +72,11 @@ export default async function ProjectsPage({ searchParams }: Readonly<ProjectsPa
     }
   }
 
-  // Custom breadcrumbs for projects listing
-  const breadcrumbItems = [
-    { label: "Home", href: "/" },
-    { label: "Projects", href: "/projects", isActive: true },
-  ];
-
   return (
     <div className="min-h-screen bg-background">
-      {/* Breadcrumbs */}
-      <div className="border-b bg-muted/30">
-        <div className="container mx-auto px-4 py-4">
-          <BlogBreadcrumbs customItems={breadcrumbItems} />
-        </div>
+      {/* Header like landing page */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-transparent">
+        <AppHeader />
       </div>
 
       {/* Main Content */}

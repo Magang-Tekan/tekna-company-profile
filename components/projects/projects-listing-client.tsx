@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import * as React from "react";
-import Image from "next/image";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,6 @@ import {
   Search,
   Grid,
   List,
-  Filter,
   Calendar,
   Star,
 } from "lucide-react";
@@ -74,48 +73,47 @@ const ProjectCard = ({ project }: { readonly project: Project }) => (
     className="h-full"
   >
     <Card className="h-full overflow-hidden hover:shadow-lg transition-all duration-300 group">
-      {project.featured_image_url && (
-        <div className="relative overflow-hidden aspect-video">
-          <Image
-            src={project.featured_image_url}
-            alt={project.name}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
-          {project.is_featured && (
-            <div className="absolute top-3 right-3">
-              <Badge className="bg-primary text-primary-foreground">
-                <Star className="w-3 h-3 mr-1" />
-                Featured
-              </Badge>
-            </div>
-          )}
-        </div>
-      )}
+      <div className="relative overflow-hidden aspect-video">
+        <ImageWithFallback
+          src={project.featured_image_url}
+          alt={project.name}
+          fill
+          size="large"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        {project.is_featured && (
+          <div className="absolute top-3 right-3">
+            <Badge className="bg-primary text-primary-foreground">
+              <Star className="w-3 h-3 mr-1" />
+              Featured
+            </Badge>
+          </div>
+        )}
+      </div>
 
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
-          <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">
+          <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors text-base">
             <Link href={`/projects/${project.slug}`}>
               {project.name}
             </Link>
           </CardTitle>
         </div>
         
-        <div className="flex items-center text-sm text-muted-foreground">
-          <Calendar className="w-4 h-4 mr-1" />
+        <div className="flex items-center text-xs text-muted-foreground mt-1">
+          <Calendar className="w-3 h-3 mr-1" />
           {new Date(project.created_at).toLocaleDateString()}
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-4">
-        <CardDescription className="line-clamp-3">
+      <CardContent className="space-y-2 pt-0">
+        <CardDescription className="line-clamp-2 text-sm">
           {project.short_description || project.description}
         </CardDescription>
 
         <div className="flex gap-2">
-          <Button asChild className="w-full">
+          <Button asChild size="sm" className="w-full">
             <Link href={`/projects/${project.slug}`}>
               View Details
             </Link>
@@ -133,23 +131,21 @@ const ProjectListItem = ({ project }: { readonly project: Project }) => (
     transition={{ duration: 0.5 }}
   >
     <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-6">
-        <div className="flex gap-4">
-          {project.featured_image_url && (
-            <div className="flex-shrink-0 w-24 h-24 relative overflow-hidden rounded-lg">
-              <Image
-                src={project.featured_image_url}
-                alt={project.name}
-                fill
-                className="object-cover"
-                sizes="96px"
-              />
-            </div>
-          )}
+      <CardContent className="p-4">
+        <div className="flex gap-3">
+          <div className="flex-shrink-0 w-20 h-20 relative overflow-hidden rounded-lg">
+            <ImageWithFallback
+              src={project.featured_image_url}
+              alt={project.name}
+              fill
+              size="small"
+              className="object-cover"
+            />
+          </div>
           
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <h3 className="font-semibold hover:text-primary transition-colors">
+            <div className="flex items-start justify-between gap-2 mb-1">
+              <h3 className="font-semibold text-base hover:text-primary transition-colors">
                 <Link href={`/projects/${project.slug}`}>
                   {project.name}
                 </Link>
@@ -165,13 +161,13 @@ const ProjectListItem = ({ project }: { readonly project: Project }) => (
               </div>
             </div>
             
-            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+            <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
               {project.short_description || project.description}
             </p>
             
             <div className="flex items-center justify-between">
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Calendar className="w-4 h-4 mr-1" />
+              <div className="flex items-center text-xs text-muted-foreground">
+                <Calendar className="w-3 h-3 mr-1" />
                 {new Date(project.created_at).toLocaleDateString()}
               </div>
               
@@ -254,7 +250,7 @@ const ProjectPagination = ({
   if (pagination.totalPages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-8">
+    <div className="flex items-center justify-center gap-2">
       <Button
         variant="outline"
         onClick={() => onPageChange(currentPage - 1)}
@@ -384,7 +380,7 @@ export function ProjectsListingClient({
   // Helper functions for render logic
   const getResultsText = () => {
     if (loading) return "Loading...";
-    const projectText = pagination.total !== 1 ? "projects" : "project";
+    const projectText = pagination.total === 1 ? "project" : "projects";
     return `${pagination.total} ${projectText} found`;
   };
 
@@ -395,18 +391,18 @@ export function ProjectsListingClient({
 
     if (sortedProjects.length === 0) {
       return (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 mx-auto bg-muted/20 rounded-full flex items-center justify-center mb-4">
-            <Search className="h-8 w-8 text-muted-foreground" />
+        <div className="text-center py-8">
+          <div className="w-12 h-12 mx-auto bg-muted/20 rounded-full flex items-center justify-center mb-3">
+            <Search className="h-6 w-6 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-medium mb-2">No projects found</h3>
-          <p className="text-muted-foreground mb-4">
+          <h3 className="text-base font-medium mb-1">No projects found</h3>
+          <p className="text-sm text-muted-foreground mb-3">
             {searchQuery
               ? `No projects match "${searchQuery}". Try adjusting your search terms.`
               : "No projects are available at the moment."}
           </p>
           {searchQuery && (
-            <Button onClick={() => setSearchQuery("")}>
+            <Button size="sm" onClick={() => setSearchQuery("")}>
               Clear Search
             </Button>
           )}
@@ -416,7 +412,7 @@ export function ProjectsListingClient({
 
     if (viewMode === "grid") {
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {sortedProjects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}
@@ -425,7 +421,7 @@ export function ProjectsListingClient({
     }
 
     return (
-      <div className="space-y-4">
+      <div className="space-y-3">
         {sortedProjects.map((project) => (
           <ProjectListItem key={project.id} project={project} />
         ))}
@@ -434,37 +430,35 @@ export function ProjectsListingClient({
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 pt-24 pb-8">
       {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">Our Projects</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+      <div className="text-center mb-6">
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">Our Projects</h1>
+        <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
           Explore our portfolio of innovative projects, from web applications to IoT solutions.
-          Each project represents our commitment to excellence and cutting-edge technology.
         </p>
       </div>
 
       {/* Filters and Search */}
-      <div className="flex flex-col lg:flex-row gap-4 mb-8 p-6 bg-muted/50 rounded-lg">
+      <div className="flex flex-col lg:flex-row gap-2 mb-6 pb-4 border-b border-border/40">
         {/* Search */}
         <div className="flex-1">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 w-3.5 h-3.5" />
             <Input
               placeholder="Search projects..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="pl-8 h-9 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-transparent focus-visible:border-primary/50 transition-colors"
             />
           </div>
         </div>
 
         {/* Filters */}
-        <div className="flex gap-2 flex-wrap lg:flex-nowrap">
+        <div className="flex gap-1.5 flex-wrap lg:flex-nowrap">
           <Select value={showFeaturedOnly.toString()} onValueChange={(value) => handleFeaturedFilterChange(value === "true")}>
-            <SelectTrigger className="w-full lg:w-40">
-              <Filter className="w-4 h-4 mr-2" />
-              <SelectValue />
+            <SelectTrigger className="w-full lg:w-auto h-9 border-0 bg-transparent focus:ring-0 focus:ring-offset-0 rounded-none border-b border-transparent focus:border-primary/50 transition-colors px-2">
+              <SelectValue placeholder="Filter" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="false">All Projects</SelectItem>
@@ -473,7 +467,7 @@ export function ProjectsListingClient({
           </Select>
 
           <Select value={sortBy} onValueChange={(value: SortBy) => handleSortChange(value)}>
-            <SelectTrigger className="w-full lg:w-40">
+            <SelectTrigger className="w-full lg:w-auto h-9 border-0 bg-transparent focus:ring-0 focus:ring-offset-0 rounded-none border-b border-transparent focus:border-primary/50 transition-colors px-2">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -484,30 +478,38 @@ export function ProjectsListingClient({
           </Select>
 
           {/* View Mode Toggle */}
-          <div className="flex rounded-lg border">
+          <div className="flex rounded-none border-0 border-b border-transparent">
             <Button
-              variant={viewMode === "grid" ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
               onClick={() => handleViewModeChange("grid")}
-              className="rounded-r-none"
+              className={`h-9 px-2 rounded-none border-b-2 transition-colors ${
+                viewMode === "grid"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
             >
-              <Grid className="w-4 h-4" />
+              <Grid className="w-3.5 h-3.5" />
             </Button>
             <Button
-              variant={viewMode === "list" ? "default" : "ghost"}
+              variant="ghost"
               size="sm"
               onClick={() => handleViewModeChange("list")}
-              className="rounded-l-none border-l"
+              className={`h-9 px-2 rounded-none border-b-2 transition-colors ${
+                viewMode === "list"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
             >
-              <List className="w-4 h-4" />
+              <List className="w-3.5 h-3.5" />
             </Button>
           </div>
         </div>
       </div>
 
       {/* Results Info */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="text-sm text-muted-foreground">
+      <div className="flex items-center justify-between mb-4">
+        <div className="text-xs text-muted-foreground">
           {getResultsText()}
           {showFeaturedOnly && " (featured only)"}
         </div>
@@ -518,12 +520,14 @@ export function ProjectsListingClient({
 
       {/* Pagination */}
       {sortedProjects.length > 0 && (
-        <ProjectPagination 
-          pagination={pagination}
-          currentPage={currentPage}
-          loading={loading}
-          onPageChange={handlePageChange}
-        />
+        <div className="mt-6">
+          <ProjectPagination 
+            pagination={pagination}
+            currentPage={currentPage}
+            loading={loading}
+            onPageChange={handlePageChange}
+          />
+        </div>
       )}
     </div>
   );
