@@ -184,7 +184,7 @@ function ProjectRow({
               className="w-full h-full"
             >
               <ImageWithFallback
-                src={project.featured_image_url}
+                src={project.featured_image_url ?? null}
                 alt={project.name}
                 fill
                 size="large"

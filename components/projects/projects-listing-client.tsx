@@ -77,7 +77,7 @@ const ProjectCard = ({ project }: { readonly project: Project }) => (
     <Card className="h-full overflow-hidden hover:shadow-lg transition-all duration-300 group">
       <div className="relative overflow-hidden aspect-video">
         <ImageWithFallback
-          src={project.featured_image_url}
+          src={project.featured_image_url ?? null}
           alt={project.name}
           fill
           size="large"
@@ -142,7 +142,7 @@ const ProjectListItem = ({ project }: { readonly project: Project }) => (
         <div className="flex gap-3">
           <div className="flex-shrink-0 w-20 h-20 relative overflow-hidden rounded-lg">
             <ImageWithFallback
-              src={project.featured_image_url}
+              src={project.featured_image_url ?? null}
               alt={project.name}
               fill
               size="small"

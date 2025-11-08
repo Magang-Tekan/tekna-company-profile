@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import Image from "next/image";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { IconSearch, IconX, IconCalendar } from "@tabler/icons-react";
 
 interface SearchResult {
@@ -177,7 +177,7 @@ export function BlogSearch() {
                             <div className="flex-shrink-0">
                               <div className="w-24 h-24 relative rounded-lg overflow-hidden bg-muted">
                                 <ImageWithFallback
-                                  src={result.featured_image_url}
+                                  src={result.featured_image_url ?? null}
                                   alt={result.title}
                                   fill
                                   size="small"
