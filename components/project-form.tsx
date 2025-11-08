@@ -489,7 +489,7 @@ export function ProjectForm({
                         required={formData.is_product}
                       />
                       <p className="text-xs text-muted-foreground">
-                        Enter approximate price (e.g., "3 jutaan", "Rp 5 juta", "10 juta an")
+                        Enter approximate price (e.g., &quot;3 jutaan&quot;, &quot;Rp 5 juta&quot;, &quot;10 juta an&quot;)
                       </p>
                     </div>
                   )}

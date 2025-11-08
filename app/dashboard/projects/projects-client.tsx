@@ -281,7 +281,7 @@ export default function ProjectsPageClient({
                     {/* Featured Image */}
                   <div className="aspect-[16/10] bg-muted/50 flex items-center justify-center relative overflow-hidden">
                     <ImageWithFallback
-                      src={project.featured_image_url}
+                      src={project.featured_image_url ?? null}
                       alt={project.name}
                       fill
                       size="large"

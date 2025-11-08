@@ -77,7 +77,7 @@ const ProductCard = ({ product }: { readonly product: Product }) => (
     <Card className="h-full overflow-hidden hover:shadow-lg transition-all duration-300 group">
       <div className="relative overflow-hidden aspect-video">
         <ImageWithFallback
-          src={product.featured_image_url}
+          src={product.featured_image_url ?? null}
           alt={product.name}
           fill
           size="large"
@@ -145,7 +145,7 @@ const ProductListItem = ({ product }: { readonly product: Product }) => (
         <div className="flex gap-3">
           <div className="flex-shrink-0 w-20 h-20 relative overflow-hidden rounded-lg">
             <ImageWithFallback
-              src={product.featured_image_url}
+              src={product.featured_image_url ?? null}
               alt={product.name}
               fill
               size="small"

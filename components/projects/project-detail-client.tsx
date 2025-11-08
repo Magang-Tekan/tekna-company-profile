@@ -160,7 +160,7 @@ export function ProjectDetailClient({
         {/* Hero Image */}
         <div className="relative h-[50vh] md:h-[60vh] lg:h-[70vh]">
           <ImageWithFallback
-            src={project.featured_image_url}
+            src={project.featured_image_url ?? null}
             alt={project.name}
             fill
             size="large"
@@ -477,7 +477,7 @@ export function ProjectDetailClient({
                   <Card className="overflow-hidden hover:shadow-lg transition-shadow">
                     <AspectRatio ratio={16 / 9}>
                       <ImageWithFallback
-                        src={relatedProject.featured_image_url}
+                        src={relatedProject.featured_image_url ?? null}
                         alt={relatedProject.name}
                         fill
                         size="large"

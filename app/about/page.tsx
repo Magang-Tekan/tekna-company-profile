@@ -74,7 +74,7 @@ export default async function AboutUsPage() {
               </h1>
               <div className="relative w-full h-64 md:h-96 mb-8 rounded-lg overflow-hidden mx-auto max-w-4xl">
                 <ImageWithFallback
-                  src={mainContent.featured_image_url}
+                  src={mainContent.featured_image_url ?? null}
                   alt={mainContent.title}
                   fill
                   size="large"
@@ -113,7 +113,7 @@ export default async function AboutUsPage() {
                         </div>
                         <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
                           <ImageWithFallback
-                            src={item.featured_image_url}
+                            src={item.featured_image_url ?? null}
                             alt={item.title}
                             fill
                             size="large"

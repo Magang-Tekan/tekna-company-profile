@@ -322,7 +322,7 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
                   {/* Featured Image */}
                   <div className="aspect-[16/10] bg-muted/50 flex items-center justify-center relative overflow-hidden">
                     <ImageWithFallback
-                      src={post.featured_image_url}
+                      src={post.featured_image_url ?? null}
                       alt={post.title}
                       fill
                       size="large"
