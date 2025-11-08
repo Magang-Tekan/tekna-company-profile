@@ -1,5 +1,5 @@
 import { PublicService } from "@/lib/services/public.service";
-import { PublicLayout } from "@/components/layout/public-layout";
+import { AppHeader } from "@/components/layout/public-header";
 import { BlogGrid } from "@/components/blog/blog-grid";
 import { Metadata } from "next";
 import { prefetchBlogImages } from "@/lib/utils/image-prefetch";
@@ -95,38 +95,23 @@ export default async function BlogIndexPage({ searchParams }: Readonly<BlogPageP
   }
 
   return (
-    <PublicLayout>
-      <div className="container mx-auto px-4 py-12 md:px-6 lg:py-16">
-        {/* Enhanced Header Section with better visual hierarchy */}
-        <header className="text-center mb-16 space-y-6">
-          <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-              Insights & Latest News
-            </h1>
-            <p className="mt-6 max-w-3xl mx-auto text-lg sm:text-xl text-muted-foreground leading-relaxed">
-              Explore our articles about technology, design, and innovation that
-              shape the future of digital experiences.
-            </p>
-          </div>
+    <div className="min-h-screen bg-background">
+      {/* Header like landing page */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-transparent">
+        <AppHeader />
+      </div>
 
-          {/* Stats Display */}
-          <div className="flex flex-wrap items-center justify-center gap-8 pt-8 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-primary rounded-full"></div>
-              <span>{pagination.total} Articles</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-secondary rounded-full"></div>
-              <span>{categories.length} Categories</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-accent rounded-full"></div>
-              <span>Weekly Updates</span>
-            </div>
-          </div>
-        </header>
+      {/* Main Content */}
+      <div className="container mx-auto px-4 pt-24 pb-8">
+        {/* Header */}
+        <div className="text-center mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Insights & Latest News</h1>
+          <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
+            Explore our articles about technology, design, and innovation that shape the future of digital experiences.
+          </p>
+        </div>
 
-        {/* Enhanced Blog Grid with better accessibility */}
+        {/* Blog Grid */}
         <main role="main" aria-label="Blog articles">
           <BlogGrid
             initialPosts={posts.map((post) => ({
@@ -149,6 +134,6 @@ export default async function BlogIndexPage({ searchParams }: Readonly<BlogPageP
           />
         </main>
       </div>
-    </PublicLayout>
+    </div>
   );
 }

@@ -169,8 +169,8 @@ export function BlogGrid({
   }, [initialPosts]);
 
   return (
-    <section className="space-y-8">
-      {/* Enhanced Blog Filters */}
+    <section className="space-y-6">
+      {/* Blog Filters */}
       <BlogFilters
         categories={categories}
         onFilterChange={handleFilterChange}
@@ -178,35 +178,33 @@ export function BlogGrid({
         isLoading={isLoading}
       />
 
-      {/* Enhanced Results Info */}
-      <div className="flex items-center justify-between">
-        <PaginationInfo
-          currentPage={pagination.page}
-          totalItems={pagination.total}
-          itemsPerPage={pagination.limit}
-        />
+      {/* Results Info */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="text-xs text-muted-foreground">
+          {isLoading ? "Loading..." : `${pagination.total} ${pagination.total === 1 ? "article" : "articles"} found`}
+        </div>
       </div>
 
-      {/* Enhanced Loading State */}
+      {/* Loading State */}
       {isLoading ? (
         <div
-          className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+          className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
           aria-label="Loading blog articles"
         >
           {Array.from({ length: pagination.limit }, (_, index) => (
             <div key={`skeleton-${index}`} className="flex flex-col">
               <Skeleton className="aspect-video w-full" />
-              <div className="p-6 space-y-3">
-                <Skeleton className="h-6 w-full" />
+              <div className="p-4 space-y-2">
+                <Skeleton className="h-5 w-full" />
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-3/4" />
               </div>
-              <div className="p-6 pt-0">
-                <div className="flex items-center gap-3">
-                  <Skeleton className="h-8 w-8 rounded-full" />
+              <div className="p-4 pt-0">
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-6 w-6 rounded-full" />
                   <div className="space-y-1">
-                    <Skeleton className="h-4 w-20" />
                     <Skeleton className="h-3 w-16" />
+                    <Skeleton className="h-2 w-12" />
                   </div>
                 </div>
               </div>
@@ -217,7 +215,7 @@ export function BlogGrid({
         <>
           {posts.length > 0 ? (
             <div
-              className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+              className="grid gap-4 md:grid-cols-2 lg:grid-cols-3"
               aria-label="Blog articles"
             >
               {posts.map((post) => (
@@ -225,21 +223,22 @@ export function BlogGrid({
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
-              <div className="max-w-md mx-auto space-y-6">
-                <div className="w-24 h-24 mx-auto bg-muted/50 rounded-full flex items-center justify-center">
-                  <IconSearch className="h-8 w-8 text-muted-foreground" />
+            <div className="text-center py-8">
+              <div className="max-w-md mx-auto space-y-3">
+                <div className="w-12 h-12 mx-auto bg-muted/20 rounded-full flex items-center justify-center">
+                  <IconSearch className="h-6 w-6 text-muted-foreground" />
                 </div>
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">No articles found</h3>
-                  <p className="text-muted-foreground">
-                    {filters.search || filters.category || filters.featured
+                <div className="space-y-1">
+                  <h3 className="text-base font-medium">No articles found</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {filters.search || filters.category !== "all" || filters.featured
                       ? "Try adjusting your filters to see more results."
                       : "No articles have been published yet. Please check back later!"}
                   </p>
                 </div>
-                {(filters.search || filters.category || filters.featured) && (
+                {(filters.search || filters.category !== "all" || filters.featured) && (
                   <Button
+                    size="sm"
                     variant="outline"
                     onClick={() =>
                       handleFilterChange({
@@ -251,7 +250,7 @@ export function BlogGrid({
                     }
                     className="gap-2"
                   >
-                    <IconX className="h-4 w-4" />
+                    <IconX className="h-3.5 w-3.5" />
                     Clear Filters
                   </Button>
                 )}
@@ -261,16 +260,18 @@ export function BlogGrid({
         </>
       )}
 
-      {/* Enhanced Pagination with better accessibility */}
+      {/* Pagination */}
       {pagination.totalPages > 1 && (
-        <nav className="flex justify-center mt-12" aria-label="Blog pagination">
-          <Pagination
-            currentPage={pagination.page}
-            totalPages={pagination.totalPages}
-            onPageChange={handlePageChange}
-            isLoading={isLoading}
-          />
-        </nav>
+        <div className="mt-6">
+          <nav className="flex justify-center" aria-label="Blog pagination">
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              onPageChange={handlePageChange}
+              isLoading={isLoading}
+            />
+          </nav>
+        </div>
       )}
     </section>
   );
