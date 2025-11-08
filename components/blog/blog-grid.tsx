@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BlogFilters } from "@/components/blog/blog-filters";
-import { Pagination, PaginationInfo } from "@/components/blog/pagination";
+import { Pagination } from "@/components/blog/pagination";
 import { BlogCard } from "@/components/blog/blog-card";
 import { IconSearch, IconX } from "@tabler/icons-react";
 import { prefetchBlogImages } from "@/lib/utils/image-prefetch";
