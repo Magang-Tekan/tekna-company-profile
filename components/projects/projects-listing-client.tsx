@@ -29,6 +29,7 @@ import {
   List,
   Calendar,
   Star,
+  Tag,
 } from "lucide-react";
 import { ClientPublicService } from "@/lib/services/client-public.service";
 
@@ -108,9 +109,17 @@ const ProjectCard = ({ project }: { readonly project: Project }) => (
           </CardTitle>
         </div>
         
-        <div className="flex items-center text-xs text-muted-foreground mt-1">
-          <Calendar className="w-3 h-3 mr-1" />
-          {new Date(project.created_at).toLocaleDateString()}
+        <div className="flex items-center justify-between mt-1">
+          <div className="flex items-center text-xs text-muted-foreground">
+            <Calendar className="w-3 h-3 mr-1" />
+            {new Date(project.created_at).toLocaleDateString()}
+          </div>
+          {project.product_price && (
+            <div className="flex items-center gap-1 text-primary font-semibold text-sm">
+              <Tag className="w-3 h-3" />
+              <span>{project.product_price}</span>
+            </div>
+          )}
         </div>
       </CardHeader>
 
@@ -152,13 +161,21 @@ const ProjectListItem = ({ project }: { readonly project: Project }) => (
           
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-1">
-              <h3 className="font-semibold text-base hover:text-primary transition-colors">
-                <Link href={`/projects/${project.slug}`}>
-                  {project.name}
-                </Link>
-              </h3>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-base hover:text-primary transition-colors">
+                  <Link href={`/projects/${project.slug}`}>
+                    {project.name}
+                  </Link>
+                </h3>
+              </div>
               
               <div className="flex items-center gap-2 flex-shrink-0">
+                {project.product_price && (
+                  <div className="flex items-center gap-1 text-primary font-semibold text-sm">
+                    <Tag className="w-3 h-3" />
+                    <span>{project.product_price}</span>
+                  </div>
+                )}
                 {project.is_product && (
                   <Badge variant="secondary" className="text-xs bg-blue-600 text-white">
                     Product
