@@ -13,6 +13,7 @@ import {
   Users,
   Star,
   Briefcase,
+  Package,
 } from "lucide-react";
 import { useState } from "react";
 import { useNavbarAnimation } from "@/hooks/use-navbar-animation";
@@ -116,6 +117,17 @@ export function AppHeader() {
             <Rocket className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
             Proyek
           </Link>
+          <Link
+            href="/products"
+            className={`flex items-center gap-2 transition-all duration-300 hover:scale-105 group ${
+              pathname === "/products"
+                ? "text-foreground font-semibold"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Package className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+            Product
+          </Link>
           <button
             onClick={() => navigateToSection("partners")}
             className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group cursor-pointer"
@@ -200,6 +212,18 @@ export function AppHeader() {
               >
                 <Rocket className="w-4 h-4" />
                 Proyek
+              </Link>
+              <Link
+                href="/products"
+                className={`flex items-center gap-3 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 ${
+                  pathname === "/products"
+                    ? "text-foreground font-semibold bg-muted/30"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Package className="w-4 h-4" />
+                Product
               </Link>
               <button
                 onClick={() => navigateToSection("partners")}

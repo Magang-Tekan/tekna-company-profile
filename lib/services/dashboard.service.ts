@@ -152,11 +152,14 @@ export class DashboardService {
           is_featured,
           is_active,
           featured_image_url,
+          is_product,
+          product_price,
           created_at,
           updated_at
         `
         )
         .eq("is_active", true)
+        // Show all projects including products
         .order("created_at", { ascending: false });
 
       if (error) throw error;

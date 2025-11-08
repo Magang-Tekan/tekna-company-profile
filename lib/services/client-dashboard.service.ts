@@ -34,6 +34,9 @@ export class ClientDashboardService {
     description?: string;
     featured_image_url?: string;
     is_featured?: boolean;
+    // Product fields
+    is_product?: boolean;
+    product_price?: string;
     // New detail fields
     overview_content?: string;
     short_description?: string;
@@ -143,6 +146,9 @@ export class ClientDashboardService {
       description?: string;
       featured_image_url?: string;
       is_featured?: boolean;
+      // Product fields
+      is_product?: boolean;
+      product_price?: string;
       // New detail fields
       overview_content?: string;
       short_description?: string;
@@ -281,6 +287,8 @@ export class ClientDashboardService {
           is_featured,
           is_active,
           sort_order,
+          is_product,
+          product_price,
           technologies,
           client_name,
           project_value,

@@ -36,6 +36,9 @@ interface ProjectFormData {
   description: string; // Landing page description
   featured_image_url: string;
   is_featured: boolean;
+  // Product fields
+  is_product: boolean;
+  product_price: string;
   // Tab 2: Project Overview 
   overview_content: string; // Detailed description from project_translations
   gallery_images: string[]; // Array of image URLs from project_images
@@ -74,6 +77,9 @@ export function ProjectForm({
     description: initialData?.description || "",
     featured_image_url: initialData?.featured_image_url || "",
     is_featured: initialData?.is_featured || false,
+    // Product fields
+    is_product: initialData?.is_product || false,
+    product_price: initialData?.product_price || "",
     // Tab 2: Project Overview
     overview_content: initialData?.overview_content || "",
     gallery_images: initialData?.gallery_images || [],
@@ -105,6 +111,17 @@ export function ProjectForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate: if is_product is checked, product_price is required
+    if (formData.is_product && !formData.product_price.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Product price is required when marking as product.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsLoading(true);
 
     try {
@@ -153,6 +170,9 @@ export function ProjectForm({
               description: formData.description || undefined,
               featured_image_url: formData.featured_image_url || undefined,
               is_featured: formData.is_featured,
+              // Product fields
+              is_product: formData.is_product || false,
+              product_price: formData.is_product ? (formData.product_price || undefined) : undefined,
               // New detail fields
               overview_content: formData.overview_content || undefined,
               short_description: formData.short_description || undefined,
@@ -199,6 +219,9 @@ export function ProjectForm({
           description: formData.description || undefined,
           featured_image_url: formData.featured_image_url || undefined,
           is_featured: formData.is_featured,
+          // Product fields
+          is_product: formData.is_product || false,
+          product_price: formData.is_product ? (formData.product_price || undefined) : undefined,
           // New detail fields
           overview_content: formData.overview_content || undefined,
           short_description: formData.short_description || undefined,
@@ -430,6 +453,46 @@ export function ProjectForm({
                     />
                     <Label htmlFor="is_featured">Make project featured on landing page</Label>
                   </div>
+
+                  {/* Is Product */}
+                  <div className="md:col-span-2 flex items-center space-x-2">
+                    <Checkbox
+                      id="is_product"
+                      checked={formData.is_product}
+                      onCheckedChange={(checked) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          is_product: !!checked,
+                          // Clear product_price if unchecked
+                          product_price: !!checked ? prev.product_price : "",
+                        }))
+                      }
+                    />
+                    <Label htmlFor="is_product">Mark as Product (will appear in Products page, not Projects page)</Label>
+                  </div>
+
+                  {/* Product Price - Conditional */}
+                  {formData.is_product && (
+                    <div className="md:col-span-2 space-y-2">
+                      <Label htmlFor="product_price">Product Price *</Label>
+                      <Input
+                        id="product_price"
+                        type="text"
+                        value={formData.product_price}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            product_price: e.target.value,
+                          }))
+                        }
+                        placeholder="e.g., 3 jutaan, Rp 5 juta, 10 juta an"
+                        required={formData.is_product}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Enter approximate price (e.g., "3 jutaan", "Rp 5 juta", "10 juta an")
+                      </p>
+                    </div>
+                  )}
                 </div>
               </TabsContent>
 

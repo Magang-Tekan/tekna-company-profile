@@ -14,11 +14,13 @@ export class ClientPublicService {
     limit = 12,
     search,
     featured,
+    isProduct,
   }: {
     page?: number;
     limit?: number;
     search?: string;
     featured?: boolean;
+    isProduct?: boolean;
   } = {}) {
     try {
       const offset = (page - 1) * limit;
@@ -38,10 +40,22 @@ export class ClientPublicService {
           is_active,
           sort_order,
           created_at,
-          updated_at
+          updated_at,
+          is_product,
+          product_price
         `, { count: 'exact' })
         .eq('is_active', true)
         .order('sort_order', { ascending: true });
+
+      // Apply is_product filter
+      if (isProduct === true) {
+        // Only get products
+        query = query.eq('is_product', true);
+      } else if (isProduct === false) {
+        // Only get regular projects (not products)
+        query = query.or('is_product.is.null,is_product.eq.false');
+      }
+      // If isProduct is undefined, get all projects (backward compatibility)
 
       // Add search filter
       if (search) {
@@ -74,9 +88,13 @@ export class ClientPublicService {
         sort_order: number;
         created_at: string;
         updated_at: string;
+        is_product?: boolean;
+        product_price?: string;
       }) => ({
         ...project,
         short_description: project.short_description?.[0]?.short_description || project.description?.substring(0, 150) + '...',
+        is_product: project.is_product || false,
+        product_price: project.product_price || undefined,
       }));
 
       const totalPages = Math.ceil((count || 0) / limit);

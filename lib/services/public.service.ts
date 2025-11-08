@@ -566,6 +566,13 @@ export class PublicService {
 
       const project = projectData[0];
 
+      // Get additional project fields (is_product, product_price) that are not in the database function
+      const { data: additionalFields } = await supabase
+        .from("projects")
+        .select("is_product, product_price")
+        .eq("id", project.id)
+        .single();
+
       // Get project images
       const { data: images, error: imagesError } = await supabase.rpc(
         "get_project_images",
@@ -597,6 +604,9 @@ export class PublicService {
         meta_description: project.meta_description,
         meta_keywords: project.meta_keywords,
         images: images || [],
+        // Product fields
+        is_product: additionalFields?.is_product || false,
+        product_price: additionalFields?.product_price || undefined,
         // Additional project information
         technologies: project.technologies,
         client_name: project.client_name,
@@ -622,6 +632,7 @@ export class PublicService {
       search?: string;
       featured?: boolean;
       language?: string;
+      isProduct?: boolean;
     } = {}
   ) {
     const supabase = createStaticClient();
@@ -631,6 +642,7 @@ export class PublicService {
       search,
       featured,
       language = "en",
+      isProduct,
     } = params;
     const offset = (page - 1) * limit;
 
@@ -717,6 +729,8 @@ export class PublicService {
           sort_order,
           created_at,
           updated_at,
+          is_product,
+          product_price,
           project_translations!project_translations_project_id_fkey(
             description,
             short_description,
@@ -727,6 +741,16 @@ export class PublicService {
           { count: "exact" }
         )
         .eq("is_active", true);
+
+      // Apply is_product filter
+      if (isProduct === true) {
+        // Only get products
+        query = query.eq("is_product", true);
+      } else if (isProduct === false) {
+        // Only get regular projects (not products)
+        query = query.or("is_product.is.null,is_product.eq.false");
+      }
+      // If isProduct is undefined, get all projects (backward compatibility)
 
       // Apply featured filter
       if (featured !== undefined) {
@@ -773,6 +797,8 @@ export class PublicService {
           sort_order: project.sort_order,
           created_at: project.created_at,
           updated_at: project.updated_at,
+          is_product: project.is_product || false,
+          product_price: project.product_price || undefined,
           meta_title: translation?.meta_title,
           meta_description: translation?.meta_description,
         };

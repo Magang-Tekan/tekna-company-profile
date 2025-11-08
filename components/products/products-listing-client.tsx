@@ -29,10 +29,11 @@ import {
   List,
   Calendar,
   Star,
+  Tag,
 } from "lucide-react";
 import { ClientPublicService } from "@/lib/services/client-public.service";
 
-interface Project {
+interface Product {
   id: string;
   name: string;
   slug: string;
@@ -45,14 +46,13 @@ interface Project {
   sort_order: number;
   created_at: string;
   updated_at: string;
+  product_price?: string;
   meta_title?: string;
   meta_description?: string;
-  is_product?: boolean;
-  product_price?: string;
 }
 
-interface ProjectsListingClientProps {
-  initialProjects: Project[];
+interface ProductsListingClientProps {
+  initialProducts: Product[];
   initialPagination: {
     page: number;
     limit: number;
@@ -67,7 +67,7 @@ type ViewMode = "grid" | "list";
 type SortBy = "name" | "date" | "featured";
 
 // Extracted components for better performance and linting compliance
-const ProjectCard = ({ project }: { readonly project: Project }) => (
+const ProductCard = ({ product }: { readonly product: Product }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -77,51 +77,54 @@ const ProjectCard = ({ project }: { readonly project: Project }) => (
     <Card className="h-full overflow-hidden hover:shadow-lg transition-all duration-300 group">
       <div className="relative overflow-hidden aspect-video">
         <ImageWithFallback
-          src={project.featured_image_url}
-          alt={project.name}
+          src={product.featured_image_url}
+          alt={product.name}
           fill
           size="large"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
-        <div className="absolute top-3 right-3 flex flex-col gap-2">
-          {project.is_product && (
-            <Badge variant="secondary" className="bg-blue-600 text-white">
-              Product
-            </Badge>
-          )}
-          {project.is_featured && (
+        {product.is_featured && (
+          <div className="absolute top-3 right-3">
             <Badge className="bg-primary text-primary-foreground">
               <Star className="w-3 h-3 mr-1" />
               Featured
             </Badge>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors text-base">
-            <Link href={`/projects/${project.slug}`}>
-              {project.name}
+            <Link href={`/products/${product.slug}`}>
+              {product.name}
             </Link>
           </CardTitle>
         </div>
         
         <div className="flex items-center text-xs text-muted-foreground mt-1">
           <Calendar className="w-3 h-3 mr-1" />
-          {new Date(project.created_at).toLocaleDateString()}
+          {new Date(product.created_at).toLocaleDateString()}
         </div>
       </CardHeader>
 
       <CardContent className="space-y-2 pt-0">
         <CardDescription className="line-clamp-2 text-sm">
-          {project.short_description || project.description}
+          {product.short_description || product.description}
         </CardDescription>
+
+        {/* Price Display */}
+        {product.product_price && (
+          <div className="flex items-center gap-2 text-primary font-semibold text-base">
+            <Tag className="w-4 h-4" />
+            <span>{product.product_price}</span>
+          </div>
+        )}
 
         <div className="flex gap-2">
           <Button asChild size="sm" className="w-full">
-            <Link href={`/projects/${project.slug}`}>
+            <Link href={`/products/${product.slug}`}>
               View Details
             </Link>
           </Button>
@@ -131,7 +134,7 @@ const ProjectCard = ({ project }: { readonly project: Project }) => (
   </motion.div>
 );
 
-const ProjectListItem = ({ project }: { readonly project: Project }) => (
+const ProductListItem = ({ product }: { readonly product: Product }) => (
   <motion.div
     initial={{ opacity: 0, x: -20 }}
     animate={{ opacity: 1, x: 0 }}
@@ -142,8 +145,8 @@ const ProjectListItem = ({ project }: { readonly project: Project }) => (
         <div className="flex gap-3">
           <div className="flex-shrink-0 w-20 h-20 relative overflow-hidden rounded-lg">
             <ImageWithFallback
-              src={project.featured_image_url}
-              alt={project.name}
+              src={product.featured_image_url}
+              alt={product.name}
               fill
               size="small"
               className="object-cover"
@@ -153,18 +156,13 @@ const ProjectListItem = ({ project }: { readonly project: Project }) => (
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-1">
               <h3 className="font-semibold text-base hover:text-primary transition-colors">
-                <Link href={`/projects/${project.slug}`}>
-                  {project.name}
+                <Link href={`/products/${product.slug}`}>
+                  {product.name}
                 </Link>
               </h3>
               
               <div className="flex items-center gap-2 flex-shrink-0">
-                {project.is_product && (
-                  <Badge variant="secondary" className="text-xs bg-blue-600 text-white">
-                    Product
-                  </Badge>
-                )}
-                {project.is_featured && (
+                {product.is_featured && (
                   <Badge variant="secondary" className="text-xs">
                     <Star className="w-3 h-3 mr-1" />
                     Featured
@@ -174,18 +172,26 @@ const ProjectListItem = ({ project }: { readonly project: Project }) => (
             </div>
             
             <p className="text-xs text-muted-foreground mb-2 line-clamp-2">
-              {project.short_description || project.description}
+              {product.short_description || product.description}
             </p>
             
             <div className="flex items-center justify-between">
-              <div className="flex items-center text-xs text-muted-foreground">
-                <Calendar className="w-3 h-3 mr-1" />
-                {new Date(project.created_at).toLocaleDateString()}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center text-xs text-muted-foreground">
+                  <Calendar className="w-3 h-3 mr-1" />
+                  {new Date(product.created_at).toLocaleDateString()}
+                </div>
+                {product.product_price && (
+                  <div className="flex items-center gap-1 text-primary font-semibold text-sm">
+                    <Tag className="w-3 h-3" />
+                    <span>{product.product_price}</span>
+                  </div>
+                )}
               </div>
               
               <div className="flex gap-2">
                 <Button size="sm" asChild>
-                  <Link href={`/projects/${project.slug}`}>
+                  <Link href={`/products/${product.slug}`}>
                     View Details
                   </Link>
                 </Button>
@@ -253,7 +259,7 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-const ProjectPagination = ({ 
+const ProductPagination = ({ 
   pagination, 
   currentPage, 
   loading, 
@@ -308,11 +314,11 @@ const ProjectPagination = ({
   );
 };
 
-export function ProjectsListingClient({
-  initialProjects,
+export function ProductsListingClient({
+  initialProducts,
   initialPagination,
-}: Readonly<ProjectsListingClientProps>) {
-  const [projects, setProjects] = useState(initialProjects);
+}: Readonly<ProductsListingClientProps>) {
+  const [products, setProducts] = useState(initialProducts);
   const [pagination, setPagination] = useState(initialPagination);
   const [loading, setLoading] = useState(false);
   
@@ -332,13 +338,13 @@ export function ProjectsListingClient({
         limit: 12,
         search: searchQuery.trim() || undefined,
         featured: showFeaturedOnly || undefined,
-        // Don't filter by isProduct - show all projects and products
+        isProduct: true, // Only get products
       });
 
-      setProjects(result.data);
+      setProducts(result.data);
       setPagination(result.pagination);
     } catch (error) {
-      console.error("Error searching projects:", error);
+      console.error("Error searching products:", error);
     } finally {
       setLoading(false);
     }
@@ -372,9 +378,9 @@ export function ProjectsListingClient({
     setCurrentPage(1);
   };
 
-  // Sort projects client-side for immediate feedback
-  const sortedProjects = useMemo(() => {
-    const sorted = [...projects];
+  // Sort products client-side for immediate feedback
+  const sortedProducts = useMemo(() => {
+    const sorted = [...products];
     switch (sortBy) {
       case "name":
         return sorted.sort((a, b) => a.name.localeCompare(b.name));
@@ -388,31 +394,31 @@ export function ProjectsListingClient({
           return a.sort_order - b.sort_order;
         });
     }
-  }, [projects, sortBy]);
+  }, [products, sortBy]);
 
   // Helper functions for render logic
   const getResultsText = () => {
     if (loading) return "Loading...";
-    const projectText = pagination.total === 1 ? "project" : "projects";
-    return `${pagination.total} ${projectText} found`;
+    const productText = pagination.total === 1 ? "product" : "products";
+    return `${pagination.total} ${productText} found`;
   };
 
-  const renderProjects = () => {
+  const renderProducts = () => {
     if (loading) {
       return <LoadingSkeleton viewMode={viewMode} />;
     }
 
-    if (sortedProjects.length === 0) {
+    if (sortedProducts.length === 0) {
       return (
         <div className="text-center py-8">
           <div className="w-12 h-12 mx-auto bg-muted/20 rounded-full flex items-center justify-center mb-3">
             <Search className="h-6 w-6 text-muted-foreground" />
           </div>
-          <h3 className="text-base font-medium mb-1">No projects found</h3>
+          <h3 className="text-base font-medium mb-1">No products found</h3>
           <p className="text-sm text-muted-foreground mb-3">
             {searchQuery
-              ? `No projects match "${searchQuery}". Try adjusting your search terms.`
-              : "No projects are available at the moment."}
+              ? `No products match "${searchQuery}". Try adjusting your search terms.`
+              : "No products are available at the moment."}
           </p>
           {searchQuery && (
             <Button size="sm" onClick={() => setSearchQuery("")}>
@@ -426,8 +432,8 @@ export function ProjectsListingClient({
     if (viewMode === "grid") {
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sortedProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
+          {sortedProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       );
@@ -435,8 +441,8 @@ export function ProjectsListingClient({
 
     return (
       <div className="space-y-3">
-        {sortedProjects.map((project) => (
-          <ProjectListItem key={project.id} project={project} />
+        {sortedProducts.map((product) => (
+          <ProductListItem key={product.id} product={product} />
         ))}
       </div>
     );
@@ -446,9 +452,9 @@ export function ProjectsListingClient({
     <div className="container mx-auto px-4 pt-24 pb-8">
       {/* Header */}
       <div className="text-center mb-6">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Our Projects</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">Our Products</h1>
         <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-          Explore our portfolio of innovative projects, from web applications to IoT solutions.
+          Explore our innovative products and solutions with transparent pricing.
         </p>
       </div>
 
@@ -459,7 +465,7 @@ export function ProjectsListingClient({
           <div className="relative">
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-muted-foreground/60 w-3.5 h-3.5" />
             <Input
-              placeholder="Search projects..."
+              placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-8 h-9 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none border-b border-transparent focus-visible:border-primary/50 transition-colors"
@@ -474,7 +480,7 @@ export function ProjectsListingClient({
               <SelectValue placeholder="Filter" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="false">All Projects</SelectItem>
+              <SelectItem value="false">All Products</SelectItem>
               <SelectItem value="true">Featured Only</SelectItem>
             </SelectContent>
           </Select>
@@ -528,13 +534,13 @@ export function ProjectsListingClient({
         </div>
       </div>
 
-      {/* Projects Display */}
-      {renderProjects()}
+      {/* Products Display */}
+      {renderProducts()}
 
       {/* Pagination */}
-      {sortedProjects.length > 0 && (
+      {sortedProducts.length > 0 && (
         <div className="mt-6">
-          <ProjectPagination 
+          <ProductPagination 
             pagination={pagination}
             currentPage={currentPage}
             loading={loading}
@@ -545,3 +551,4 @@ export function ProjectsListingClient({
     </div>
   );
 }
+
