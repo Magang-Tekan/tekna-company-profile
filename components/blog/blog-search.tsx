@@ -174,18 +174,17 @@ export function BlogSearch() {
                         <CardContent className="p-6">
                           <div className="flex gap-4">
                             {/* Enhanced Thumbnail */}
-                            {result.featured_image_url && (
-                              <div className="flex-shrink-0">
-                                <div className="w-24 h-24 relative rounded-lg overflow-hidden bg-muted">
-                                  <Image
-                                    src={result.featured_image_url}
-                                    alt={result.title}
-                                    fill
-                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                  />
-                                </div>
+                            <div className="flex-shrink-0">
+                              <div className="w-24 h-24 relative rounded-lg overflow-hidden bg-muted">
+                                <ImageWithFallback
+                                  src={result.featured_image_url}
+                                  alt={result.title}
+                                  fill
+                                  size="small"
+                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                />
                               </div>
-                            )}
+                            </div>
 
                             {/* Enhanced Content */}
                             <div className="flex-1 min-w-0 space-y-3">

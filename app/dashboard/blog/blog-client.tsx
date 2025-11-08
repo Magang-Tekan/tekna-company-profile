@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import useSWR, { mutate as globalMutate } from "swr";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -321,19 +321,13 @@ export function BlogPageClient({ initialPosts }: BlogPageClientProps) {
                 <CardContent className="p-0">
                   {/* Featured Image */}
                   <div className="aspect-[16/10] bg-muted/50 flex items-center justify-center relative overflow-hidden">
-                    {post.featured_image_url ? (
-                      <Image
-                        src={post.featured_image_url}
-                        alt={post.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-200"
-                      />
-                    ) : (
-                      <div className="text-center space-y-1">
-                        <IconEdit className="w-8 h-8 text-muted-foreground mx-auto" />
-                        <p className="text-xs text-muted-foreground">No Image</p>
-                      </div>
-                    )}
+                    <ImageWithFallback
+                      src={post.featured_image_url}
+                      alt={post.title}
+                      fill
+                      size="large"
+                      className="object-cover group-hover:scale-105 transition-transform duration-200"
+                    />
                     
                     {/* Hover overlay with actions */}
                     <div className="absolute inset-0 bg-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -160,22 +160,15 @@ export default function PartnersClient() {
                 <CardContent className="p-0">
                   {/* Logo Section */}
                   <div className="aspect-square bg-muted/50 flex items-center justify-center p-4 relative overflow-hidden">
-                    {partner.logo_url ? (
-                      <Image
-                        src={partner.logo_url}
-                        alt="Partner logo"
-                        width={200}
-                        height={200}
-                        className="w-full h-full object-contain max-w-[80%] max-h-[80%]"
-                      />
-                    ) : (
-                      <div className="text-center space-y-1">
-                        <div className="w-12 h-12 bg-muted rounded-lg mx-auto flex items-center justify-center">
-                          <Users className="w-6 h-6 text-muted-foreground" />
-                        </div>
-                        <p className="text-xs text-muted-foreground">No Logo</p>
-                      </div>
-                    )}
+                    <ImageWithFallback
+                      src={partner.logo_url}
+                      alt="Partner logo"
+                      width={200}
+                      height={200}
+                      size="small"
+                      className="w-full h-full object-contain max-w-[80%] max-h-[80%]"
+                      fallbackSrc="/images/placeholder-blog.svg"
+                    />
                     
                     {/* Hover overlay with actions */}
                     <div className="absolute inset-0 bg-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">

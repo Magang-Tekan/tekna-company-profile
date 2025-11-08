@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -278,19 +278,13 @@ export default function ProjectsPageClient({
                 <CardContent className="p-0">
                   {/* Featured Image */}
                   <div className="aspect-[16/10] bg-muted/50 flex items-center justify-center relative overflow-hidden">
-                    {project.featured_image_url ? (
-                      <Image
-                        src={project.featured_image_url}
-                        alt={project.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-200"
-                      />
-                    ) : (
-                      <div className="text-center space-y-1">
-                        <IconFolder className="w-8 h-8 text-muted-foreground mx-auto" />
-                        <p className="text-xs text-muted-foreground">No Image</p>
-                      </div>
-                    )}
+                    <ImageWithFallback
+                      src={project.featured_image_url}
+                      alt={project.name}
+                      fill
+                      size="large"
+                      className="object-cover group-hover:scale-105 transition-transform duration-200"
+                    />
                     
                     {/* Hover overlay with actions */}
                     <div className="absolute inset-0 bg-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">

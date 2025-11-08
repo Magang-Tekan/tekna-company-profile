@@ -1,6 +1,6 @@
 import { ContentManagementService } from "@/lib/services/content-management.service";
 import { notFound } from "next/navigation";
-import Image from "next/image";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { Calendar, User, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -72,17 +72,16 @@ export default async function AboutUsPage() {
               <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
                 {mainContent.title}
               </h1>
-              {mainContent.featured_image_url && (
-                <div className="relative w-full h-64 md:h-96 mb-8 rounded-lg overflow-hidden mx-auto max-w-4xl">
-                  <Image
-                    src={mainContent.featured_image_url}
-                    alt={mainContent.title}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              )}
+              <div className="relative w-full h-64 md:h-96 mb-8 rounded-lg overflow-hidden mx-auto max-w-4xl">
+                <ImageWithFallback
+                  src={mainContent.featured_image_url}
+                  alt={mainContent.title}
+                  fill
+                  size="large"
+                  priority
+                  className="object-cover"
+                />
+              </div>
             </div>
           </header>
 
@@ -112,16 +111,15 @@ export default async function AboutUsPage() {
                             Content
                           </Badge>
                         </div>
-                        {item.featured_image_url && (
-                          <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
-                            <Image
-                              src={item.featured_image_url}
-                              alt={item.title}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        )}
+                        <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
+                          <ImageWithFallback
+                            src={item.featured_image_url}
+                            alt={item.title}
+                            fill
+                            size="large"
+                            className="object-cover"
+                          />
+                        </div>
                         <div 
                           className="text-foreground/80 leading-relaxed"
                           dangerouslySetInnerHTML={{ __html: item.content }}
