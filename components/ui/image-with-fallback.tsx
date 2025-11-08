@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +15,7 @@ interface ImageWithFallbackProps {
   readonly unoptimized?: boolean;
   readonly priority?: boolean;
   readonly size?: "small" | "medium" | "large";
+  readonly sizes?: string;
 }
 
 export function ImageWithFallback({
@@ -28,6 +29,7 @@ export function ImageWithFallback({
   unoptimized = false,
   priority = false,
   size = "medium",
+  sizes,
   ...props
 }: ImageWithFallbackProps) {
   // Choose fallback based on size if not provided
@@ -39,22 +41,46 @@ export function ImageWithFallback({
 
   const [imageSrc, setImageSrc] = useState(src || defaultFallback);
   const [hasError, setHasError] = useState(!src);
+  const [imgError, setImgError] = useState(false);
 
-  const handleError = () => {
-    if (imageSrc !== defaultFallback) {
+  // Reset error state when src changes
+  useEffect(() => {
+    if (src) {
+      setImageSrc(src);
+      setHasError(false);
+      setImgError(false);
+    } else {
       setImageSrc(defaultFallback);
       setHasError(true);
     }
-  };
+  }, [src, defaultFallback]);
+
+  // Use a hidden img tag to detect errors since Next.js Image doesn't support onError
+  useEffect(() => {
+    if (!src || hasError) return;
+
+    const img = new window.Image();
+    img.onload = () => {
+      setImgError(false);
+    };
+    img.onerror = () => {
+      setImgError(true);
+      setImageSrc(defaultFallback);
+      setHasError(true);
+    };
+    img.src = src;
+  }, [src, defaultFallback, hasError]);
+
+  const finalSrc = imgError || hasError ? defaultFallback : imageSrc;
 
   const imageProps = {
     ...props,
-    src: imageSrc,
+    src: finalSrc,
     alt,
-    className: cn(className, hasError && "opacity-75"),
-    onError: handleError,
-    unoptimized: hasError || unoptimized,
+    className: cn(className, (hasError || imgError) && "opacity-75"),
+    unoptimized: (hasError || imgError) || unoptimized,
     priority,
+    ...(sizes && { sizes }),
   };
 
   if (fill) {
