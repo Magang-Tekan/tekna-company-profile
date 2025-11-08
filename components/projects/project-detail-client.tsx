@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -158,19 +158,18 @@ export function ProjectDetailClient({
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         {/* Hero Image */}
-        {project.featured_image_url && (
-          <div className="relative h-[50vh] md:h-[60vh] lg:h-[70vh]">
-            <Image
-              src={project.featured_image_url}
-              alt={project.name}
-              fill
-              className="object-cover"
-              priority
-              sizes="100vw"
-            />
-            <div className="absolute inset-0 bg-black/20" />
-          </div>
-        )}
+        <div className="relative h-[50vh] md:h-[60vh] lg:h-[70vh]">
+          <ImageWithFallback
+            src={project.featured_image_url}
+            alt={project.name}
+            fill
+            size="large"
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-black/20" />
+        </div>
 
         {/* Hero Content Overlay */}
         <div className="absolute inset-0 flex items-end">
@@ -270,15 +269,13 @@ export function ProjectDetailClient({
                           <Dialog key={image.id}>
                             <DialogTrigger asChild>
                               <div className="relative aspect-video cursor-pointer overflow-hidden rounded-lg hover:opacity-80 transition-opacity duration-300 ease-in">
-                                <Image
+                                <ImageWithFallback
                                   src={image.image_url}
                                   alt={image.alt_text || `${project.name} - Image ${index + 1}`}
                                   fill
-                                  className="object-cover transition-opacity duration-300 ease-in"
+                                  size="large"
                                   sizes="(max-width: 768px) 50vw, 33vw"
-                                  quality={85}
-                                  placeholder="blur"
-                                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
+                                  className="object-cover transition-opacity duration-300 ease-in"
                                 />
                               </div>
                             </DialogTrigger>
@@ -290,14 +287,14 @@ export function ProjectDetailClient({
                                 )}
                               </DialogHeader>
                               <AspectRatio ratio={16 / 9}>
-                                <Image
+                                <ImageWithFallback
                                   src={image.image_url}
                                   alt={image.alt_text || project.name}
                                   fill
-                                  className="object-contain transition-opacity duration-300 ease-in"
+                                  size="large"
                                   sizes="90vw"
-                                  quality={90}
-                                  priority={index < 3} // Priority for first 3 images
+                                  priority={index < 3}
+                                  className="object-contain transition-opacity duration-300 ease-in"
                                 />
                               </AspectRatio>
                             </DialogContent>
@@ -478,17 +475,16 @@ export function ProjectDetailClient({
                   viewport={{ once: true }}
                 >
                   <Card className="overflow-hidden hover:shadow-lg transition-shadow">
-                    {relatedProject.featured_image_url && (
-                      <AspectRatio ratio={16 / 9}>
-                        <Image
-                          src={relatedProject.featured_image_url}
-                          alt={relatedProject.name}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                      </AspectRatio>
-                    )}
+                    <AspectRatio ratio={16 / 9}>
+                      <ImageWithFallback
+                        src={relatedProject.featured_image_url}
+                        alt={relatedProject.name}
+                        fill
+                        size="large"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover"
+                      />
+                    </AspectRatio>
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <CardTitle className="line-clamp-1">

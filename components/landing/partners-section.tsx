@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import { InfiniteSlider } from '@/components/motion-primitives/infinite-slider';
 import { ProgressiveBlur } from '@/components/motion-primitives/progressive-blur';
 import { usePartnersData } from '@/hooks/use-landing-data';
@@ -40,12 +40,14 @@ export function PartnersSection() {
                   {partners.map((partner) => (
                     <div key={partner.id} className="flex items-center justify-center">
                       <div className="relative h-16 w-32 md:h-24 md:w-64">
-                        <Image
-                          className="object-contain dark:invert filter grayscale hover:grayscale-0 transition-all duration-300"
+                        <ImageWithFallback
                           src={partner.logo_url}
                           alt={`Partner Logo`}
                           fill
+                          size="small"
                           sizes="(max-width: 768px) 128px, 256px"
+                          className="object-contain dark:invert filter grayscale hover:grayscale-0 transition-all duration-300"
+                          fallbackSrc="/images/placeholder-blog.svg"
                         />
                       </div>
                     </div>
@@ -64,12 +66,14 @@ export function PartnersSection() {
                   {partners.map((partner) => (
                     <div key={partner.id} className="flex items-center justify-center">
                       <div className="relative h-24 w-64">
-                        <Image
-                          className="object-contain dark:invert filter grayscale hover:grayscale-0 transition-all duration-300"
+                        <ImageWithFallback
                           src={partner.logo_url}
                           alt={`Partner Logo`}
                           fill
+                          size="small"
                           sizes="256px"
+                          className="object-contain dark:invert filter grayscale hover:grayscale-0 transition-all duration-300"
+                          fallbackSrc="/images/placeholder-blog.svg"
                         />
                       </div>
                     </div>

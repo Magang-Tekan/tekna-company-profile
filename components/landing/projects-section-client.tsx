@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { ImageWithFallback } from "@/components/ui/image-with-fallback";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
@@ -177,33 +177,24 @@ function ProjectRow({
           }}
         >
           <div className="relative aspect-video overflow-hidden rounded-2xl shadow-2xl">
-            {project.featured_image_url ? (
-              <motion.div
-                initial={{ scale: 1.05 }}
-                whileInView={{ scale: 1 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-                className="w-full h-full"
-              >
-                <Image
-                  src={project.featured_image_url}
-                  alt={project.name}
-                  fill
-                  className="object-cover transition-opacity duration-300"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  priority={true}
-                  quality={85}
-                  placeholder="blur"
-                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                  onLoad={() => {
-                    // Image loaded successfully
-                  }}
-                  onError={(e) => {
-                    console.warn(`Failed to load image: ${project.featured_image_url}`, e);
-                  }}
-                />
-              </motion.div>
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center">
+            <motion.div
+              initial={{ scale: 1.05 }}
+              whileInView={{ scale: 1 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="w-full h-full"
+            >
+              <ImageWithFallback
+                src={project.featured_image_url}
+                alt={project.name}
+                fill
+                size="large"
+                sizes="(max-width: 768px) 100vw, 50vw"
+                priority={true}
+                className="object-cover transition-opacity duration-300"
+              />
+            </motion.div>
+            {!project.featured_image_url && (
+              <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center">
                 <motion.span
                   className="text-primary-foreground text-xl font-semibold"
                   initial={{ opacity: 0, scale: 0.8 }}
