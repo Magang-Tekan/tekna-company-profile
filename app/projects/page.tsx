@@ -54,12 +54,13 @@ export default async function ProjectsPage({ searchParams }: Readonly<ProjectsPa
   const search = resolvedSearchParams.search;
   const featured = resolvedSearchParams.featured === "true";
 
-  // Fetch initial projects data
+  // Fetch initial projects data (include all projects and products)
   const projectsData = await PublicService.getAllProjects({
     page,
     limit: 12,
     search,
     featured: featured || undefined,
+    // Don't filter by isProduct - show all projects and products
   });
 
   // Prefetch project images for better performance

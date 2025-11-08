@@ -25,6 +25,9 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
     sort_order: number;
     created_at: string;
     updated_at: string;
+    // Product fields
+    is_product?: boolean;
+    product_price?: string;
     // Additional fields from project_translations and project_images
     overview_content?: string; // From project_translations.description
     short_description?: string;
@@ -99,6 +102,9 @@ export default function EditProjectPage({ params }: EditProjectPageProps) {
             description: project.description || "",
             featured_image_url: project.featured_image_url || "",
             is_featured: project.is_featured || false,
+            // Product fields
+            is_product: project.is_product || false,
+            product_price: project.product_price || "",
             // Use actual data from project_translations and project_images
             overview_content: project.overview_content || "", // This comes from project_translations.description
             short_description: project.short_description || "",

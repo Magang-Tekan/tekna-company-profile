@@ -39,6 +39,8 @@ interface Project {
   is_featured: boolean;
   is_active: boolean;
   featured_image_url?: string;
+  is_product?: boolean;
+  product_price?: string;
   created_at: string;
   updated_at: string;
 }
@@ -276,7 +278,7 @@ export default function ProjectsPageClient({
             {filteredProjects.map((project) => (
               <Card key={project.id} className="group hover:shadow-sm transition-all duration-200 overflow-hidden">
                 <CardContent className="p-0">
-                  {/* Featured Image */}
+                    {/* Featured Image */}
                   <div className="aspect-[16/10] bg-muted/50 flex items-center justify-center relative overflow-hidden">
                     <ImageWithFallback
                       src={project.featured_image_url}
@@ -285,6 +287,20 @@ export default function ProjectsPageClient({
                       size="large"
                       className="object-cover group-hover:scale-105 transition-transform duration-200"
                     />
+                    
+                    {/* Badges overlay */}
+                    <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
+                      {project.is_product && (
+                        <Badge variant="secondary" className="bg-blue-600 text-white text-xs px-2 py-0.5">
+                          Product
+                        </Badge>
+                      )}
+                      {project.is_featured && (
+                        <Badge variant="secondary" className="bg-primary/90 text-primary-foreground text-xs px-2 py-0.5">
+                          Featured
+                        </Badge>
+                      )}
+                    </div>
                     
                     {/* Hover overlay with actions */}
                     <div className="absolute inset-0 bg-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
@@ -332,11 +348,6 @@ export default function ProjectsPageClient({
                         <h3 className="text-sm font-semibold line-clamp-2 group-hover:text-primary transition-colors leading-tight">
                           {project.name}
                         </h3>
-                        {project.is_featured && (
-                          <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-xs px-2 py-0.5">
-                            Featured
-                          </Badge>
-                        )}
                       </div>
                       
                       {project.description && (
