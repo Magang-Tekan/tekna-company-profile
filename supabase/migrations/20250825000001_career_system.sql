@@ -1,7 +1,12 @@
--- Career tables migration with simplified RLS policies
--- Created: 2025-08-25
+-- Migration: Career System
+-- Description: Complete career/job posting system with applications, skills, and notifications
+-- Created: 2025-08-25 (consolidated from multiple migrations)
 
--- Create career_categories table
+-- =====================================================
+-- CAREER TABLES
+-- =====================================================
+
+-- Career categories table
 CREATE TABLE career_categories (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   name text NOT NULL,
@@ -15,7 +20,7 @@ CREATE TABLE career_categories (
   updated_at timestamptz DEFAULT now()
 );
 
--- Create career_locations table
+-- Career locations table
 CREATE TABLE career_locations (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   name text NOT NULL,
@@ -32,7 +37,7 @@ CREATE TABLE career_locations (
   updated_at timestamptz DEFAULT now()
 );
 
--- Create career_types table
+-- Career types table
 CREATE TABLE career_types (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   name text NOT NULL, -- Full-time, Part-time, Contract, Internship
@@ -44,7 +49,7 @@ CREATE TABLE career_types (
   updated_at timestamptz DEFAULT now()
 );
 
--- Create career_levels table
+-- Career levels table
 CREATE TABLE career_levels (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   name text NOT NULL, -- Entry Level, Mid Level, Senior Level, Executive
@@ -58,7 +63,7 @@ CREATE TABLE career_levels (
   updated_at timestamptz DEFAULT now()
 );
 
--- Create career_positions table (main job postings)
+-- Career positions table (main job postings)
 CREATE TABLE career_positions (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   company_id uuid REFERENCES companies(id) ON DELETE CASCADE,
@@ -106,7 +111,7 @@ CREATE TABLE career_positions (
   updated_at timestamptz DEFAULT now()
 );
 
--- Create career_skills table (for skill requirements)
+-- Career skills table (for skill requirements)
 CREATE TABLE career_skills (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   name text NOT NULL UNIQUE,
@@ -119,7 +124,7 @@ CREATE TABLE career_skills (
   updated_at timestamptz DEFAULT now()
 );
 
--- Create junction table for position skills
+-- Junction table for position skills
 CREATE TABLE career_position_skills (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   position_id uuid REFERENCES career_positions(id) ON DELETE CASCADE,
@@ -131,7 +136,7 @@ CREATE TABLE career_position_skills (
   UNIQUE(position_id, skill_id)
 );
 
--- Create career_applications table
+-- Career applications table
 CREATE TABLE career_applications (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   position_id uuid REFERENCES career_positions(id) ON DELETE CASCADE,
@@ -163,7 +168,7 @@ CREATE TABLE career_applications (
   updated_at timestamptz DEFAULT now()
 );
 
--- Create career_application_activities table (for tracking application progress)
+-- Career application activities table (for tracking application progress)
 CREATE TABLE career_application_activities (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   application_id uuid REFERENCES career_applications(id) ON DELETE CASCADE,
@@ -178,7 +183,10 @@ CREATE TABLE career_application_activities (
   created_at timestamptz DEFAULT now()
 );
 
--- Create indexes for better performance
+-- =====================================================
+-- INDEXES FOR PERFORMANCE
+-- =====================================================
+
 CREATE INDEX idx_career_positions_company_id ON career_positions(company_id);
 CREATE INDEX idx_career_positions_category_id ON career_positions(category_id);
 CREATE INDEX idx_career_positions_location_id ON career_positions(location_id);
@@ -188,6 +196,7 @@ CREATE INDEX idx_career_positions_status ON career_positions(status);
 CREATE INDEX idx_career_positions_featured ON career_positions(featured);
 CREATE INDEX idx_career_positions_published_at ON career_positions(published_at);
 CREATE INDEX idx_career_positions_slug ON career_positions(slug);
+CREATE INDEX idx_career_positions_status_active ON career_positions(status, is_active);
 
 CREATE INDEX idx_career_applications_position_id ON career_applications(position_id);
 CREATE INDEX idx_career_applications_status ON career_applications(status);
@@ -197,7 +206,10 @@ CREATE INDEX idx_career_applications_applied_at ON career_applications(applied_a
 CREATE INDEX idx_career_position_skills_position_id ON career_position_skills(position_id);
 CREATE INDEX idx_career_position_skills_skill_id ON career_position_skills(skill_id);
 
--- Create updated_at triggers
+-- =====================================================
+-- TRIGGERS FOR UPDATED_AT
+-- =====================================================
+
 CREATE TRIGGER update_career_categories_updated_at
   BEFORE UPDATE ON career_categories
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -226,33 +238,122 @@ CREATE TRIGGER update_career_applications_updated_at
   BEFORE UPDATE ON career_applications
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Functions for view counting
+-- =====================================================
+-- CAREER FUNCTIONS
+-- =====================================================
+
+-- Function to increment position views
 CREATE OR REPLACE FUNCTION increment_position_views(position_id uuid)
-RETURNS void AS $$
+RETURNS void 
+LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
   UPDATE career_positions 
   SET views_count = views_count + 1 
   WHERE id = position_id;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Function to update application count
-CREATE OR REPLACE FUNCTION public.increment_applications_count()
-RETURNS TRIGGER AS $BODY$
+CREATE OR REPLACE FUNCTION increment_applications_count()
+RETURNS TRIGGER 
+LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
-  UPDATE public.career_positions
+  UPDATE career_positions
   SET applications_count = applications_count + 1
   WHERE id = NEW.position_id;
   RETURN NEW;
 END;
-$BODY$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Trigger to update applications count when new application is created
 CREATE TRIGGER on_application_created_increment_count
-  AFTER INSERT ON public.career_applications
-  FOR EACH ROW EXECUTE FUNCTION public.increment_applications_count();
+  AFTER INSERT ON career_applications
+  FOR EACH ROW EXECUTE FUNCTION increment_applications_count();
 
--- Simplified RLS Policies (not too strict)
+-- =====================================================
+-- EMAIL NOTIFICATION FUNCTIONS
+-- =====================================================
+
+-- Email notification function with error handling
+CREATE OR REPLACE FUNCTION send_application_notification()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Try to send email notification, fallback to logging if it fails
+  BEGIN
+    PERFORM net.http_post(
+      url := 'https://rarxrbqpndlfxchdxnat.supabase.co/functions/v1/send-application-email'::text,
+      headers := '{"Content-Type": "application/json", "Authorization": "Bearer ' || current_setting('app.supabase_service_role_key', true) || '"}'::text,
+      body := json_build_object(
+        'application_id', NEW.id,
+        'applicant_email', NEW.email,
+        'applicant_name', NEW.first_name || ' ' || NEW.last_name,
+        'position_id', NEW.position_id,
+        'type', 'confirmation'
+      )::jsonb
+    );
+  EXCEPTION WHEN OTHERS THEN
+    -- Log the notification attempt instead of sending HTTP request
+    RAISE LOG 'Application notification would be sent for application % (email: %, position: %) - Error: %', 
+      NEW.id, NEW.email, NEW.position_id, SQLERRM;
+  END;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger for new applications
+CREATE TRIGGER on_application_submitted
+  AFTER INSERT ON career_applications
+  FOR EACH ROW
+  EXECUTE FUNCTION send_application_notification();
+
+-- Status notification function with error handling
+CREATE OR REPLACE FUNCTION send_application_status_notification()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Only send email if status actually changed
+  IF OLD.status != NEW.status THEN
+    BEGIN
+      PERFORM net.http_post(
+        url := 'https://rarxrbqpndlfxchdxnat.supabase.co/functions/v1/send-application-email'::text,
+        headers := '{"Content-Type": "application/json", "Authorization": "Bearer ' || current_setting('app.supabase_service_role_key', true) || '"}'::text,
+        body := json_build_object(
+          'application_id', NEW.id,
+          'applicant_email', NEW.email,
+          'applicant_name', NEW.first_name || ' ' || NEW.last_name,
+          'position_id', NEW.position_id,
+          'old_status', OLD.status,
+          'new_status', NEW.status,
+          'type', 'status_update'
+        )::jsonb
+      );
+    EXCEPTION WHEN OTHERS THEN
+      -- Log the notification attempt instead of sending HTTP request
+      RAISE LOG 'Application status notification would be sent for application %: % -> % - Error: %', 
+        NEW.id, OLD.status, NEW.status, SQLERRM;
+    END;
+  END IF;
+  
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create trigger for application status updates
+CREATE TRIGGER on_application_status_change
+  AFTER UPDATE ON career_applications
+  FOR EACH ROW
+  EXECUTE FUNCTION send_application_status_notification();
+
+-- =====================================================
+-- ROW LEVEL SECURITY
+-- =====================================================
+
 -- Enable RLS on all career tables
 ALTER TABLE career_categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE career_locations ENABLE ROW LEVEL SECURITY;
@@ -264,68 +365,118 @@ ALTER TABLE career_position_skills ENABLE ROW LEVEL SECURITY;
 ALTER TABLE career_applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE career_application_activities ENABLE ROW LEVEL SECURITY;
 
--- Simple policies: Allow public read access, authenticated users can insert applications
--- Career Categories - Public read, admin/HR write
-CREATE POLICY "Career categories public read" ON career_categories FOR SELECT USING (true);
-CREATE POLICY "Career categories admin hr write" ON career_categories FOR ALL USING (
-  auth.uid() IN (SELECT user_id FROM user_roles WHERE role IN ('admin', 'hr'))
-);
+-- =====================================================
+-- PUBLIC READ POLICIES
+-- =====================================================
 
--- Career Locations - Public read, admin/HR write
-CREATE POLICY "Career locations public read" ON career_locations FOR SELECT USING (true);
-CREATE POLICY "Career locations admin hr write" ON career_locations FOR ALL USING (
-  auth.uid() IN (SELECT user_id FROM user_roles WHERE role IN ('admin', 'hr'))
-);
+-- Career Categories - Public read access
+CREATE POLICY "Career categories consolidated" ON career_categories
+    FOR SELECT USING (true);
 
--- Career Types - Public read, admin/HR write
-CREATE POLICY "Career types public read" ON career_types FOR SELECT USING (true);
-CREATE POLICY "Career types admin hr write" ON career_types FOR ALL USING (
-  auth.uid() IN (SELECT user_id FROM user_roles WHERE role IN ('admin', 'hr'))
-);
+-- Career Locations - Public read access
+CREATE POLICY "Career locations consolidated" ON career_locations
+    FOR SELECT USING (true);
 
--- Career Levels - Public read, admin/HR write
-CREATE POLICY "Career levels public read" ON career_levels FOR SELECT USING (true);
-CREATE POLICY "Career levels admin hr write" ON career_levels FOR ALL USING (
-  auth.uid() IN (SELECT user_id FROM user_roles WHERE role IN ('admin', 'hr'))
-);
+-- Career Types - Public read access
+CREATE POLICY "Career types consolidated" ON career_types
+    FOR SELECT USING (true);
 
--- Career Positions - Public read published, admin/HR can see all
-CREATE POLICY "Career positions public read" ON career_positions FOR SELECT USING (
-  is_active = true AND status = 'open' AND published_at IS NOT NULL
-);
-CREATE POLICY "Career positions admin read all" ON career_positions FOR SELECT USING (
-  auth.uid() IN (SELECT user_id FROM user_roles WHERE role IN ('admin', 'hr'))
-);
-CREATE POLICY "Career positions admin hr write" ON career_positions FOR ALL USING (
-  auth.uid() IN (SELECT user_id FROM user_roles WHERE role IN ('admin', 'hr'))
-);
+-- Career Levels - Public read access
+CREATE POLICY "Career levels consolidated" ON career_levels
+    FOR SELECT USING (true);
 
--- Career Skills - Public read, admin/HR write
-CREATE POLICY "Career skills public read" ON career_skills FOR SELECT USING (true);
-CREATE POLICY "Career skills admin hr write" ON career_skills FOR ALL USING (
-  auth.uid() IN (SELECT user_id FROM user_roles WHERE role IN ('admin', 'hr'))
-);
+-- Career Skills - Public read access
+CREATE POLICY "Career skills consolidated" ON career_skills
+    FOR SELECT USING (true);
 
--- Career Position Skills - Public read, admin/HR write
-CREATE POLICY "Career position skills public read" ON career_position_skills FOR SELECT USING (true);
-CREATE POLICY "Career position skills admin hr write" ON career_position_skills FOR ALL USING (
-  auth.uid() IN (SELECT user_id FROM user_roles WHERE role IN ('admin', 'hr'))
-);
+-- Career Position Skills - Public read access
+CREATE POLICY "Career position skills consolidated" ON career_position_skills
+    FOR SELECT USING (true);
 
--- Career Applications - Anyone can submit, admin/HR can see all
-CREATE POLICY "Career applications public insert" ON career_applications FOR INSERT WITH CHECK (true);
-CREATE POLICY "Career applications public read" ON career_applications FOR SELECT USING (true);
-CREATE POLICY "Career applications admin hr read all" ON career_applications FOR SELECT USING (
-  auth.uid() IN (SELECT user_id FROM user_roles WHERE role IN ('admin', 'hr'))
-);
-CREATE POLICY "Career applications admin hr manage" ON career_applications FOR ALL USING (
-  auth.uid() IN (SELECT user_id FROM user_roles WHERE role IN ('admin', 'hr'))
-);
+-- Career Positions - Public read access to published positions
+CREATE POLICY "Career positions public read" ON career_positions
+    FOR SELECT USING (is_active = true AND status = 'open');
 
--- Career Application Activities - Admin/HR can see all
-CREATE POLICY "Career application activities admin hr read" ON career_application_activities FOR SELECT USING (
-  auth.uid() IN (SELECT user_id FROM user_roles WHERE role IN ('admin', 'hr'))
-);
-CREATE POLICY "Career application activities admin hr manage" ON career_application_activities FOR ALL USING (
-  auth.uid() IN (SELECT user_id FROM user_roles WHERE role IN ('admin', 'hr'))
-);
+-- Career Applications - Public insert and read own
+CREATE POLICY "Career applications public insert" ON career_applications
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Career applications public read own" ON career_applications
+    FOR SELECT USING ((select auth.jwt() ->> 'email') = email);
+
+-- Career Application Activities - Public read
+CREATE POLICY "Career application activities public read" ON career_application_activities
+    FOR SELECT USING (true);
+
+-- =====================================================
+-- ADMIN/HR MANAGEMENT POLICIES
+-- =====================================================
+
+-- Career Categories - Admin/HR can manage
+CREATE POLICY "Career categories admin hr manage" ON career_categories
+    FOR ALL USING ((select get_user_role(auth.uid())) IN ('admin', 'hr'));
+
+-- Career Locations - Admin/HR can manage
+CREATE POLICY "Career locations admin hr manage" ON career_locations
+    FOR ALL USING ((select get_user_role(auth.uid())) IN ('admin', 'hr'));
+
+-- Career Types - Admin/HR can manage
+CREATE POLICY "Career types admin hr manage" ON career_types
+    FOR ALL USING ((select get_user_role(auth.uid())) IN ('admin', 'hr'));
+
+-- Career Levels - Admin/HR can manage
+CREATE POLICY "Career levels admin hr manage" ON career_levels
+    FOR ALL USING ((select get_user_role(auth.uid())) IN ('admin', 'hr'));
+
+-- Career Positions - Admin/HR can manage
+CREATE POLICY "Career positions admin hr manage" ON career_positions
+    FOR ALL USING ((select get_user_role(auth.uid())) IN ('admin', 'hr'));
+
+-- Career Skills - Admin/HR can manage
+CREATE POLICY "Career skills admin hr manage" ON career_skills
+    FOR ALL USING ((select get_user_role(auth.uid())) IN ('admin', 'hr'));
+
+-- Career Position Skills - Admin/HR can manage
+CREATE POLICY "Career position skills admin hr manage" ON career_position_skills
+    FOR ALL USING ((select get_user_role(auth.uid())) IN ('admin', 'hr'));
+
+-- Career Applications - Admin/HR can manage
+CREATE POLICY "Career applications admin hr manage" ON career_applications
+    FOR ALL USING ((select get_user_role(auth.uid())) IN ('admin', 'hr'));
+
+-- Career Application Activities - Admin/HR can manage
+CREATE POLICY "Career application activities admin hr consolidated" ON career_application_activities
+    FOR ALL USING ((select get_user_role(auth.uid())) IN ('admin', 'hr'));
+
+-- =====================================================
+-- GRANT PERMISSIONS
+-- =====================================================
+
+-- Grant necessary permissions to anon and authenticated users
+GRANT SELECT ON career_categories TO anon;
+GRANT SELECT ON career_categories TO authenticated;
+GRANT SELECT ON career_locations TO anon;
+GRANT SELECT ON career_locations TO authenticated;
+GRANT SELECT ON career_types TO anon;
+GRANT SELECT ON career_types TO authenticated;
+GRANT SELECT ON career_levels TO anon;
+GRANT SELECT ON career_levels TO authenticated;
+GRANT SELECT ON career_skills TO anon;
+GRANT SELECT ON career_skills TO authenticated;
+GRANT SELECT ON career_position_skills TO anon;
+GRANT SELECT ON career_position_skills TO authenticated;
+GRANT SELECT ON career_positions TO anon;
+GRANT SELECT ON career_positions TO authenticated;
+GRANT INSERT ON career_applications TO anon;
+GRANT INSERT ON career_applications TO authenticated;
+GRANT SELECT ON career_applications TO anon;
+GRANT SELECT ON career_applications TO authenticated;
+GRANT SELECT ON career_application_activities TO anon;
+GRANT SELECT ON career_application_activities TO authenticated;
+
+-- Grant execute permissions on functions
+GRANT EXECUTE ON FUNCTION increment_position_views(uuid) TO anon;
+GRANT EXECUTE ON FUNCTION increment_position_views(uuid) TO authenticated;
+GRANT EXECUTE ON FUNCTION increment_applications_count() TO anon;
+GRANT EXECUTE ON FUNCTION increment_applications_count() TO authenticated;
+
