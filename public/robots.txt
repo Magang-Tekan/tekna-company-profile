@@ -10,6 +10,9 @@ Allow: /career
 Allow: /blog
 Allow: /contact
 Allow: /partners
+Allow: /products
+Allow: /team
+Allow: /faq
 
 # Block admin and private areas
 Disallow: /dashboard/
@@ -19,11 +22,9 @@ Disallow: /auth/
 
 # Block sensitive files
 Disallow: /*.json$
-Disallow: /*.xml$
 Disallow: /_next/
-Disallow: /api/
 
-# Allow sitemap
+# Allow sitemap and robots (must come after disallow rules)
 Allow: /sitemap.xml
 Allow: /robots.txt
 
