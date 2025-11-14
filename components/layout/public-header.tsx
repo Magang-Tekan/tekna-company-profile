@@ -11,7 +11,6 @@ import {
   Code,
   Globe,
   Users,
-  Star,
   Briefcase,
   Package,
 } from "lucide-react";
@@ -22,35 +21,9 @@ import { usePathname } from "next/navigation";
 export function AppHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
-  const isLandingPage = pathname === "/";
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  // Smooth scroll to section function (only works on landing page)
-  const scrollToSection = (sectionId: string) => {
-    if (!isLandingPage) return;
-
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-    // Close mobile menu if open
-    setIsMobileMenuOpen(false);
-  };
-
-  // Navigate to landing page and scroll to section
-  const navigateToSection = (sectionId: string) => {
-    if (isLandingPage) {
-      scrollToSection(sectionId);
-    } else {
-      // Navigate to landing page with hash
-      window.location.href = `/#${sectionId}`;
-    }
   };
 
   // Use navbar animation hook
@@ -98,14 +71,32 @@ export function AppHeader() {
         <nav
           ref={navRef}
           className="hidden lg:flex items-center gap-8 text-sm font-medium"
+          aria-label="Main navigation"
         >
-          <button
-            onClick={() => navigateToSection("home")}
-            className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group cursor-pointer"
+          <Link
+            href="/"
+            className={`flex items-center gap-2 transition-all duration-300 hover:scale-105 group ${
+              pathname === "/"
+                ? "text-foreground font-semibold"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            aria-label="Go to homepage"
           >
             <Code className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
             Beranda
-          </button>
+          </Link>
+          <Link
+            href="/about"
+            className={`flex items-center gap-2 transition-all duration-300 hover:scale-105 group ${
+              pathname === "/about"
+                ? "text-foreground font-semibold"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+            aria-label="Learn about our company"
+          >
+            <Users className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
+            Tentang Kami
+          </Link>
           <Link
             href="/projects"
             className={`flex items-center gap-2 transition-all duration-300 hover:scale-105 group ${
@@ -113,6 +104,7 @@ export function AppHeader() {
                 ? "text-foreground font-semibold"
                 : "text-muted-foreground hover:text-foreground"
             }`}
+            aria-label="View our projects portfolio"
           >
             <Rocket className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
             Proyek
@@ -124,24 +116,11 @@ export function AppHeader() {
                 ? "text-foreground font-semibold"
                 : "text-muted-foreground hover:text-foreground"
             }`}
+            aria-label="Explore our products"
           >
             <Package className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
             Product
           </Link>
-          <button
-            onClick={() => navigateToSection("partners")}
-            className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group cursor-pointer"
-          >
-            <Users className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
-            Partner
-          </button>
-          <button
-            onClick={() => navigateToSection("testimonials")}
-            className="flex items-center gap-2 text-muted-foreground transition-all duration-300 hover:text-foreground hover:scale-105 group cursor-pointer"
-          >
-            <Star className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
-            Testimonial
-          </button>
           <Link
             href="/blog"
             className={`flex items-center gap-2 transition-all duration-300 hover:scale-105 group ${
@@ -149,6 +128,7 @@ export function AppHeader() {
                 ? "text-foreground font-semibold"
                 : "text-muted-foreground hover:text-foreground"
             }`}
+            aria-label="Read our blog articles"
           >
             <Globe className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
             Blog
@@ -160,6 +140,7 @@ export function AppHeader() {
                 ? "text-foreground font-semibold"
                 : "text-muted-foreground hover:text-foreground"
             }`}
+            aria-label="View career opportunities"
           >
             <Briefcase className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
             Career
@@ -193,14 +174,33 @@ export function AppHeader() {
       {isMobileMenuOpen && (
         <div className="lg:hidden border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
           <div className="container mx-auto px-4 py-6 space-y-4">
-            <nav className="flex flex-col space-y-4">
-              <button
-                onClick={() => navigateToSection("home")}
-                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 cursor-pointer text-left w-full"
+            <nav className="flex flex-col space-y-4" aria-label="Mobile navigation">
+              <Link
+                href="/"
+                className={`flex items-center gap-3 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 ${
+                  pathname === "/"
+                    ? "text-foreground font-semibold bg-muted/30"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Go to homepage"
               >
                 <Code className="w-4 h-4" />
                 Beranda
-              </button>
+              </Link>
+              <Link
+                href="/about"
+                className={`flex items-center gap-3 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 ${
+                  pathname === "/about"
+                    ? "text-foreground font-semibold bg-muted/30"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Learn about our company"
+              >
+                <Users className="w-4 h-4" />
+                Tentang Kami
+              </Link>
               <Link
                 href="/projects"
                 className={`flex items-center gap-3 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 ${
@@ -209,6 +209,7 @@ export function AppHeader() {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="View our projects portfolio"
               >
                 <Rocket className="w-4 h-4" />
                 Proyek
@@ -221,24 +222,11 @@ export function AppHeader() {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Explore our products"
               >
                 <Package className="w-4 h-4" />
                 Product
               </Link>
-              <button
-                onClick={() => navigateToSection("partners")}
-                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 cursor-pointer text-left w-full"
-              >
-                <Users className="w-4 h-4" />
-                Partner
-              </button>
-              <button
-                onClick={() => navigateToSection("testimonials")}
-                className="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 cursor-pointer text-left w-full"
-              >
-                <Star className="w-4 h-4" />
-                Testimonial
-              </button>
               <Link
                 href="/blog"
                 className={`flex items-center gap-3 transition-colors duration-200 py-2 px-3 rounded-lg hover:bg-muted/50 ${
@@ -247,6 +235,7 @@ export function AppHeader() {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Read our blog articles"
               >
                 <Globe className="w-4 h-4" />
                 Blog
@@ -259,6 +248,7 @@ export function AppHeader() {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
                 onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="View career opportunities"
               >
                 <Briefcase className="w-4 h-4" />
                 Career

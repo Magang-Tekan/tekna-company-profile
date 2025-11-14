@@ -28,39 +28,21 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Section 1: Services (Non-clickable, hover only) */}
+          {/* Section 1: Quick Links - Main Pages for SEO */}
           <div>
             <h4 className="font-semibold text-sidebar-foreground mb-6">
-              Our Services
+              Quick Links
             </h4>
             <ul className="space-y-3">
-              <li className="text-sidebar-foreground/80 text-sm flex items-center group cursor-default">
-                Web Development
+              <li>
+                <Link
+                  href="/"
+                  className="text-sidebar-foreground/80 hover:text-sidebar-accent transition-colors text-sm flex items-center group"
+                >
+                  Home
+                  <ExternalLink className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
               </li>
-              <li className="text-sidebar-foreground/80 text-sm flex items-center group cursor-default">
-                Mobile Apps
-              </li>
-              <li className="text-sidebar-foreground/80 text-sm flex items-center group cursor-default">
-                IoT Solutions
-              </li>
-              <li className="text-sidebar-foreground/80 text-sm flex items-center group cursor-default">
-                UI/UX Design
-              </li>
-              <li className="text-sidebar-foreground/80 text-sm flex items-center group cursor-default">
-                Cloud Services
-              </li>
-              <li className="text-sidebar-foreground/80 text-sm flex items-center group cursor-default">
-                Digital Marketing
-              </li>
-            </ul>
-          </div>
-
-          {/* Section 2: Company */}
-          <div>
-            <h4 className="font-semibold text-sidebar-foreground mb-6">
-              Company
-            </h4>
-            <ul className="space-y-3">
               <li>
                 <Link
                   href="/about"
@@ -72,19 +54,19 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/team"
+                  href="/projects"
                   className="text-sidebar-foreground/80 hover:text-sidebar-accent transition-colors text-sm flex items-center group"
                 >
-                  Our Team
+                  Projects
                   <ExternalLink className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/career"
+                  href="/products"
                   className="text-sidebar-foreground/80 hover:text-sidebar-accent transition-colors text-sm flex items-center group"
                 >
-                  Career
+                  Products
                   <ExternalLink className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
               </li>
@@ -99,28 +81,64 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/projects"
+                  href="/career"
                   className="text-sidebar-foreground/80 hover:text-sidebar-accent transition-colors text-sm flex items-center group"
                 >
-                  Portfolio
+                  Career
                   <ExternalLink className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Section 3: Support */}
+          {/* Section 2: Company */}
           <div>
             <h4 className="font-semibold text-sidebar-foreground mb-6">
-              Support
+              Company
             </h4>
             <ul className="space-y-3">
+              <li>
+                <Link
+                  href="/team"
+                  className="text-sidebar-foreground/80 hover:text-sidebar-accent transition-colors text-sm flex items-center group"
+                >
+                  Our Team
+                  <ExternalLink className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+              </li>
               <li>
                 <Link
                   href="/faq"
                   className="text-sidebar-foreground/80 hover:text-sidebar-accent transition-colors text-sm flex items-center group"
                 >
                   FAQ
+                  <ExternalLink className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Section 3: Legal */}
+          <div>
+            <h4 className="font-semibold text-sidebar-foreground mb-6">
+              Legal
+            </h4>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  href="/privacy-policy"
+                  className="text-sidebar-foreground/80 hover:text-sidebar-accent transition-colors text-sm flex items-center group"
+                >
+                  Privacy Policy
+                  <ExternalLink className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms-of-service"
+                  className="text-sidebar-foreground/80 hover:text-sidebar-accent transition-colors text-sm flex items-center group"
+                >
+                  Terms of Service
                   <ExternalLink className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
               </li>
@@ -256,13 +274,13 @@ export function Footer() {
             </p>
             <div className="flex gap-4">
               <Link
-                href="/privacy"
+                href="/privacy-policy"
                 className="hover:text-sidebar-accent transition-colors"
               >
                 Privacy
               </Link>
               <Link
-                href="/terms"
+                href="/terms-of-service"
                 className="hover:text-sidebar-accent transition-colors"
               >
                 Terms

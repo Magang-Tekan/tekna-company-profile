@@ -6,104 +6,97 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://tekna.id'
   const currentDate = new Date()
   
-  // Static pages with high priority
-  const staticPages = [
+  /**
+   * PRIORITY STRUCTURE FOR GOOGLE SITELINKS:
+   * 1.0 - Homepage (most important)
+   * 0.9 - Main category pages (About, Services main page)
+   * 0.8 - Important child pages (Projects, Products, Blog, Career, Service subcategories)
+   * 0.7 - Secondary pages (Contact, Team, Individual projects/posts)
+   * 0.6 - Tertiary pages (Partners, FAQ, Categories)
+   * 0.3 - Legal/Static pages (Privacy, Terms)
+   * 
+   * CHANGE FREQUENCY GUIDELINES:
+   * - daily: Blog main page (new content)
+   * - weekly: Homepage, Projects, Products, Career (regular updates)
+   * - monthly: About, Services, Contact, Team (occasional updates)
+   * - yearly: Legal pages (rare updates)
+   */
+  
+  // TIER 1: Homepage - Highest Priority (1.0)
+  const homePage = [
     {
       url: baseUrl,
       lastModified: currentDate,
       changeFrequency: 'weekly' as const,
       priority: 1,
     },
+  ]
+
+  // TIER 2: Main Category Pages - Very High Priority (0.9)
+  const mainCategoryPages = [
     {
       url: `${baseUrl}/about`,
       lastModified: currentDate,
       changeFrequency: 'monthly' as const,
       priority: 0.9,
     },
-    // Service pages - high priority for business
-    {
-      url: `${baseUrl}/services`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly' as const,
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/services/iot-development`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/services/mobile-app-development`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/services/web-development`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    },
-    // Portfolio and Projects - showcase work
-    {
-      url: `${baseUrl}/portfolio`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    },
+  ]
+
+  // TIER 3: Important Child Pages - High Priority (0.8)
+  // These are the pages Google should prioritize for sitelinks
+  const importantPages = [
+    // Projects & Portfolio
     {
       url: `${baseUrl}/projects`,
       lastModified: currentDate,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     },
-    // Blog - fresh content
+    // Products
+    {
+      url: `${baseUrl}/products`,
+      lastModified: currentDate,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    },
+    // Blog - Content Hub
     {
       url: `${baseUrl}/blog`,
       lastModified: currentDate,
       changeFrequency: 'daily' as const,
       priority: 0.8,
     },
-    // Career - attract talent
+    // Career - Talent Acquisition
     {
       url: `${baseUrl}/career`,
       lastModified: currentDate,
       changeFrequency: 'weekly' as const,
       priority: 0.8,
     },
-    // Contact and business pages
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/partners`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.6,
-    },
+  ]
+
+  // TIER 4: Secondary Pages - Medium-High Priority (0.7)
+  const secondaryPages = [
     {
       url: `${baseUrl}/team`,
       lastModified: currentDate,
       changeFrequency: 'monthly' as const,
-      priority: 0.6,
+      priority: 0.7,
     },
+  ]
+
+  // TIER 5: Tertiary Pages - Medium Priority (0.6)
+  const tertiaryPages = [
     {
       url: `${baseUrl}/faq`,
       lastModified: currentDate,
       changeFrequency: 'monthly' as const,
-      priority: 0.5,
+      priority: 0.6,
     },
-    {
-      url: `${baseUrl}/products`,
-      lastModified: currentDate,
-      changeFrequency: 'weekly' as const,
-      priority: 0.7,
-    },
-    // Legal pages
+  ]
+
+  // TIER 6: Legal Pages - Low Priority (0.3)
+  const legalPages = [
     {
       url: `${baseUrl}/privacy-policy`,
       lastModified: currentDate,
@@ -115,34 +108,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: currentDate,
       changeFrequency: 'yearly' as const,
       priority: 0.3,
-    },
-  ]
-
-  // Additional service landing pages for SEO
-  const servicePages = [
-    {
-      url: `${baseUrl}/services/software-house-jakarta`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/services/jasa-pembuatan-aplikasi`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/services/developer-aplikasi-indonesia`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/services/transformasi-digital`,
-      lastModified: currentDate,
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
     },
   ]
 
@@ -197,12 +162,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Continue with static pages even if dynamic content fails
   }
 
+  /**
+   * SITEMAP ORDER STRATEGY FOR GOOGLE SITELINKS:
+   * Pages are ordered by priority (highest first) to help Google understand
+   * the site structure and identify the most important pages for sitelinks.
+   * 
+   * This order signals to Google which pages should appear as sitelinks:
+   * 1. Homepage
+   * 2. Main category pages (About)
+   * 3. Important child pages (Projects, Products, Blog, Career)
+   * 4. Dynamic content (Blog categories, individual posts, projects, careers)
+   * 5. Secondary/Tertiary pages
+   * 6. Legal pages
+   */
   return [
-    ...staticPages,
-    ...servicePages,
+    ...homePage,
+    ...mainCategoryPages,
+    ...importantPages,
     ...blogCategoryPages,
     ...blogPosts,
     ...projects,
     ...careerPositions,
+    ...secondaryPages,
+    ...tertiaryPages,
+    ...legalPages,
   ]
 }
