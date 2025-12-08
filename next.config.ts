@@ -3,6 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Enable standalone output for Docker
   output: 'standalone',
+  // Turbopack configuration (Next.js 16 default)
+  // Turbopack handles GLB/GLTF files as assets automatically
+  // serverExternalPackages handles supabase exclusion
+  turbopack: {},
+  // Webpack configuration (fallback for --webpack flag)
   webpack: (config) => {
     // Handle GLB and GLTF files
     config.module.rules.push({
